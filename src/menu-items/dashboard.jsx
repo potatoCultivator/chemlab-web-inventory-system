@@ -1,9 +1,11 @@
 // assets
-import { DashboardOutlined } from '@ant-design/icons';
+import { DashboardOutlined, ToolOutlined, ExperimentOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
-  DashboardOutlined
+  DashboardOutlined,
+  ToolOutlined,
+  ExperimentOutlined
 };
 
 // ==============================|| MENU ITEMS - DASHBOARD ||============================== //
@@ -19,6 +21,14 @@ const dashboard = {
       type: 'item',
       url: '/dashboard/default',
       icon: icons.DashboardOutlined,
+      breadcrumbs: false
+    },
+    {
+      id: 'tools-equipments',
+      title: 'Tools and Equipments',
+      type: 'item',
+      url: '/tools-equipments',
+      icon: icons.ExperimentOutlined,
       breadcrumbs: false
     }
   ]
