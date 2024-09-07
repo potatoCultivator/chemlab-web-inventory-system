@@ -1,5 +1,5 @@
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-// material-ui
 import Link from '@mui/material/Link';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -10,11 +10,15 @@ import TableRow from '@mui/material/TableRow';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { useEffect } from 'react';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
 
 // project import
 import { rows, headCells } from './constant';
-
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -42,8 +46,6 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-// ==============================|| ORDER TABLE - HEADER ||============================== //
-
 function TE_TableHead({ order, orderBy }) {
   return (
     <TableHead>
@@ -63,17 +65,39 @@ function TE_TableHead({ order, orderBy }) {
   );
 }
 
-// ==============================|| ORDER TABLE ||============================== //
-
-export default function TE_Table({refresh, catValue}) {
+export default function TE_Table({ refresh, catValue }) {
   const order = 'asc';
   const orderBy = 'no';
 
-  // Filter rows to include only glassware category
-  const filteredRows = catValue === 'all' ? rows : rows.filter(row => row.category === catValue);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [data, setData] = useState(rows);
+
+  const handleEditClick = (item) => {
+    setSelectedItem(item);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedItem(null);
+  };
+
+  const handleSave = () => {
+    setData((prevData) =>
+      prevData.map((row) => (row.no === selectedItem.no ? selectedItem : row))
+    );
+    handleClose();
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setSelectedItem((prevItem) => ({ ...prevItem, [name]: value }));
+  };
+
+  const filteredRows = catValue === 'all' ? data : data.filter(row => row.category === catValue);
 
   useEffect(() => {
-    // This effect will run every time the `refresh` prop changes
     console.log('TE_Table re-rendered due to refresh prop change');
   }, [refresh]);
 
@@ -112,19 +136,89 @@ export default function TE_Table({refresh, catValue}) {
                   <TableCell align="center">{row.category}</TableCell>
                   <TableCell align="center">{row.date}</TableCell>
                   <TableCell align="right">
-                    <IconButton color="primary" size="large">
+                    <IconButton color="primary" size="large" onClick={() => handleEditClick(row)}>
                       <EditOutlined />
                     </IconButton>
                     <IconButton color="secondary" size="large">
                       <DeleteOutlined />
                     </IconButton>
-                </TableCell>
+                  </TableCell>
                 </TableRow>
               );
             })}
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Edit Tool/Equipment</DialogTitle>
+        <DialogContent>
+          <TextField
+            margin="dense"
+            label="Item"
+            name="item"
+            value={selectedItem?.item || ''}
+            onChange={handleChange}
+            fullWidth
+          />
+          <TextField
+            margin="dense"
+            label="Capacity"
+            name="capacity"
+            value={selectedItem?.capacity || ''}
+            onChange={handleChange}
+            fullWidth
+          />
+          <TextField
+            margin="dense"
+            label="Unit"
+            name="unit"
+            value={selectedItem?.unit || ''}
+            onChange={handleChange}
+            fullWidth
+          />
+          <TextField
+            margin="dense"
+            label="Current Quantity"
+            name="currentQuantity"
+            value={selectedItem?.currentQuantity || ''}
+            onChange={handleChange}
+            fullWidth
+          />
+          <TextField
+            margin="dense"
+            label="Total Quantity"
+            name="totalQuantity"
+            value={selectedItem?.totalQuantity || ''}
+            onChange={handleChange}
+            fullWidth
+          />
+          <TextField
+            margin="dense"
+            label="Category"
+            name="category"
+            value={selectedItem?.category || ''}
+            onChange={handleChange}
+            fullWidth
+          />
+          <TextField
+            margin="dense"
+            label="Date"
+            name="date"
+            value={selectedItem?.date || ''}
+            onChange={handleChange}
+            fullWidth
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleSave} color="primary">
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
