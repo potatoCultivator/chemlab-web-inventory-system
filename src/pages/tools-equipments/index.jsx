@@ -33,19 +33,6 @@ export default function ToolsAndEquipments() {
       <Grid item xs={12}>
         <ProcessTab refresh={refreshProcessTab} />
       </Grid>
-      <Grid item xs={12}>
-        <Button variant="contained" color="primary">
-          Add Tool/Equipment
-        </Button>
-      </Grid>
-      <Grid item xs={12} md={7} lg={8}>
-        <MainCard sx={{ mt: 2 }} content={false}>
-          <ProcessTab refresh={refreshProcessTab} />
-        </MainCard>
-      </Grid>
-      <MainCard title="Tools and Equipments">
-        <ToolsAndEquipmentsTable />
-      </MainCard>
     </Grid>
   );
 }

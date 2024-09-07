@@ -127,8 +127,8 @@ export default function AddItemDialog({ onDone }) {
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleDone}>Done</Button>
+          <Button aria-hidden="true" onClick={handleClose}>Cancel</Button>
+          <Button aria-hidden="true" onClick={handleDone}>Done</Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>
