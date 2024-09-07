@@ -72,10 +72,28 @@ export default function TE_Table({ refresh, catValue }) {
   const [selectedItem, setSelectedItem] = useState(null);
   const [open, setOpen] = useState(false);
   const [data, setData] = useState(rows);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   const handleEditClick = (item) => {
     setSelectedItem(item);
     setOpen(true);
+  };
+
+  const handleDeleteClick = (item) => {
+    setItemToDelete(item);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    setData((prevData) => prevData.filter((row) => row.no !== itemToDelete.no));
+    setDeleteDialogOpen(false);
+    setItemToDelete(null);
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+    setItemToDelete(null);
   };
 
   const handleClose = () => {
@@ -127,9 +145,9 @@ export default function TE_Table({ refresh, catValue }) {
                   tabIndex={-1}
                   key={row.no}
                 >
-                  <TableCell component="th" id={labelId} scope="row">
+                  {/* <TableCell component="th" id={labelId} scope="row">
                     <Link color="secondary"> {row.no}</Link>
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell align='left'>{row.item}</TableCell>
                   <TableCell align="center">{row.capacity} {row.unit}</TableCell>
                   <TableCell align='center'>{row.currentQuantity}/{row.totalQuantity}</TableCell>
@@ -139,7 +157,7 @@ export default function TE_Table({ refresh, catValue }) {
                     <IconButton color="primary" size="large" onClick={() => handleEditClick(row)}>
                       <EditOutlined />
                     </IconButton>
-                    <IconButton color="secondary" size="large">
+                    <IconButton color="secondary" size="large" onClick={() => handleDeleteClick(row)}>
                       <DeleteOutlined />
                     </IconButton>
                   </TableCell>
@@ -216,6 +234,24 @@ export default function TE_Table({ refresh, catValue }) {
           </Button>
           <Button onClick={handleSave} color="primary">
             Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={deleteDialogOpen} onClose={handleDeleteCancel}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete this item?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} color="primary">
+            Cancel
+          </Button>
+          <Button 
+          onClick={handleDeleteConfirm} 
+          color="error" 
+          sx={{ color: 'rgba(255, 0, 0, 0.7)' }}>
+            Delete
           </Button>
         </DialogActions>
       </Dialog>

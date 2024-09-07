@@ -41,12 +41,6 @@ const category = [
 // Use in ToolasAndEquipmentsTable.jsx
 const headCells = [
     {
-      id: 'no',
-      align: 'left',
-      disablePadding: true,
-      label: 'No.'
-    },
-    {
       id: 'item',
       align: 'left',
       disablePadding: true,
