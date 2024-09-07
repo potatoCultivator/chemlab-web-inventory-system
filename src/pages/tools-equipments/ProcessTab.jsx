@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 // Project Imports
 import MainCard from 'components/MainCard';
 import ToolsAndEquipmentsTable from './ToolsAndEquipmentsTable';
-import { category } from './constant';
+import { category } from './constants';
 
 // Function
 function CustomTabPanel(props) {

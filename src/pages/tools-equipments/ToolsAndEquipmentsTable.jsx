@@ -18,7 +18,7 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 
 // project import
-import { rows, headCells } from './constant';
+import { rows, headCells } from './constants';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
