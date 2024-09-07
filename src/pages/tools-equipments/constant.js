@@ -64,12 +64,12 @@ const headCells = [
         disablePadding: false,
         label: 'Category'
       },
-    {
-      id: 'date',
-      align: 'center',
-      disablePadding: false,
-      label: 'Date'
-    }
+      {
+        id: 'action',
+        align: 'right',
+        disablePadding: false,
+        label: 'Edit/Delete'
+      }
   ];
 
 // Use in ToolasAndEquipmentsTable.jsx

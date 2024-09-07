@@ -152,12 +152,11 @@ export default function TE_Table({ refresh, catValue }) {
                   <TableCell align="center">{row.capacity} {row.unit}</TableCell>
                   <TableCell align='center'>{row.currentQuantity}/{row.totalQuantity}</TableCell>
                   <TableCell align="center">{row.category}</TableCell>
-                  <TableCell align="center">{row.date}</TableCell>
                   <TableCell align="right">
                     <IconButton color="primary" size="large" onClick={() => handleEditClick(row)}>
                       <EditOutlined />
                     </IconButton>
-                    <IconButton color="secondary" size="large" onClick={() => handleDeleteClick(row)}>
+                    <IconButton color="error" size="large" onClick={() => handleDeleteClick(row)}>
                       <DeleteOutlined />
                     </IconButton>
                   </TableCell>
