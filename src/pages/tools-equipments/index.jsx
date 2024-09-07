@@ -9,6 +9,8 @@ import MainCard from 'components/MainCard';
 import ToolsAndEquipmentsTable from './ToolsAndEquipmentsTable';
 import ProcessTab from './ProcessTab';
 import AddItem from './AddItem';
+import AddItemDialog from './AddItemDialog';
+
 // ==============================|| SAMPLE PAGE ||============================== //
 
 export default function ToolsAndEquipments() {
@@ -18,9 +20,7 @@ export default function ToolsAndEquipments() {
     <Grid item xs={12} sx={{ mb: -2.25 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h5">Tools and Equipments</Typography>
-        <Button variant="contained" color="primary">
-          Add Tool/Equipment
-        </Button>
+        <AddItemDialog />
       </Box>
     </Grid>
     <Grid item xs={12}>

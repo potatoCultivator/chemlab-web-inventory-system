@@ -1,11 +1,12 @@
 // assets
-import { DashboardOutlined, ToolOutlined, ExperimentOutlined } from '@ant-design/icons';
+import { DashboardOutlined, ToolOutlined, ExperimentOutlined, UserOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
   DashboardOutlined,
   ToolOutlined,
-  ExperimentOutlined
+  ExperimentOutlined,
+  UserOutlined
 };
 
 // ==============================|| MENU ITEMS - DASHBOARD ||============================== //
@@ -29,6 +30,15 @@ const dashboard = {
       type: 'item',
       url: '/tools-equipments',
       icon: icons.ExperimentOutlined,
+      breadcrumbs: false
+    }
+    ,
+    {
+      id: 'borrowers',
+      title: 'Borrowers',
+      type: 'item',
+      url: '/borrowers',
+      icon: icons.UserOutlined,
       breadcrumbs: false
     }
   ]

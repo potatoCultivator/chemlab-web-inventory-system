@@ -56,7 +56,7 @@ function AddItem() {
             value={item.unit}
             onChange={(e) => setItem.unit(e.target.value)}
             SelectProps={{ native: true }}
-            helperText="unit of measurement">
+            /*helperText="unit of measurement"*/>
                 <option value="kg">kg</option>
                 <option value="g">g</option>
                 <option value="L">L</option>

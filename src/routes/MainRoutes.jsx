@@ -9,6 +9,7 @@ const Typography = Loadable(lazy(() => import('pages/component-overview/typograp
 const Shadow = Loadable(lazy(() => import('pages/component-overview/shadows')));
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard/index')));
 const ToolsAndEquipment = Loadable(lazy(() => import('pages/tools-equipments/index')));
+const Borrowers = Loadable(lazy(() => import('pages/borrowers/index')));
 
 // render - sample page
 const SamplePage = Loadable(lazy(() => import('pages/extra-pages/sample-page')));
@@ -26,6 +27,10 @@ const MainRoutes = {
     {
       path: 'tools-equipments',
       element: <ToolsAndEquipment />
+    },
+    {
+      path: 'borrowers',
+      element: <Borrowers />
     },
     {
       path: 'color',
