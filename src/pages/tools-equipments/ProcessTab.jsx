@@ -42,9 +42,10 @@ function a11yProps(index) {
   };
 }
 
-export default function SortingTab() {
+export default function ProcessTab({ refresh }) {
   const [value, setValue] = useState(0);
   const [catValue, setCatValue] = useState('all');
+  const [refreshTable, setRefreshTable] = useState(false);
   const [returned, setReturned] = useState(0);
   const [borrowed, setRorrowed] = useState(0);
   const theme = useTheme();
@@ -52,6 +53,14 @@ export default function SortingTab() {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  useEffect(() => {
+    // This effect will run every time the `refresh` prop changes
+    console.log('ProcessTab re-rendered due to refresh prop change');
+    setRefreshTable(prev => !prev); 
+    // Add any logic needed to refresh the content
+  }, [refresh]);
+
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -143,7 +152,7 @@ export default function SortingTab() {
           </Box>
         </MainCard>
         <MainCard>
-          <CustomTabPanel value={value} index={0}>
+          <CustomTabPanel refresh={refreshTable} value={value} index={0}>
             <ToolsAndEquipmentsTable catValue={catValue}/>
           </CustomTabPanel>
           <CustomTabPanel value={value} index={1}>

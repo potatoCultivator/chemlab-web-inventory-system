@@ -1,15 +1,14 @@
 import PropTypes from 'prop-types';
 // material-ui
 import Link from '@mui/material/Link';
-import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import { useEffect } from 'react';
 
 // project import
 import { rows, headCells } from './constant';
@@ -64,12 +63,17 @@ function TE_TableHead({ order, orderBy }) {
 
 // ==============================|| ORDER TABLE ||============================== //
 
-export default function TE_Table({catValue}) {
+export default function TE_Table({refresh, catValue}) {
   const order = 'asc';
   const orderBy = 'no';
 
   // Filter rows to include only glassware category
   const filteredRows = catValue === 'all' ? rows : rows.filter(row => row.category === catValue);
+
+  useEffect(() => {
+    // This effect will run every time the `refresh` prop changes
+    console.log('TE_Table re-rendered due to refresh prop change');
+  }, [refresh]);
 
   return (
     <Box>
