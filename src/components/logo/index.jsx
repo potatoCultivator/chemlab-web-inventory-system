@@ -18,7 +18,7 @@ const LogoSection = ({ sx, to }) => {
       <Stack direction="row" spacing={1} alignItems="center">
         <Logo />
         <Chip
-          label={'Chemlab IMS'}
+          label={'ChemLab IMS'}
           variant="outlined"
           size="small"
           color="secondary"
