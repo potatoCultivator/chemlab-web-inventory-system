@@ -18,7 +18,8 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 
 // project import
-import { rows, headCells } from './constants';
+import { fetchAllTools } from 'pages/TE_Backend';
+import { headCells } from './constants';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -68,12 +69,29 @@ function TE_TableHead({ order, orderBy }) {
 export default function TE_Table({ refresh, catValue }) {
   const order = 'asc';
   const orderBy = 'no';
-
+  const [tools, setTools] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [open, setOpen] = useState(false);
-  const [data, setData] = useState(rows);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+  console.log('useEffect triggered with refresh:', refresh);
+  const fetchData = async () => {
+    try {
+      const fetchedTools = await fetchAllTools();
+      setTools(fetchedTools);
+    } catch (error) {
+      console.error('Error fetching tools:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchData();
+}, [refresh]);
+
 
   const handleEditClick = (item) => {
     setSelectedItem(item);
@@ -86,7 +104,7 @@ export default function TE_Table({ refresh, catValue }) {
   };
 
   const handleDeleteConfirm = () => {
-    setData((prevData) => prevData.filter((row) => row.no !== itemToDelete.no));
+    setTools((prevData) => prevData.filter((tool) => tool.no !== itemToDelete.no));
     setDeleteDialogOpen(false);
     setItemToDelete(null);
   };
@@ -102,8 +120,8 @@ export default function TE_Table({ refresh, catValue }) {
   };
 
   const handleSave = () => {
-    setData((prevData) =>
-      prevData.map((row) => (row.no === selectedItem.no ? selectedItem : row))
+    setTools((prevData) =>
+      prevData.map((tool) => (tool.no === selectedItem.no ? selectedItem : tool))
     );
     handleClose();
   };
@@ -113,59 +131,54 @@ export default function TE_Table({ refresh, catValue }) {
     setSelectedItem((prevItem) => ({ ...prevItem, [name]: value }));
   };
 
-  const filteredRows = catValue === 'all' ? data : data.filter(row => row.category === catValue);
-
-  useEffect(() => {
-    console.log('TE_Table re-rendered due to refresh prop change');
-  }, [refresh]);
+  const filteredRows = catValue === 'all' ? tools : tools.filter(tool => tool.category === catValue);
 
   return (
     <Box>
-      <TableContainer
-        sx={{
-          width: '100%',
-          overflowX: 'auto',
-          position: 'relative',
-          display: 'block',
-          maxWidth: '100%',
-          '& td, & th': { whiteSpace: 'nowrap' }
-        }}
-      >
-        <Table aria-labelledby="tableTitle">
-          <TE_TableHead order={order} orderBy={orderBy} />
-          <TableBody>
-            {stableSort(filteredRows, getComparator(order, orderBy)).map((row, index) => {
-              const labelId = `enhanced-table-checkbox-${index}`;
-
-              return (
-                <TableRow
-                  hover
-                  role="checkbox"
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  tabIndex={-1}
-                  key={row.no}
-                >
-                  {/* <TableCell component="th" id={labelId} scope="row">
-                    <Link color="secondary"> {row.no}</Link>
-                  </TableCell> */}
-                  <TableCell align='left'>{row.item}</TableCell>
-                  <TableCell align="center">{row.capacity} {row.unit}</TableCell>
-                  <TableCell align='center'>{row.currentQuantity}/{row.totalQuantity}</TableCell>
-                  <TableCell align="center">{row.category}</TableCell>
-                  <TableCell align="right">
-                    <IconButton color="primary" size="large" onClick={() => handleEditClick(row)}>
-                      <EditOutlined />
-                    </IconButton>
-                    <IconButton color="error" size="large" onClick={() => handleDeleteClick(row)}>
-                      <DeleteOutlined />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <TableContainer
+          sx={{
+            width: '100%',
+            overflowX: 'auto',
+            position: 'relative',
+            display: 'block',
+            maxWidth: '100%',
+            '& td, & th': { whiteSpace: 'nowrap' }
+          }}
+        >
+          <Table aria-labelledby="tableTitle">
+            <TE_TableHead order={order} orderBy={orderBy} />
+            <TableBody>
+              {stableSort(filteredRows, getComparator(order, orderBy)).map((row, index) => {
+                return (
+                  <TableRow
+                    hover
+                    role="checkbox"
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    tabIndex={-1}
+                    key={row.id}
+                  >
+                    <TableCell align='left'>{row.name}</TableCell>
+                    <TableCell align="center">{row.capacity} {row.unit}</TableCell>
+                    <TableCell align='center'>{row.quantity}/{row.quantity}</TableCell>
+                    <TableCell align="center">{row.category}</TableCell>
+                    <TableCell align="right">
+                      <IconButton color="primary" size="large" onClick={() => handleEditClick(row)}>
+                        <EditOutlined />
+                      </IconButton>
+                      <IconButton color="error" size="large" onClick={() => handleDeleteClick(row)}>
+                        <DeleteOutlined />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
 
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Edit Tool/Equipment</DialogTitle>
@@ -174,7 +187,7 @@ export default function TE_Table({ refresh, catValue }) {
             margin="dense"
             label="Item"
             name="item"
-            value={selectedItem?.item || ''}
+            value={selectedItem?.name || ''}
             onChange={handleChange}
             fullWidth
           />

@@ -12,6 +12,8 @@ import MainCard from 'components/MainCard';
 import ToolsAndEquipmentsTable from './ToolsAndEquipmentsTable';
 import { category } from './constants';
 
+import { countRows } from 'pages/TE_Backend';
+
 // Function
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -45,9 +47,10 @@ function a11yProps(index) {
 export default function ProcessTab({ refresh }) {
   const [value, setValue] = useState(0);
   const [catValue, setCatValue] = useState('all');
-  const [refreshTable, setRefreshTable] = useState(false);
+  const [refreshTable, setRefreshTable] = useState(refresh);
   const [returned, setReturned] = useState(0);
   const [borrowed, setRorrowed] = useState(0);
+  const [count, setCount] = useState(0);
   const theme = useTheme();
 
   const handleChange = (event, newValue) => {
@@ -55,9 +58,20 @@ export default function ProcessTab({ refresh }) {
   };
 
   useEffect(() => {
-    // This effect will run every time the `refresh` prop changes
-    console.log('ProcessTab re-rendered due to refresh prop change');
-    setRefreshTable(prev => !prev); 
+    const fetchRowCoun = async () => {
+      // This effect will run every time the `refresh` prop changes
+      console.log('ProcessTab re-rendered due to refresh prop change:', refresh);
+      setRefreshTable(prev => !prev); 
+      try {
+        const fetchCount = await countRows();
+        setCount(fetchCount);
+      }
+      catch {
+        console.error('Error fetching tools:', error);
+
+      }
+    }
+    fetchRowCoun();
     // Add any logic needed to refresh the content
   }, [refresh]);
 
@@ -84,7 +98,7 @@ export default function ProcessTab({ refresh }) {
                   <Box display="flex" alignItems="center" gap={1}>
                     <span style={{ color: value === 0 ? 'black' : theme.palette.secondary.main }}>All</span>
                     <Chip
-                      label={returned + borrowed}
+                      label={count}
                       size="small"
                       style={{
                         backgroundColor: value === 0 ? theme.palette.primary.main : alpha(theme.palette.primary.main, 0.2),
@@ -152,8 +166,8 @@ export default function ProcessTab({ refresh }) {
           </Box>
         </MainCard>
         <MainCard>
-          <CustomTabPanel refresh={refreshTable} value={value} index={0}>
-            <ToolsAndEquipmentsTable catValue={catValue}/>
+          <CustomTabPanel value={value} index={0}>
+            <ToolsAndEquipmentsTable refresh={refreshTable} catValue={catValue}/>
           </CustomTabPanel>
           <CustomTabPanel value={value} index={1}>
             <ToolsAndEquipmentsTable />

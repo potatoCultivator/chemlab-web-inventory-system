@@ -7,9 +7,10 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Grid from '@mui/material/Grid';
 import CircularProgress from '@mui/material/CircularProgress'; // Import CircularProgress
+import { Box } from '@mui/system';
 
 // firebase import
-import uploadTE from '../TE_Backend';
+import uploadTE from '../TE_Backend.jsx';
 
 export default function AddItemDialog({ onDone }) {
   const [open, setOpen] = React.useState(false);
@@ -38,7 +39,7 @@ export default function AddItemDialog({ onDone }) {
     setLoading(true); // Set loading state to true
     try {
       await uploadTE(item); // Call the uploadTE function to add the item to Firestore
-      onDone(); // Call the onDone function to trigger the refresh
+      onDone();
       handleClose();
     } catch (error) {
       console.error('Error uploading item:', error);
@@ -63,6 +64,7 @@ export default function AddItemDialog({ onDone }) {
         }}
       >
         <DialogTitle>Add Tool/Equipment</DialogTitle>
+        <Box mt={0.5}/>
         <DialogContent>
           {loading ? (
             <Grid container justifyContent="center" alignItems="center" style={{ height: '100px' }}>
