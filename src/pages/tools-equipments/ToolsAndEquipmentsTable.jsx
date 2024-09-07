@@ -8,6 +8,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useEffect } from 'react';
 
 // project import
@@ -109,6 +111,14 @@ export default function TE_Table({refresh, catValue}) {
                   <TableCell align='center'>{row.currentQuantity}/{row.totalQuantity}</TableCell>
                   <TableCell align="center">{row.category}</TableCell>
                   <TableCell align="center">{row.date}</TableCell>
+                  <TableCell align="right">
+                    <IconButton color="primary" size="large">
+                      <EditOutlined />
+                    </IconButton>
+                    <IconButton color="secondary" size="large">
+                      <DeleteOutlined />
+                    </IconButton>
+                </TableCell>
                 </TableRow>
               );
             })}

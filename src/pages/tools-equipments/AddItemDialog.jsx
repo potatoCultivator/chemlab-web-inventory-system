@@ -43,7 +43,7 @@ export default function AddItemDialog({ onDone }) {
         onClose={handleClose}
         PaperProps={{
           sx: {
-            border: '2px solid #000', // Add border here
+            border: 'none', // Add border here
             boxShadow: 'none',
             backgroundColor: '#fff' // Add background color here
           }
@@ -64,6 +64,17 @@ export default function AddItemDialog({ onDone }) {
             <Grid item xs={6}>
               <TextField
                 fullWidth
+                label="Quantity"
+                variant="outlined"
+                value={item.quantity}
+                onChange={(e) => setItem(prevItem => ({ ...prevItem, quantity: e.target.value }))}
+                helperText="Please enter the capacity of the item"
+              />
+            </Grid>
+
+            <Grid item xs={3}>
+              <TextField
+                fullWidth
                 label="Capacity"
                 variant="outlined"
                 value={item.capacity}
@@ -71,7 +82,8 @@ export default function AddItemDialog({ onDone }) {
                 helperText="Please enter the capacity of the item"
               />
             </Grid>
-            <Grid item xs={6}>
+
+            <Grid item xs={3}>
               <TextField
                 fullWidth
                 label="Unit"
@@ -98,19 +110,6 @@ export default function AddItemDialog({ onDone }) {
                 onChange={(e) => setItem(prevItem => ({ ...prevItem, category: e.target.value }))}
                 SelectProps={{ native: true }}
                 helperText="Please select the category"
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    '& fieldset': {
-                      border: '2px solid #000', // Add border here
-                    },
-                    '&:hover fieldset': {
-                      borderColor: '#000', // Change border color on hover
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: '#000', // Change border color when focused
-                    },
-                  },
-                }}
               >
                 <option value="all">All</option>
                 <option value="glassware">Glassware</option>

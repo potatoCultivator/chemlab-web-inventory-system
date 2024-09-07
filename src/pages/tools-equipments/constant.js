@@ -1,3 +1,4 @@
+// Use In processtab.jsx
 const category = [
     {
         value: 'all',
@@ -37,7 +38,7 @@ const category = [
     }
   ];
 
-  
+// Use in ToolasAndEquipmentsTable.jsx
 const headCells = [
     {
       id: 'no',
@@ -77,6 +78,7 @@ const headCells = [
     }
   ];
 
+// Use in ToolasAndEquipmentsTable.jsx
   function createData(no, item, capacity, unit, currentQuantity, totalQuantity, date, category) {
     return { no, item, capacity, unit, currentQuantity, totalQuantity, date, category };
   }
