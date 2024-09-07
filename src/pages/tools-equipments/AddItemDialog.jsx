@@ -7,6 +7,9 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Grid from '@mui/material/Grid';
 
+// firebase import
+import uploadTE from '../TE_Backend'; 
+
 export default function AddItemDialog({ onDone }) {
   const [open, setOpen] = React.useState(false);
   const [item, setItem] = React.useState({
@@ -27,8 +30,9 @@ export default function AddItemDialog({ onDone }) {
     setOpen(false);
   };
 
-  const handleDone = () => {
+  const handleDone = async () => {
     // Perform any necessary actions here
+    await uploadTE(item); // Call the uploadTE function to add the item to Firestore
     onDone(); // Call the onDone function to trigger the refresh
     handleClose();
   };
