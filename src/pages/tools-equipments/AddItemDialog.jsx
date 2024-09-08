@@ -8,6 +8,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Grid from '@mui/material/Grid';
 import CircularProgress from '@mui/material/CircularProgress'; // Import CircularProgress
 import { Box } from '@mui/system';
+import { UploadOutlined } from '@ant-design/icons'; 
+import { CameraOutlined, DeleteOutlined } from '@ant-design/icons';
 
 // firebase import
 import uploadTE from '../TE_Backend.jsx';
@@ -15,6 +17,7 @@ import uploadTE from '../TE_Backend.jsx';
 export default function AddItemDialog({ onDone }) {
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false); // Add loading state
+  const [image, setImage] = React.useState(null);
   const [item, setItem] = React.useState({
     name: '',
     capacity: '',
@@ -44,6 +47,12 @@ export default function AddItemDialog({ onDone }) {
     } catch (error) {
       console.error('Error uploading item:', error);
       setLoading(false); // Reset loading state in case of error
+    }
+  };
+
+  const handleImageChange = (event) => {
+    if (event.target.files && event.target.files[0]) {
+      setImage(event.target.files[0]);
     }
   };
 
@@ -127,7 +136,7 @@ export default function AddItemDialog({ onDone }) {
                   <option value="mL">mL</option>
                 </TextField>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={3}>
                 <TextField
                   fullWidth
                   label="Category"
@@ -148,6 +157,77 @@ export default function AddItemDialog({ onDone }) {
                   <option value="mixing">Mixing & Stirring</option>
                 </TextField>
               </Grid>
+
+               {/* Image Upload Field */}
+               {/* <Grid item xs={3}>
+                <input
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  id="raised-button-file"
+                  type="file"
+                  onChange={handleImageChange}
+                />
+                <label htmlFor="raised-button-file">
+                  <Button variant="outlined" component="span">
+                    Upload Image
+                  </Button>
+                </label>
+              </Grid> */}
+
+              {/* <Grid item xs={3} sx={{ textAlign: 'center', marginTop: 2 }}> */}
+              <Grid item xs={12} sm={6} md={4} lg={3} sx={{ textAlign: 'center', marginTop: 0 }}>
+              {image ? (
+                  // Display the image preview when an image is selected
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <img
+                      src={URL.createObjectURL(image)}
+                      alt="Selected"
+                      style={{ 
+                        width: '100%', 
+                        maxWidth: '200px', 
+                        height: 'auto', 
+                        objectFit: 'cover', 
+                        marginBottom: '10px', 
+                        borderRadius: '8px', 
+                        border: '1px solid #ccc' }}
+                    />
+                    <Button variant="contained" component="label" color="secondary">
+                      Change Image
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        style={{ display: 'none' }}
+                      />
+                    </Button>
+                  </Box>
+                ) : (
+                  // Display the upload button if no image is selected
+                  <Button
+                    component="label"
+                    variant="outlined"
+                    color="primary"
+                    sx={{
+                      border: '2px dashed #ccc',
+                      padding: 2,
+                      borderRadius: '8px',
+                      backgroundColor: '#f5f5f5',
+                      '&:hover': {
+                        backgroundColor: '#e0e0e0',
+                      },
+                    }}
+                  >
+                    <CameraOutlined style={{ fontSize: 50, marginRight: 8 }} />
+                    Upload Image
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      style={{ display: 'none' }}
+                    />
+                  </Button>
+                )}
+                </Grid>
               {/* Add other fields as necessary */}
             </Grid>
           )}

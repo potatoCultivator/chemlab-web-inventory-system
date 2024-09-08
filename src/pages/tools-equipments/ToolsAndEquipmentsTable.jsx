@@ -103,12 +103,6 @@ export default function TE_Table({ refresh, catValue }) {
     setDeleteDialogOpen(true);
   };
 
-  // const handleDeleteConfirm = () => {
-  //   setTools((prevData) => prevData.filter((tool) => tool.id !== itemToDelete.id));
-  //   setDeleteDialogOpen(false);
-  //   setItemToDelete(null);
-  // };
-
   const handleDeleteConfirm = async () => {
     try {
       // Call the Firestore delete function
