@@ -12,21 +12,22 @@ import { UploadOutlined } from '@ant-design/icons';
 import { CameraOutlined, DeleteOutlined } from '@ant-design/icons';
 
 // firebase import
-import uploadTE from '../TE_Backend.jsx';
+import uploadTE, { uploadImageAndGetUrl } from '../TE_Backend.jsx';
 
 export default function AddItemDialog({ onDone }) {
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false); // Add loading state
   const [image, setImage] = React.useState(null);
   const [item, setItem] = React.useState({
-    name: '',
-    capacity: '',
-    unit: 'kg',
-    quantity: '',
-    current_quantity: '',
-    category: 'glassware',
-    condition: 'good_condition',
-    date: ''
+    name: '', // string
+    capacity: 0, // number
+    unit: 'kg', // string
+    quantity: 0, // number
+    current_quantity: 0, // number
+    category: 'glassware', // string
+    condition: 'good_condition', // string
+    image: '', // string
+    date: new Date()
   });
 
   const handleClickOpen = () => {
@@ -40,7 +41,11 @@ export default function AddItemDialog({ onDone }) {
 
   const handleDone = async () => {
     setLoading(true); // Set loading state to true
+    console.log('image: ', image);
+    const imageUrl = uploadImageAndGetUrl(image);
+    console.log('imageUrl: ', imageUrl);
     try {
+      item.image = imageUrl;
       await uploadTE(item); // Call the uploadTE function to add the item to Firestore
       onDone();
       handleClose();

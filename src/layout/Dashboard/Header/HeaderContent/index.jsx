@@ -20,10 +20,9 @@ export default function HeaderContent() {
 
   return (
     <>
-      {!downLG && <Search />}
+      {/* {!downLG && <Search />} */}
+      <Box sx={{ flexGrow: 1 }} />
       {downLG && <Box sx={{ width: '100%', ml: 1 }} />}
-
-      <Notification />
       
       {!downLG && <Profile />}
       {downLG && <MobileSection />}

@@ -43,12 +43,12 @@ export default function SettingTab() {
         </ListItemIcon>
         <ListItemText primary="Feedback" />
       </ListItemButton>
-      <ListItemButton selected={selectedIndex === 4} onClick={(event) => handleListItemClick(event, 4)}>
+      {/* <ListItemButton selected={selectedIndex === 4} onClick={(event) => handleListItemClick(event, 4)}>
         <ListItemIcon>
           <UnorderedListOutlined />
         </ListItemIcon>
         <ListItemText primary="History" />
-      </ListItemButton>
+      </ListItemButton> */}
     </List>
   );
 }

@@ -10,6 +10,8 @@ import { useEffect, useState } from 'react';
 // Project Imports
 import MainCard from 'components/MainCard';
 import ToolsAndEquipmentsTable from './ToolsAndEquipmentsTable';
+import ReturnTable from './ReturnTable';
+import BorrowTable from './BorrowTable';
 import { category } from './constants';
 
 import { countRows } from 'pages/TE_Backend';
@@ -170,10 +172,10 @@ export default function ProcessTab({ refresh }) {
             <ToolsAndEquipmentsTable refresh={refreshTable} catValue={catValue}/>
           </CustomTabPanel>
           <CustomTabPanel value={value} index={1}>
-            <ToolsAndEquipmentsTable />
+            <ReturnTable />
           </CustomTabPanel>
           <CustomTabPanel value={value} index={2}>
-            <ToolsAndEquipmentsTable />
+            <BorrowTable />
           </CustomTabPanel>
         </MainCard>
       </Box>
