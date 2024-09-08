@@ -22,7 +22,7 @@ export default function AddItemDialog({ onDone }) {
     quantity: '',
     current_quantity: '',
     category: 'glassware',
-    condition: '',
+    condition: 'good_condition',
     date: ''
   });
 
