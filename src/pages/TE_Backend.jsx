@@ -40,6 +40,25 @@ async function fetchAllTools() {
     return querySnapshot.docs.length; // Returns the count of documents in the collection
   }
 
-export default uploadTE;
+  async function updateTool(toolId, updatedData) {
+    const db = firestore;
+    const toolDocRef = doc(db, 'tools_and_equipments', toolId);
 
-export { fetchAllTools, countRows };
+    // Update the document with the new data
+    await updateDoc(toolDocRef, updatedData);
+
+    console.log(`Tool with ID ${toolId} has been updated`);
+}
+
+async function deleteTool(toolId) {
+  const db = firestore;
+  const toolDocRef = doc(db, 'tools_and_equipments', toolId);
+
+  // Delete the document
+  await deleteDoc(toolDocRef);
+
+  console.log(`Tool with ID ${toolId} has been deleted`);
+}
+
+export default uploadTE;
+export { fetchAllTools, countRows, updateTool, deleteTool };

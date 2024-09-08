@@ -18,7 +18,7 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 
 // project import
-import { fetchAllTools } from 'pages/TE_Backend';
+import { fetchAllTools, updateTool, deleteTool } from 'pages/TE_Backend';
 import { headCells } from './constants';
 
 function descendingComparator(a, b, orderBy) {
@@ -103,10 +103,29 @@ export default function TE_Table({ refresh, catValue }) {
     setDeleteDialogOpen(true);
   };
 
-  const handleDeleteConfirm = () => {
-    setTools((prevData) => prevData.filter((tool) => tool.no !== itemToDelete.no));
-    setDeleteDialogOpen(false);
-    setItemToDelete(null);
+  // const handleDeleteConfirm = () => {
+  //   setTools((prevData) => prevData.filter((tool) => tool.id !== itemToDelete.id));
+  //   setDeleteDialogOpen(false);
+  //   setItemToDelete(null);
+  // };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      // Call the Firestore delete function
+      await deleteTool(itemToDelete.id);
+  
+      // Update the local state to remove the deleted item from the tools array
+      setTools((prevData) => prevData.filter((tool) => tool.id !== itemToDelete.id));
+  
+      // Close the delete confirmation dialog
+      setDeleteDialogOpen(false);
+      setItemToDelete(null);
+  
+      console.log(`Tool with ID ${itemToDelete.id} has been deleted`);
+    } catch (error) {
+      console.error('Error deleting tool:', error);
+      // Handle any errors that occur during the deletion process
+    }
   };
 
   const handleDeleteCancel = () => {
@@ -119,11 +138,14 @@ export default function TE_Table({ refresh, catValue }) {
     setSelectedItem(null);
   };
 
-  const handleSave = () => {
-    setTools((prevData) =>
-      prevData.map((tool) => (tool.no === selectedItem.no ? selectedItem : tool))
-    );
-    handleClose();
+  const handleSave = async () => {
+    if (selectedItem) {
+      await updateTool(selectedItem.id, selectedItem); // Call updateTool with the selected item's ID and updated data
+      setTools((prevData) =>
+        prevData.map((tool) => (tool.no === selectedItem.no ? selectedItem : tool))
+      );
+      handleClose();
+    }
   };
 
   const handleChange = (e) => {
@@ -162,7 +184,7 @@ export default function TE_Table({ refresh, catValue }) {
                   >
                     <TableCell align='left'>{row.name}</TableCell>
                     <TableCell align="center">{row.capacity} {row.unit}</TableCell>
-                    <TableCell align='center'>{row.quantity}/{row.quantity}</TableCell>
+                    <TableCell align='center'>{row.current_quantity}/{row.quantity}</TableCell>
                     <TableCell align="center">{row.category}</TableCell>
                     <TableCell align="right">
                       <IconButton color="primary" size="large" onClick={() => handleEditClick(row)}>
@@ -186,7 +208,7 @@ export default function TE_Table({ refresh, catValue }) {
           <TextField
             margin="dense"
             label="Item"
-            name="item"
+            name="name"
             value={selectedItem?.name || ''}
             onChange={handleChange}
             fullWidth
@@ -195,6 +217,7 @@ export default function TE_Table({ refresh, catValue }) {
             margin="dense"
             label="Capacity"
             name="capacity"
+            type='number'
             value={selectedItem?.capacity || ''}
             onChange={handleChange}
             fullWidth
@@ -210,16 +233,18 @@ export default function TE_Table({ refresh, catValue }) {
           <TextField
             margin="dense"
             label="Current Quantity"
-            name="currentQuantity"
-            value={selectedItem?.currentQuantity || ''}
+            name="current_quantity"
+            type='number'
+            value={selectedItem?.current_quantity || ''}
             onChange={handleChange}
             fullWidth
           />
           <TextField
             margin="dense"
             label="Total Quantity"
-            name="totalQuantity"
-            value={selectedItem?.totalQuantity || ''}
+            name="quantity"
+            type='number'
+            value={selectedItem?.quantity || ''}
             onChange={handleChange}
             fullWidth
           />
@@ -227,18 +252,23 @@ export default function TE_Table({ refresh, catValue }) {
             margin="dense"
             label="Category"
             name="category"
+            select
             value={selectedItem?.category || ''}
             onChange={handleChange}
             fullWidth
-          />
-          <TextField
-            margin="dense"
-            label="Date"
-            name="date"
-            value={selectedItem?.date || ''}
-            onChange={handleChange}
-            fullWidth
-          />
+            SelectProps={{ native: true }}
+            helperText="Please select the category"
+          >
+            <option value="all">All</option>
+            <option value="glassware">Glassware</option>
+            <option value="plasticware">Plasticware</option>
+            <option value="metalware">Metalware</option>
+            <option value="heating">Heating</option>
+            <option value="measuring">Measuring</option>
+            <option value="container">Container</option>
+            <option value="separator">Separation Equipment</option>
+            <option value="mixing">Mixing & Stirring</option>
+          </TextField>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
