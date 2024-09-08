@@ -42,11 +42,20 @@ export default function AddItemDialog({ onDone }) {
   const handleDone = async () => {
     setLoading(true); // Set loading state to true
     console.log('image: ', image);
-    const imageUrl = uploadImageAndGetUrl(image);
-    console.log('imageUrl: ', imageUrl);
+  
     try {
-      item.image = imageUrl;
-      await uploadTE(item); // Call the uploadTE function to add the item to Firestore
+      // Await the result of the asynchronous function
+      const imageUrl = await uploadImageAndGetUrl(image);
+      console.log('imageUrl: ', imageUrl);
+  
+      // Update the item with the image URL
+      const updatedItem = { ...item, image: imageUrl };
+      setItem(updatedItem);
+  
+      // Call the uploadTE function to add the item to Firestore
+      await uploadTE(updatedItem);
+  
+      // Call the onDone and handleClose functions
       onDone();
       handleClose();
     } catch (error) {
