@@ -6,7 +6,7 @@ async function uploadTE(toolData) {
     const batch = writeBatch(db);
 
     // Reference to the "tools" collection
-    const toolsCollection = collection(db, 'tools');
+    const toolsCollection = collection(db, 'tools_and_equipments');
 
     // Create a new document reference
     const newToolDoc = doc(toolsCollection);
@@ -22,7 +22,7 @@ async function uploadTE(toolData) {
 
 async function fetchAllTools() {
     const db = firestore;
-    const querySnapshot = await getDocs(collection(db, 'tools'));
+    const querySnapshot = await getDocs(collection(db, 'tools_and_equipments'));
     
     const rows = querySnapshot.docs.map(doc => ({
       id: doc.id, // Include the document ID
@@ -36,7 +36,7 @@ async function fetchAllTools() {
 
   async function countRows() {
     const db = firestore;
-    const querySnapshot = await getDocs(collection(db, "tools"));
+    const querySnapshot = await getDocs(collection(db, "tools_and_equipments"));
     return querySnapshot.docs.length; // Returns the count of documents in the collection
   }
 

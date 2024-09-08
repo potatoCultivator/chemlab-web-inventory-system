@@ -79,7 +79,7 @@ export default function AddItemDialog({ onDone }) {
                   label="Name"
                   variant="outlined"
                   value={item.name}
-                  onChange={(e) => setItem(prevItem => ({ ...prevItem, name: e.target.value }))}
+                  onChange={(e) => {setItem(prevItem => ({ ...prevItem, name: e.target.value }))}}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -87,8 +87,13 @@ export default function AddItemDialog({ onDone }) {
                   fullWidth
                   label="Quantity"
                   variant="outlined"
+                  type='number'
                   value={item.quantity}
-                  onChange={(e) => setItem(prevItem => ({ ...prevItem, quantity: e.target.value }))}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setItem(prevItem => ({ ...prevItem, quantity: value }));
+                    setItem(prevItem => ({ ...prevItem, current_quantity: value }));
+                  }}
                   helperText="Please enter the capacity of the item"
                 />
               </Grid>
@@ -98,6 +103,7 @@ export default function AddItemDialog({ onDone }) {
                   fullWidth
                   label="Capacity"
                   variant="outlined"
+                  type='number'
                   value={item.capacity}
                   onChange={(e) => setItem(prevItem => ({ ...prevItem, capacity: e.target.value }))}
                   helperText="Please enter the capacity of the item"
