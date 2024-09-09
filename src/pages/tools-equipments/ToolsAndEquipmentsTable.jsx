@@ -76,23 +76,23 @@ export default function TE_Table({ refresh, catValue }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-  console.log('useEffect triggered with refresh:', refresh);
-  const fetchData = async () => {
-    try {
-      const fetchedTools = await fetchAllTools();
-      setTools(fetchedTools);
-    } catch (error) {
-      console.error('Error fetching tools:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    console.log('useEffect triggered with refresh:', refresh);
+    const fetchData = async () => {
+      try {
+        const fetchedTools = await fetchAllTools();
+        setTools(fetchedTools);
+      } catch (error) {
+        console.error('Error fetching tools:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  fetchData();
-}, [refresh]);
-
+    fetchData();
+  }, [refresh]);
 
   const handleEditClick = (item) => {
+    console.log('Editing item:', item); // Debugging
     setSelectedItem(item);
     setOpen(true);
   };
@@ -133,9 +133,10 @@ export default function TE_Table({ refresh, catValue }) {
 
   const handleSave = async () => {
     if (selectedItem) {
+      console.log('Saving item:', selectedItem); // Debugging
       await updateTool(selectedItem.id, selectedItem); // Call updateTool with the selected item's ID and updated data
       setTools((prevData) =>
-        prevData.map((tool) => (tool.no === selectedItem.no ? selectedItem : tool))
+        prevData.map((tool) => (tool.id === selectedItem.id ? selectedItem : tool))
       );
       handleClose();
     }
@@ -143,6 +144,7 @@ export default function TE_Table({ refresh, catValue }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    console.log('Changing field:', name, 'to:', value); // Debugging
     setSelectedItem((prevItem) => ({ ...prevItem, [name]: value }));
   };
 
@@ -252,7 +254,6 @@ export default function TE_Table({ refresh, catValue }) {
             SelectProps={{ native: true }}
             helperText="Please select the category"
           >
-            <option value="all">All</option>
             <option value="glassware">Glassware</option>
             <option value="plasticware">Plasticware</option>
             <option value="metalware">Metalware</option>
