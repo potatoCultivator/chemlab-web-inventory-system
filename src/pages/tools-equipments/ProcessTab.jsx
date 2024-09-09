@@ -13,6 +13,7 @@ import ToolsAndEquipmentsTable from './ToolsAndEquipmentsTable';
 import ReturnTable from './ReturnTable';
 import BorrowTable from './BorrowTable';
 import { category } from './constants';
+import Search from './Search';
 
 import { countRows } from 'pages/TE_Backend';
 
@@ -147,7 +148,10 @@ export default function ProcessTab({ refresh }) {
               />
 
               {/* Category */}
-              <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+              <Box sx={{ flexGrow: 0, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginLeft: 'auto' }}>
+                <Search />
+              </Box>
+              <Box sx={{ flexGrow: 0.01, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
               <TextField
                     id="standard-select-currency"
                     size="small"

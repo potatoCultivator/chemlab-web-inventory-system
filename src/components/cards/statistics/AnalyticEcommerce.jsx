@@ -43,7 +43,7 @@ export default function AnalyticEcommerce({ color = 'primary', title, count, per
           )}
         </Grid>
       </Stack>
-      <Box sx={{ pt: 2.25 }}>
+      {/* <Box sx={{ pt: 2.25 }}>
         <Typography variant="caption" color="text.secondary">
           You made an extra{' '}
           <Typography variant="caption" sx={{ color: `${color || 'primary'}.main` }}>
@@ -51,7 +51,7 @@ export default function AnalyticEcommerce({ color = 'primary', title, count, per
           </Typography>{' '}
           this year
         </Typography>
-      </Box>
+      </Box> */}
     </MainCard>
   );
 }

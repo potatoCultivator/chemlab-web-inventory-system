@@ -161,14 +161,14 @@ export default function AddItemDialog({ onDone }) {
                   SelectProps={{ native: true }}
                   helperText="Please select the category"
                 >
-                  <option value="glassware">Glassware</option>
-                  <option value="plasticware">Plasticware</option>
-                  <option value="metalware">Metalware</option>
-                  <option value="heating">Heating</option>
+                  <option value="Glassware">Glassware</option>
+                  <option value="Plasticware">Plasticware</option>
+                  <option value="Metalware">Metalware</option>
+                  <option value="Heating">Heating</option>
                   <option value="measuring">Measuring</option>
-                  <option value="container">Container</option>
-                  <option value="separator">Separation Equipment</option>
-                  <option value="mixing">Mixing & Stirring</option>
+                  <option value="Measuring">Container</option>
+                  <option value="Separation Equipment<">Separation Equipment</option>
+                  <option value="Mixing & Stirring">Mixing & Stirring</option>
                 </TextField>
               </Grid>
 

@@ -97,7 +97,7 @@ function OrderStatus({ status }) {
 
 // ==============================|| ORDER TABLE ||============================== //
 
-export default function BorrowTable() {
+export default function SummaryTable() {
   const order = 'asc';
   const orderBy = 'tracking_no';
 

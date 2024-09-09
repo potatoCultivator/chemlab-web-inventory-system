@@ -4,12 +4,11 @@ import { lazy } from 'react';
 import Loadable from 'components/Loadable';
 import Dashboard from 'layout/Dashboard';
 
-const Color = Loadable(lazy(() => import('pages/component-overview/color')));
-const Typography = Loadable(lazy(() => import('pages/component-overview/typography')));
-const Shadow = Loadable(lazy(() => import('pages/component-overview/shadows')));
+// Lazy load components
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard/index')));
 const ToolsAndEquipment = Loadable(lazy(() => import('pages/tools-equipments/index')));
 const Borrowers = Loadable(lazy(() => import('pages/borrowers/index')));
+const Instructors = Loadable(lazy(() => import('pages/instructors/index')));
 
 // render - sample page
 const SamplePage = Loadable(lazy(() => import('pages/extra-pages/sample-page')));
@@ -33,8 +32,8 @@ const MainRoutes = {
       element: <Borrowers />
     },
     {
-      path: 'color',
-      element: <Color />
+      path: 'instructors',
+      element: <Instructors />
     },
     {
       path: 'dashboard',
@@ -44,18 +43,6 @@ const MainRoutes = {
           element: <DashboardDefault />
         }
       ]
-    },
-    {
-      path: 'sample-page',
-      element: <SamplePage />
-    },
-    {
-      path: 'shadow',
-      element: <Shadow />
-    },
-    {
-      path: 'typography',
-      element: <Typography />
     }
   ]
 };
