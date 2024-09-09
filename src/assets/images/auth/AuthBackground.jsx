@@ -13,13 +13,14 @@ export default function AuthBackground() {
     <Box
       sx={{
         position: 'absolute',
-        filter: 'blur(18px)',
+        filter: 'blur(10px)',
         zIndex: -1,
-        bottom: 0,
-        transform: 'inherit'
+        bottom: 50, // Adjust the bottom position
+        left: '50%', // Center horizontally
+        transform: 'translateX(-220%)', // Center horizontally
       }}
     >
-      <img src={atomLogo} alt="Atom Logo" width="100%" height="calc(100vh - 175px)" />
+      <img src={atomLogo} alt="Atom Logo" width="120%" height="calc(100vh - 175px)" />
     </Box>
   );
 }

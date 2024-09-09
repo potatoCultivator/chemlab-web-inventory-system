@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 
 // project import
 import MainCard from 'components/MainCard';
+import Logo from 'components/logo/LogoMain';
 
 // ==============================|| AUTHENTICATION - CARD WRAPPER ||============================== //
 
