@@ -53,16 +53,16 @@ export default function DashboardDefault() {
         <Typography variant="h5">Dashboard</Typography>
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Total Borrowed Tools/Equipments" count="4,42,236"  />
+        <AnalyticEcommerce title="Total Borrowed Tools/Equipments" count="30"  />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Total Returned Tools/Equipments" count="4,42,236"  />
+        <AnalyticEcommerce title="Total Returned Tools/Equipments" count="49"  />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Total Good Condition Tools/Equipments" count="4,42,236"  />
+        <AnalyticEcommerce title="Total Good Condition Tools/Equipments" count="300"  />
       </Grid>
       <Grid item xs={12} sm={6} md={4} lg={3}>
-        <AnalyticEcommerce title="Total Bad COndition Tools/Equipments" count="4,42,236"  />
+        <AnalyticEcommerce title="Total Bad COndition Tools/Equipments" count="4"  />
       </Grid>
       {/* <Grid item xs={12} sm={6} md={4} lg={3}>
         <AnalyticEcommerce title="Total Returned Tools/Equipments" count="78,250" percentage={70.5} extra="8,900" />
