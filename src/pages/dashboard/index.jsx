@@ -16,6 +16,8 @@ import MainCard from 'components/MainCard';
 import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
 import SummaryTable from './SummaryTable';
 import BorrowerSlip from './BorrowerSlip';
+import MonthlyBarChart from './MonthlyBarChart';
+import SaleReportCard from './SaleReportCard';
 
 // assets
 import GiftOutlined from '@ant-design/icons/GiftOutlined';
@@ -77,7 +79,7 @@ export default function DashboardDefault() {
       <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} /> */}
 
       {/* row 2 */}
-      <Grid item xs={12} md={7} lg={8}>
+      <Grid item xs={12} md={6} lg={6}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
             <Typography variant="h5">Recent Borrowed Tools/Equipments</Typography>
@@ -90,22 +92,20 @@ export default function DashboardDefault() {
       </Grid>
       
       {/* row 4 */}
-      <Grid item xs={12} md={5} lg={4}>
-        <Grid container alignItems="center" justifyContent="space-between">
+      <Grid item xs={12} md={6} lg={6}>
+        {/* <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
             <Typography variant="h5">Recent Borrowers</Typography>
           </Grid>
           <Grid item />
-        </Grid>
-        <MainCard sx={{ mt: 2 }} content={false}>
-         <BorrowerSlip />
-         <BorrowerSlip />
-         <BorrowerSlip />
-         <BorrowerSlip />
-         <BorrowerSlip />
-         <BorrowerSlip />
-        </MainCard>
+        </Grid> */}
+        <SaleReportCard />
       </Grid>
+      {/* <Grid item xs={12} md={5} lg={4}>
+        <MainCard title="Monthly Borrowed Tools/Equipments">
+          <MonthlyBarChart />
+        </MainCard>
+      </Grid> */}
     </Grid>
   );
 }

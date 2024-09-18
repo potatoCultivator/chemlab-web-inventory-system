@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ListItem, ListItemText, ListItemAvatar, Avatar, List, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from '@mui/material';
+import { ListItem, ListItemText, ListItemAvatar, Avatar, List, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Typography } from '@mui/material';
 
 const BorrowerSlip = ({ borrower }) => {
   const [open, setOpen] = useState(false);
@@ -14,13 +14,23 @@ const BorrowerSlip = ({ borrower }) => {
 
   return (
     <>
-            <ListItem button onClick={handleClickOpen}>
+      <ListItem button onClick={handleClickOpen}>
         <ListItemAvatar>
           <Avatar>{borrower.borrowername.charAt(0).toUpperCase()}</Avatar>
         </ListItemAvatar>
         <ListItemText
           primary={borrower.borrowername}
-          secondary={`Course: ${borrower.course} Date: ${borrower.date.toDate().toLocaleString()}`}
+          secondary={
+            <>
+              <Typography component="span" variant="body2" color="textPrimary">
+                Course: {borrower.course}
+              </Typography>
+              <br />
+              <Typography component="span" variant="body2" color="textPrimary">
+                Date: {borrower.date.toDate().toLocaleString()}
+              </Typography>
+            </>
+          }
         />
         <List>
           {borrower.equipmentDetails.slice(0, 2).map((equipment, eqIndex) => (
@@ -33,7 +43,13 @@ const BorrowerSlip = ({ borrower }) => {
           ))}
           {borrower.equipmentDetails.length > 2 && (
             <ListItem>
-              <ListItemText primary={`And ${borrower.equipmentDetails.length - 2} more...`} />
+              <ListItemText
+                primary={
+                  <Typography color="primary">
+                    and {borrower.equipmentDetails.length - 2} more...
+                  </Typography>
+                }
+              />
             </ListItem>
           )}
         </List>
@@ -61,8 +77,14 @@ const BorrowerSlip = ({ borrower }) => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          {/* <Button onClick={handleClose} color="primary" variant="outlined">
             Close
+          </Button> */}
+          <Button onClick={handleClose} variant="outlined" sx={{ color: 'red', borderColor: 'red' }}>
+            Reject
+          </Button>
+          <Button onClick={handleClose} variant="outlined" sx={{ color: 'green', borderColor: 'green' }}>
+            Approve
           </Button>
         </DialogActions>
       </Dialog>
