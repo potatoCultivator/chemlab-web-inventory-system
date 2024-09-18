@@ -14,16 +14,16 @@ const BorrowerSlip = ({ borrower }) => {
 
   return (
     <>
-      <ListItem button onClick={handleClickOpen}>
+            <ListItem button onClick={handleClickOpen}>
         <ListItemAvatar>
-          <Avatar>{borrower.borrowername.charAt(0)}</Avatar>
+          <Avatar>{borrower.borrowername.charAt(0).toUpperCase()}</Avatar>
         </ListItemAvatar>
         <ListItemText
           primary={borrower.borrowername}
-          secondary={`Course: ${borrower.course}, Instructor: ${borrower.instructor}, Date: ${borrower.date.toDate().toLocaleString()}`}
+          secondary={`Course: ${borrower.course} Date: ${borrower.date.toDate().toLocaleString()}`}
         />
         <List>
-          {borrower.equipmentDetails.map((equipment, eqIndex) => (
+          {borrower.equipmentDetails.slice(0, 2).map((equipment, eqIndex) => (
             <ListItem key={eqIndex}>
               <ListItemText
                 primary={equipment.name}
@@ -31,6 +31,11 @@ const BorrowerSlip = ({ borrower }) => {
               />
             </ListItem>
           ))}
+          {borrower.equipmentDetails.length > 2 && (
+            <ListItem>
+              <ListItemText primary={`And ${borrower.equipmentDetails.length - 2} more...`} />
+            </ListItem>
+          )}
         </List>
       </ListItem>
 
