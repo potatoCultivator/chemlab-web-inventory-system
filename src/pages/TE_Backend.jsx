@@ -86,6 +86,39 @@ async function deleteTool(toolId) {
   return fileUrl;
 }
 
+async function fetchAllBorrowers() {
+  const db = firestore;
+  const querySnapshot = await getDocs(collection(db, 'borrower'));
+  
+  const rows = querySnapshot.docs.map(doc => ({
+    ...doc.data() // Spread the document data
+  }));
+
+  return rows;
+}
+
+
+
+
+// async function fetchBorrowerDetails(borrowerId) {
+//   const borrowerDocRef = doc(firestore, 'borrowers', borrowerId);
+
+//   try {
+//     const borrowerDoc = await getDoc(borrowerDocRef);
+
+//     if (borrowerDoc.exists()) {
+//       const borrowerData = borrowerDoc.data();
+//       console.log('Borrower Data:', borrowerData);
+//       return borrowerData;
+//     } else {
+//       console.log('No such document!');
+//       return null;
+//     }
+//   } catch (error) {
+//     console.error('Error fetching borrower details:', error);
+//   }
+// }
+
 export default uploadTE;
 
-export { fetchAllTools, countRows, updateTool, deleteTool, uploadImageAndGetUrl };
+export { fetchAllTools, countRows, updateTool, deleteTool, uploadImageAndGetUrl, fetchAllBorrowers }; // Export the functions for use in other modules
