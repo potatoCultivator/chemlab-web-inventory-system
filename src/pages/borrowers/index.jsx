@@ -22,15 +22,13 @@ export default function Borrowers() {
       </Grid>
 
       {/* row 2 */}
-      <Grid item xs={6}>
-        <MainCard title='To Borrow'/>
-        <MainCard >
+      <Grid item xs={12} sm={6}>
+        <MainCard title='To Borrow'>
           <BorrowerSlipTable />
         </MainCard>
       </Grid>
-      <Grid item xs={6}>
-        <MainCard title='To Return'/>
-        <MainCard >
+      <Grid item xs={12} sm={6}>
+        <MainCard title='To Return'>
           <BorrowerSlipTable />
         </MainCard>
       </Grid>
