@@ -1,5 +1,24 @@
 import React, { useState } from 'react';
-import { ListItem, ListItemText, ListItemAvatar, Avatar, List, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Typography } from '@mui/material';
+import { 
+  List,
+  ListItem, 
+  ListItemText, 
+  ListItemAvatar, 
+  Avatar, 
+  Dialog, 
+  DialogTitle, 
+  DialogContent, 
+  DialogContentText, 
+  DialogActions, 
+  Button, 
+  Typography, 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableContainer, 
+  TableHead, 
+  TableRow,
+  Divider } from '@mui/material';
 
 const BorrowerSlip = ({ borrower }) => {
   const [open, setOpen] = useState(false);
@@ -54,9 +73,14 @@ const BorrowerSlip = ({ borrower }) => {
           )}
         </List>
       </ListItem>
+      <Divider />
 
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Borrower Slip</DialogTitle>
+        <DialogTitle>
+          <Typography variant="h4" component="div" sx={{ fontWeight: 'bold' }}>
+            Borrower Slip
+          </Typography>
+        </DialogTitle>
         <DialogContent>
           <DialogContentText>
             <strong>Borrower Name:</strong> {borrower.borrowername}<br />
@@ -64,7 +88,7 @@ const BorrowerSlip = ({ borrower }) => {
             <strong>Instructor:</strong> {borrower.instructor}<br />
             <strong>Date:</strong> {borrower.date.toDate().toLocaleString()}<br />
             <strong>Equipment Details:</strong>
-            <List>
+            {/* <List>
               {borrower.equipmentDetails.map((equipment, eqIndex) => (
                 <ListItem key={eqIndex}>
                   <ListItemText
@@ -73,17 +97,37 @@ const BorrowerSlip = ({ borrower }) => {
                   />
                 </ListItem>
               ))}
-            </List>
+            </List> */}
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Capacity</TableCell>
+                    <TableCell> Qty</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {borrower.equipmentDetails.map((equipment, eqIndex) => (
+                    <TableRow key={eqIndex}>
+                      <TableCell>{equipment.name}</TableCell>
+                      <TableCell align='center  '>{`${equipment.capacity} ${equipment.unit}`}</TableCell>
+                      <TableCell align='center'>{equipment.current_quantity}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           {/* <Button onClick={handleClose} color="primary" variant="outlined">
             Close
           </Button> */}
-          <Button onClick={handleClose} variant="outlined" sx={{ color: 'red', borderColor: 'red' }}>
+          <Button onClick={handleClose} variant="text" sx={{ color: 'red', borderColor: 'red' }}>
             Reject
           </Button>
-          <Button onClick={handleClose} variant="outlined" sx={{ color: 'green', borderColor: 'green' }}>
+          <Button onClick={handleClose} variant="text" sx={{ color: 'green', borderColor: 'green' }}>
             Approve
           </Button>
         </DialogActions>

@@ -15,9 +15,8 @@ import Typography from '@mui/material/Typography';
 import MainCard from 'components/MainCard';
 import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
 import SummaryTable from './SummaryTable';
-import BorrowerSlip from './BorrowerSlip';
-import MonthlyBarChart from './MonthlyBarChart';
 import SaleReportCard from './SaleReportCard';
+import BorrowersReport from './BorrowersReport';
 
 // assets
 import GiftOutlined from '@ant-design/icons/GiftOutlined';
@@ -99,7 +98,7 @@ export default function DashboardDefault() {
           </Grid>
           <Grid item />
         </Grid> */}
-        <SaleReportCard />
+        <BorrowersReport />
       </Grid>
       {/* <Grid item xs={12} md={5} lg={4}>
         <MainCard title="Monthly Borrowed Tools/Equipments">
