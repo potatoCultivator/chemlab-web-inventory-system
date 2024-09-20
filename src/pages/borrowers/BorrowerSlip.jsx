@@ -1,5 +1,24 @@
 import React, { useState } from 'react';
-import { ListItem, ListItemText, ListItemAvatar, Avatar, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Divider, List } from '@mui/material';
+import { 
+  List,
+  ListItem, 
+  ListItemText, 
+  ListItemAvatar, 
+  Avatar, 
+  Dialog, 
+  DialogTitle, 
+  DialogContent, 
+  DialogContentText, 
+  DialogActions, 
+  Button, 
+  Typography, 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableContainer, 
+  TableHead, 
+  TableRow,
+  Divider } from '@mui/material';
 
 const BorrowerSlip = ({ borrower }) => {
   const [open, setOpen] = useState(false);
@@ -58,7 +77,7 @@ const BorrowerSlip = ({ borrower }) => {
 
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>
-          <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
+          <Typography variant="h4" component="div" sx={{ fontWeight: 'bold' }}>
             Borrower Slip
           </Typography>
         </DialogTitle>
@@ -69,21 +88,21 @@ const BorrowerSlip = ({ borrower }) => {
             <strong>Instructor:</strong> {borrower.instructor}<br />
             <strong>Date:</strong> {borrower.date.toDate().toLocaleString()}<br />
             <strong>Equipment Details:</strong>
-            <TableContainer component={Paper}>
+            <TableContainer>
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell align="center">Name</TableCell>
-                    <TableCell align="center">Capacity</TableCell>
-                    <TableCell align="center">Qty</TableCell>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Capacity</TableCell>
+                    <TableCell> Qty</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {borrower.equipmentDetails.map((equipment, eqIndex) => (
                     <TableRow key={eqIndex}>
-                      <TableCell align="center">{equipment.name}</TableCell>
-                      <TableCell align="center">{`${equipment.capacity} ${equipment.unit}`}</TableCell>
-                      <TableCell align="center">{equipment.current_quantity}</TableCell>
+                      <TableCell>{equipment.name}</TableCell>
+                      <TableCell align='center'>{`${equipment.capacity} ${equipment.unit}`}</TableCell>
+                      <TableCell align='center'>{equipment.current_quantity}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -92,10 +111,13 @@ const BorrowerSlip = ({ borrower }) => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} variant="text" sx={{ color: 'red' }}>
+          {/* <Button onClick={handleClose} color="primary" variant="outlined">
+            Close
+          </Button> */}
+          <Button onClick={handleClose} variant="text" sx={{ color: 'red', borderColor: 'red' }}>
             Reject
           </Button>
-          <Button onClick={handleClose} variant="text" sx={{ color: 'green' }}>
+          <Button onClick={handleClose} variant="text" sx={{ color: 'green', borderColor: 'green' }}>
             Approve
           </Button>
         </DialogActions>
