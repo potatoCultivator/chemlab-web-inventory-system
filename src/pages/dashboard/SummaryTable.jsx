@@ -16,7 +16,7 @@ import { useEffect, useState } from 'react';
 import Dot from 'components/@extended/Dot';
 import { borow_return_headCells } from './constants';
 
-import { fetchAllBorrowers } from 'pages/TE_Backend';
+import { fetchAllBorrowers } from '../TE_Backend'; // Adjust the import path as needed
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -110,10 +110,23 @@ export default function SummaryTable() {
     return () => unsubscribe();
   }, []);
 
-  // Ensure borrowers is defined and is an array before using flatMap
+  // Ensure borrowers is defined and is an array before using map and reduce
   const approvedBorrowers = Array.isArray(borrowers) 
     ? borrowers.filter(borrower => borrower.isApproved === 'approved' || borrower.isApproved === 'approved_admin') 
     : [];
+
+  // Flatten the array without using flatMap
+  const flattenedBorrowers = approvedBorrowers.reduce((acc, borrower) => {
+    if (Array.isArray(borrower.equipmentDetails)) {
+      const equipmentDetails = borrower.equipmentDetails.map(equipment => ({
+        ...equipment,
+        borrower: borrower.borrowername,
+        isApproved: borrower.isApproved
+      }));
+      return acc.concat(equipmentDetails);
+    }
+    return acc;
+  }, []);
 
   return (
     <Box>
@@ -130,13 +143,7 @@ export default function SummaryTable() {
         <Table aria-labelledby="tableTitle">
           <OrderTableHead order={order} orderBy={orderBy} />
           <TableBody>
-            {approvedBorrowers.length > 0 && approvedBorrowers.flatMap(borrower => 
-              Array.isArray(borrower.equipmentDetails) ? borrower.equipmentDetails.map(equipment => ({
-                ...equipment,
-                borrower: borrower.borrowername,
-                isApproved: borrower.isApproved
-              })) : []
-            ).sort((a, b) => getComparator(order, orderBy)(a, b)).map((row, index) => {
+            {flattenedBorrowers.length > 0 && stableSort(flattenedBorrowers, getComparator(order, orderBy)).map((row, index) => {
               const labelId = `enhanced-table-checkbox-${index}`;
 
               return (
