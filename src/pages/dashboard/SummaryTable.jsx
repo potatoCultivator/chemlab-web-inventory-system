@@ -78,7 +78,7 @@ function OrderStatus({ status }) {
       color = 'success';
       title = 'Approved';
       break;
-    case 'declined_admin':
+    case 'declined':
       color = 'error';
       title = 'Declined';
       break;
@@ -103,13 +103,17 @@ export default function SummaryTable() {
   const [borrowers, setBorrowers] = useState([]);
 
   useEffect(() => {
-    const fetchBorrowers = async () => {
-      const res = await fetchAllBorrowers();
-      setBorrowers(res);
-    };
-    fetchBorrowers();
+    // Set up the listener and get the unsubscribe function
+    const unsubscribe = fetchAllBorrowers(setBorrowers);
+
+    // Clean up the listener on component unmount
+    return () => unsubscribe();
   }, []);
 
+  // Ensure borrowers is defined and is an array before using flatMap
+  const approvedBorrowers = Array.isArray(borrowers) 
+    ? borrowers.filter(borrower => borrower.isApproved === 'approved' || borrower.isApproved === 'approved_admin') 
+    : [];
   return (
     <Box>
       <TableContainer
@@ -125,14 +129,12 @@ export default function SummaryTable() {
         <Table aria-labelledby="tableTitle">
           <OrderTableHead order={order} orderBy={orderBy} />
           <TableBody>
-            {borrowers.flatMap(borrower => 
-              borrower.equipmentDetails
-                .filter(equipment => borrower.isApproved === 'approved') // Filter only approved items
-                .map(equipment => ({
-                  ...equipment,
-                  borrower: borrower.borrowername,
-                  isApproved: borrower.isApproved
-                }))
+            {approvedBorrowers.flatMap(borrower => 
+              borrower.equipmentDetails.map(equipment => ({
+                ...equipment,
+                borrower: borrower.borrowername,
+                isApproved: borrower.isApproved
+              }))
             ).sort((a, b) => getComparator(order, orderBy)(a, b)).map((row, index) => {
               const labelId = `enhanced-table-checkbox-${index}`;
 
