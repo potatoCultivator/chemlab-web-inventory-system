@@ -1,39 +1,10 @@
-import PropTypes from 'prop-types';
-// material-ui
-import Link from '@mui/material/Link';
-import Stack from '@mui/material/Stack';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-
-// third-party
-import { NumericFormat } from 'react-number-format';
-
-// project import
-import Dot from 'components/@extended/Dot';
+import React, { useEffect, useState } from 'react';
+import { fetchInstructors } from '../TE_Backend';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 
 function createData(tracking_no, name, position, department, email) {
   return { tracking_no, name, position, department, email };
 }
-
-const rows = [
-  createData(1, 'Dr. John Smith', 'Professor', 'Computer Science', 'jsmith@university.edu'),
-  createData(2, 'Dr. Emily Watson', 'Associate Professor', 'Mathematics', 'ewatson@university.edu'),
-  createData(3, 'Dr. Michael Johnson', 'Assistant Professor', 'Physics', 'mjohnson@university.edu'),
-  createData(4, 'Dr. Sarah Davis', 'Lecturer', 'Biology', 'sdavis@university.edu'),
-  createData(5, 'Dr. Olivia Brown', 'Professor', 'Chemistry', 'obrown@university.edu'),
-  createData(6, 'Dr. Robert Lee', 'Assistant Professor', 'History', 'rlee@university.edu'),
-  createData(7, 'Dr. Sophia Martinez', 'Associate Professor', 'Philosophy', 'smartinez@university.edu'),
-  createData(8, 'Dr. William Clark', 'Lecturer', 'Political Science', 'wclark@university.edu'),
-  createData(9, 'Dr. Isabella Garcia', 'Professor', 'Economics', 'igarcia@university.edu'),
-  createData(10, 'Dr. James Miller', 'Lecturer', 'Engineering', 'jmiller@university.edu')
-];
-
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -62,97 +33,77 @@ function stableSort(array, comparator) {
 }
 
 const headCells = [
-  {
+  { 
     id: 'name',
-    align: 'left',
-    disablePadding: true,
-    label: 'Instructor'
+    numeric: false,
+    disablePadding: false,
+    label: 'Name' 
   },
-  {
+  { 
     id: 'position',
-    align: 'left',
+    numeric: false,
     disablePadding: false,
-    label: 'Position'
+    label: 'Position' 
   },
-  {
+  { 
     id: 'department',
-    align: 'left',
-    disablePadding: false,
-    label: 'Department'
+    numeric: false,
+    disablePadding: false, 
+    label: 'Department' 
   },
-  {
+  { 
     id: 'email',
-    align: 'center',
+    numeric: false,
     disablePadding: false,
-    label: 'Email'
+    label: 'Email' 
   }
 ];
 
-// ==============================|| ORDER TABLE - HEADER ||============================== //
-
-function OrderTableHead({ order, orderBy }) {
-  return (
-    <TableHead>
-      <TableRow>
-        {headCells.map((headCell) => (
-          <TableCell
-            key={headCell.id}
-            align={headCell.align}
-            padding={headCell.disablePadding ? 'none' : 'normal'}
-            sortDirection={orderBy === headCell.id ? order : false}
-          >
-            {headCell.label}
-          </TableCell>
-        ))}
-      </TableRow>
-    </TableHead>
-  );
-}
-
-// ==============================|| ORDER TABLE ||============================== //
-
 export default function InstructorTable() {
-  const order = 'asc';
-  const orderBy = 'tracking_no';
+  const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+    async function getInstructors() {
+      const data = await fetchInstructors();
+      const formattedData = data.map((instructor, index) => 
+        createData(index + 1, `${instructor.firstname} ${instructor.lastname}`, instructor.position, instructor.department, instructor.email)
+      );
+      setRows(formattedData);
+    }
+
+    getInstructors();
+  }, []);
 
   return (
-    <Box>
-      <TableContainer
-        sx={{
-          width: '100%',
-          overflowX: 'auto',
-          position: 'relative',
-          display: 'block',
-          maxWidth: '100%',
-          '& td, & th': { whiteSpace: 'nowrap' }
-        }}
-      >
-        <Table aria-labelledby="tableTitle">
-          <OrderTableHead order={order} orderBy={orderBy} />
-          <TableBody>
-            {stableSort(rows, getComparator(order, orderBy)).map((row, index) => {
-              const labelId = `enhanced-table-checkbox-${index}`;
-
-              return (
-                <TableRow
-                  hover
-                  role="checkbox"
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  tabIndex={-1}
-                  key={row.tracking_no}
-                >
-                  <TableCell>{row.name}</TableCell>
-                  <TableCell align="left">{row.position}</TableCell>
-                  <TableCell>{row.department}</TableCell>
-                  <TableCell align="center">{row.email}</TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
+    <TableContainer component={Paper}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            {headCells.map((headCell) => (
+              <TableCell
+                key={headCell.id}
+                align={headCell.numeric ? 'right' : 'left'}
+                padding={headCell.disablePadding ? 'none' : 'normal'}
+              >
+                {headCell.label}
+              </TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {stableSort(rows, getComparator('asc', 'name')).map((row, index) => (
+            <TableRow key={row.tracking_no}>
+              {/* <TableCell component="th" scope="row" padding="none">
+                {row.tracking_no}
+              </TableCell> */}
+              <TableCell>{row.name}</TableCell>
+              <TableCell>{row.position}</TableCell>
+              <TableCell>{row.department}</TableCell>
+              <TableCell>{row.email}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }
-
-OrderTableHead.propTypes = { order: PropTypes.any, orderBy: PropTypes.string };

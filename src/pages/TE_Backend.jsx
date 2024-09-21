@@ -97,28 +97,54 @@ async function fetchAllBorrowers() {
   return rows;
 }
 
+async function uploadInstructor(instructorData) {
+  console.log('Uploading instructor:', instructorData); // Log the data being uploaded
+  const db = firestore;
+  const batch = writeBatch(db);
 
+  // Reference to the "instructors" collection
+  const instructorsCollection = collection(db, 'instructors');
 
+  // Create a new document reference
+  const newInstructorDoc = doc(instructorsCollection);
 
-// async function fetchBorrowerDetails(borrowerId) {
-//   const borrowerDocRef = doc(firestore, 'borrowers', borrowerId);
+  // Add the instructor data to the batch
+  batch.set(newInstructorDoc, instructorData);
 
-//   try {
-//     const borrowerDoc = await getDoc(borrowerDocRef);
+  // Commit the batch
+  await batch.commit();
 
-//     if (borrowerDoc.exists()) {
-//       const borrowerData = borrowerDoc.data();
-//       console.log('Borrower Data:', borrowerData);
-//       return borrowerData;
-//     } else {
-//       console.log('No such document!');
-//       return null;
-//     }
-//   } catch (error) {
-//     console.error('Error fetching borrower details:', error);
-//   }
-// }
+  console.log('Instructor added to the database');
+}
+
+async function fetchInstructors() {
+  console.log('Fetching instructors...');
+  const db = firestore;
+
+  // Reference to the "instructors" collection
+  const instructorsCollection = collection(db, 'instructors');
+
+  // Get all documents from the collection
+  const querySnapshot = await getDocs(instructorsCollection);
+
+  // Extract data from the documents
+  const instructors = querySnapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  }));
+
+  console.log('Instructors fetched:', instructors);
+  return instructors;
+}
 
 export default uploadTE;
 
-export { fetchAllTools, countRows, updateTool, deleteTool, uploadImageAndGetUrl, fetchAllBorrowers }; // Export the functions for use in other modules
+export { 
+  fetchAllTools, 
+  countRows, 
+  updateTool, 
+  deleteTool, 
+  uploadImageAndGetUrl, 
+  fetchAllBorrowers, 
+  uploadInstructor,
+  fetchInstructors }; // Export the functions for use in other modules

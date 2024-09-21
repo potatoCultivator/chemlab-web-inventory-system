@@ -22,9 +22,7 @@ export default function Instructors() {
       {/* row 2 */}
       <Grid item xs={12}  md={8}>
         {/* <Typography variant="h5">Instructor Table</Typography> */}
-        <MainCard title="Instructor Table" content={InstructorTable} >
-          <InstructorTable />
-        </MainCard>
+        <InstructorTable />
       </Grid>
       <Grid item xs={12}  md={4}>
         {/* <Typography variant="h5">Instructor Registration</Typography> */}
