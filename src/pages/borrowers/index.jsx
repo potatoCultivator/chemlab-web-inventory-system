@@ -24,12 +24,12 @@ export default function Borrowers() {
       {/* row 2 */}
       <Grid item xs={12} sm={6}>
         <MainCard title='To Borrow'>
-          <BorrowerSlipTable />
+          <BorrowerSlipTable status={'approved'}/>
         </MainCard>
       </Grid>
       <Grid item xs={12} sm={6}>
         <MainCard title='To Return'>
-          <BorrowerSlipTable />
+          <BorrowerSlipTable status={'approved_admin'}/>
         </MainCard>
       </Grid>
       

@@ -18,7 +18,7 @@ const actionSX = {
   right: 0
 };
 
-export default function BorrowerSlipTable() {
+export default function BorrowerSlipTable({ status}) {
   const [borrowers, setBorrowers] = useState([]);
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export default function BorrowerSlipTable() {
   }, []);
 
   // Ensure borrowers is defined and is an array before filtering
-  const approvedBorrowers = Array.isArray(borrowers) ? borrowers.filter(borrower => borrower.isApproved === 'approved') : [];
+  const approvedBorrowers = Array.isArray(borrowers) ? borrowers.filter(borrower => borrower.isApproved === status) : [];
 
   return (
     <Box sx={{ height: '655px', overflowY: 'auto' }}> {/* Set a fixed height and make it scrollable */}
