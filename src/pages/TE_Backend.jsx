@@ -124,7 +124,7 @@ async function uploadInstructor(instructorData) {
   const batch = writeBatch(db);
 
   // Reference to the "instructors" collection
-  const instructorsCollection = collection(db, 'instructors');
+  const instructorsCollection = collection(db, 'instructor');
 
   // Create a new document reference
   const newInstructorDoc = doc(instructorsCollection);
@@ -154,7 +154,7 @@ async function fetchInstructors() {
   const db = firestore;
 
   // Reference to the "instructors" collection
-  const instructorsCollection = collection(db, 'instructors');
+  const instructorsCollection = collection(db, 'instructor');
 
   // Get all documents from the collection
   const querySnapshot = await getDocs(instructorsCollection);

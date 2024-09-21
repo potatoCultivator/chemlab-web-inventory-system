@@ -66,7 +66,7 @@ export default function InstructorTable() {
     async function getInstructors() {
       const data = await fetchInstructors();
       const formattedData = data.map((instructor, index) => 
-        createData(index + 1, `${instructor.firstname} ${instructor.lastname}`, instructor.position, instructor.department, instructor.email)
+        createData(index + 1, instructor.name, instructor.position, instructor.department, instructor.email)
       );
       setRows(formattedData);
     }

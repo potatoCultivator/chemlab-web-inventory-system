@@ -78,9 +78,15 @@ export default function InstructorRegistration() {
           password: Yup.string().max(255).required('Password is required')
         })}
         onSubmit={async (values, { setSubmitting, setErrors, resetForm }) => {
-          console.log('Form values:', values); // Log the form values
           try {
-            await uploadInstructor(values);
+            const instructorData = {
+              name: values.firstname + ' ' + values.lastname,
+              email: values.email,
+              position: values.position,
+              department: values.department,
+              password: values.password
+            };
+            await uploadInstructor(instructorData);
             console.log('Instructor successfully uploaded');
             setSnackbarMessage('Instructor successfully uploaded!');
             setSnackbarOpen(true);
