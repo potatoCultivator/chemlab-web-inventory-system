@@ -240,6 +240,7 @@ export default function InstructorRegistration() {
                     onChange={handleChange}
                     placeholder="******"
                     inputProps={{}}
+                    disabled 
                   />
                 </Stack>
                 {touched.password && errors.password && (

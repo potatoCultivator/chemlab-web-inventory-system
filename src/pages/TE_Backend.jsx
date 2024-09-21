@@ -98,26 +98,6 @@ async function fetchAllBorrowers() {
   return rows;
 }
 
-// async function uploadInstructor(instructorData) {
-//   console.log('Uploading instructor:', instructorData); // Log the data being uploaded
-//   const db = firestore;
-//   const batch = writeBatch(db);
-
-//   // Reference to the "instructors" collection
-//   const instructorsCollection = collection(db, 'instructors');
-
-//   // Create a new document reference
-//   const newInstructorDoc = doc(instructorsCollection);
-
-//   // Add the instructor data to the batch
-//   batch.set(newInstructorDoc, instructorData);
-
-//   // Commit the batch
-//   await batch.commit();
-
-//   console.log('Instructor added to the database');
-// }
-
 async function uploadInstructor(instructorData) {
   console.log('Uploading instructor:', instructorData); // Log the data being uploaded
   const db = firestore;
@@ -136,9 +116,9 @@ async function uploadInstructor(instructorData) {
   await batch.commit();
 
   // Send email to the instructor
-  const emailSubject = 'Your Account Information';
+  // const emailSubject = 'Your Account Information';
   const emailText = `Your account has been created. Your details are as follows:\n\nEmail: ${instructorData.email}\nPassword: ${instructorData.password}`;
-  const toName = `${instructorData.firstname} ${instructorData.lastname}`;
+  const toName = `${instructorData.name}`;
   const fromName = 'Your Organization Name'; // Replace with your organization name
 
   try {
