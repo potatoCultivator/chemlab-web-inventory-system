@@ -110,10 +110,8 @@ function fetchAllBorrowers(callback) {
     callback(rows);
   });
 
-  // Return the unsubscribe function to allow for cleanup
   return unsubscribe;
 }
-
 async function uploadInstructor(instructorData) {
   // console.log('Uploading instructor:', instructorData); // Log the data being uploaded
   const db = firestore;
