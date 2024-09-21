@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import React from 'react';
+import emailjs from 'emailjs-com';
 
 // material-ui
 import Button from '@mui/material/Button';
@@ -17,9 +18,6 @@ import { Formik } from 'formik';
 // project import
 import AnimateButton from 'components/@extended/AnimateButton';
 import { uploadInstructor } from '../TE_Backend'; // Adjust the import path based on your project structure
-// import { generatePassword } from 'utils/passwordGenerator'; // Import the password generator function
-
-// ============================|| JWT - REGISTER ||============================ //
 
 function generatePassword(length = 8) {
   const lowercase = "abcdefghijklmnopqrstuvwxyz";
@@ -47,6 +45,18 @@ function generatePassword(length = 8) {
 export default function InstructorRegistration() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+  const form = useRef();
+
+  const sendEmail = (e) => {
+    e.preventDefault();
+
+    emailjs.sendForm('service_rs71h8n', 'template_mvq7bdh', form.current, 'HnRtI-nQOt92ux3oK')
+      .then((result) => {
+          console.log('Email sent successfully:', result.text);
+      }, (error) => {
+          console.error('Error sending email:', error.text);
+      });
+  };
 
   return (
     <>
@@ -58,7 +68,6 @@ export default function InstructorRegistration() {
           position: '',
           department: '',
           password: '',
-          // submit: null
         }}
         validationSchema={Yup.object().shape({
           firstname: Yup.string().max(255).required('First Name is required'),
@@ -76,6 +85,7 @@ export default function InstructorRegistration() {
             setSnackbarMessage('Instructor successfully uploaded!');
             setSnackbarOpen(true);
             resetForm();
+            sendEmail(); // Send email after successful upload
           } catch (error) {
             console.error('Error uploading instructor:', error);
             setSnackbarMessage('Error uploading instructor. Please try again.');
@@ -87,7 +97,7 @@ export default function InstructorRegistration() {
         }}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, setFieldValue, touched, values }) => (
-          <form noValidate onSubmit={handleSubmit}>
+          <form ref={form} noValidate onSubmit={handleSubmit}>
             <Grid container spacing={3}>
 
               {/* Firstname */}
@@ -210,7 +220,7 @@ export default function InstructorRegistration() {
               </Grid>
 
               {/* Password */}
-              <Grid item xs={12} md={6}>
+              <Grid item xs={7} md={6}>
                 <Stack spacing={1}>
                   <InputLabel htmlFor="password-signup">Password*</InputLabel>
                   <OutlinedInput
@@ -233,7 +243,7 @@ export default function InstructorRegistration() {
                 )}
               </Grid>
 
-              <Grid item xs={12} md={6}>
+              <Grid item xs={5} md={6}>
                 <Stack spacing={1}>
                 <InputLabel htmlFor="password-signup">Generate Password</InputLabel>
                 <Button
@@ -241,7 +251,7 @@ export default function InstructorRegistration() {
                   onClick={() => setFieldValue('password', generatePassword())}
                   sx={{ mt: 2 }}
                 >
-                  Generate Password
+                  Generate
                 </Button>
                 </Stack>
               </Grid>

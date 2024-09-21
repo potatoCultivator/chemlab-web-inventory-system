@@ -9,6 +9,7 @@
     "url": "https://codedthemes.com/"
   },
   "scripts": {
+    "dev": "vite",
     "start": "vite",
     "build": "vite build",
     "preview": "vite preview",
@@ -33,6 +34,7 @@
     "@svgr/webpack": "^8.1.0",
     "@vitejs/plugin-react": "^4.2.1",
     "apexcharts": "^3.49.0",
+    "emailjs-com": "^3.2.0",
     "firebase": "^10.13.1",
     "formik": "^2.4.5",
     "framer-motion": "^11.0.8",

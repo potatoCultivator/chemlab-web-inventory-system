@@ -93,9 +93,6 @@ export default function InstructorTable() {
         <TableBody>
           {stableSort(rows, getComparator('asc', 'name')).map((row, index) => (
             <TableRow key={row.tracking_no}>
-              {/* <TableCell component="th" scope="row" padding="none">
-                {row.tracking_no}
-              </TableCell> */}
               <TableCell>{row.name}</TableCell>
               <TableCell>{row.position}</TableCell>
               <TableCell>{row.department}</TableCell>
