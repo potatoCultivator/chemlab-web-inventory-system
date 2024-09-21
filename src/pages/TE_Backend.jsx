@@ -84,7 +84,7 @@ async function deleteTool(toolId) {
   // Delete the document
   await deleteDoc(toolDocRef);
 
-  console.log(`Tool with ID ${toolId} has been deleted`);
+  // console.log(`Tool with ID ${toolId} has been deleted`);
 }
 
 // Function to upload image and get its URL
@@ -107,7 +107,7 @@ async function fetchAllBorrowers() {
 }
 
 async function uploadInstructor(instructorData) {
-  console.log('Uploading instructor:', instructorData); // Log the data being uploaded
+  // console.log('Uploading instructor:', instructorData); // Log the data being uploaded
   const db = firestore;
   const batch = writeBatch(db);
 

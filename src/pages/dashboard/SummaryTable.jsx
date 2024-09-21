@@ -14,7 +14,7 @@ import { useEffect, useState } from 'react';
 
 // project import
 import Dot from 'components/@extended/Dot';
-import { borow_return_headCells, rows } from './constants';
+import { borow_return_headCells } from './constants';
 
 import { fetchAllBorrowers } from 'pages/TE_Backend';
 
@@ -70,15 +70,15 @@ function OrderStatus({ status }) {
   let title;
 
   switch (status) {
-    case 'pending':
+    case 'approved':
       color = 'warning';
       title = 'Pending';
       break;
-    case 'approved':
+    case 'approved_admin':
       color = 'success';
       title = 'Approved';
       break;
-    case 'declined':
+    case 'declined_admin':
       color = 'error';
       title = 'Declined';
       break;
@@ -105,7 +105,6 @@ export default function SummaryTable() {
   useEffect(() => {
     const fetchBorrowers = async () => {
       const res = await fetchAllBorrowers();
-      console.log(res);
       setBorrowers(res);
     };
     fetchBorrowers();
@@ -126,7 +125,15 @@ export default function SummaryTable() {
         <Table aria-labelledby="tableTitle">
           <OrderTableHead order={order} orderBy={orderBy} />
           <TableBody>
-            {stableSort(rows, getComparator(order, orderBy)).map((row, index) => {
+            {borrowers.flatMap(borrower => 
+              borrower.equipmentDetails
+                .filter(equipment => borrower.isApproved === 'approved') // Filter only approved items
+                .map(equipment => ({
+                  ...equipment,
+                  borrower: borrower.borrowername,
+                  isApproved: borrower.isApproved
+                }))
+            ).sort((a, b) => getComparator(order, orderBy)(a, b)).map((row, index) => {
               const labelId = `enhanced-table-checkbox-${index}`;
 
               return (
@@ -135,15 +142,12 @@ export default function SummaryTable() {
                   role="checkbox"
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   tabIndex={-1}
-                  key={row.tracking_no}
+                  key={row.id}
                 >
-                  {/* <TableCell component="th" id={labelId} scope="row">
-                    <Link color="secondary"> {row.tracking_no}</Link>
-                  </TableCell> */}
                   <TableCell>{row.name}</TableCell>
                   <TableCell>{row.borrower}</TableCell>
-                  <TableCell align="right">{row.quantity}</TableCell>
-                  <TableCell><OrderStatus status={row.status} /></TableCell>
+                  <TableCell align="right">{row.current_quantity}{row.unit}</TableCell>
+                  <TableCell><OrderStatus status={row.isApproved} /></TableCell>
                   <TableCell align="right">{row.condition}</TableCell>
                 </TableRow>
               );
@@ -157,4 +161,4 @@ export default function SummaryTable() {
 
 OrderTableHead.propTypes = { order: PropTypes.any, orderBy: PropTypes.string };
 
-OrderStatus.propTypes = { status: PropTypes.number };
+OrderStatus.propTypes = { status: PropTypes.string };
