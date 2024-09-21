@@ -1,20 +1,37 @@
 // material-ui
 import Typography from '@mui/material/Typography';
+import Grid from '@mui/system/Unstable_Grid/Grid';
+import Box from '@mui/material/Box';
 
 // project import
 import MainCard from 'components/MainCard';
+import InstructorRegistration from './InstructorRegistration';
+import InstructorTable from './InstructorTable';
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
 export default function Instructors() {
   return (
-    <MainCard title="Sample Card">
-      <Typography variant="body2">
-        Lorem ipsum dolor sit amen, consenter nipissing eli, sed do elusion tempos incident ut laborers et doolie magna alissa. Ut enif ad
-        minim venice, quin nostrum exercitation illampu laborings nisi ut liquid ex ea commons construal. Duos aube grue dolor in
-        reprehended in voltage veil esse colum doolie eu fujian bulla parian. Exceptive sin ocean cuspidate non president, sunk in culpa qui
-        officiate descent molls anim id est labours.
-      </Typography>
-    </MainCard>
+    <Grid container rowSpacing={4.5} columnSpacing={2.75}>
+      {/* row 1 */}
+      <Grid item xs={12} sx={{ mb: -2.25 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Typography variant="h5">Intructors</Typography>
+        </Box>
+      </Grid>
+      {/* row 2 */}
+      <Grid item xs={12}  md={8}>
+        {/* <Typography variant="h5">Instructor Table</Typography> */}
+        <MainCard title="Instructor Table" content={InstructorTable} >
+          <InstructorTable />
+        </MainCard>
+      </Grid>
+      <Grid item xs={12}  md={4}>
+        {/* <Typography variant="h5">Instructor Registration</Typography> */}
+        <MainCard title="Instructor Registration" content={InstructorRegistration} >
+          <InstructorRegistration />
+        </MainCard>
+      </Grid>
+    </Grid>
   );
 }

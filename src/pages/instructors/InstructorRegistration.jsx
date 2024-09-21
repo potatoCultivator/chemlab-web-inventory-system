@@ -29,7 +29,7 @@ import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
 
 // ============================|| JWT - REGISTER ||============================ //
 
-export default function AuthRegister() {
+export default function InstructorRegistration() {
   const [level, setLevel] = useState();
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => {
@@ -80,7 +80,7 @@ export default function AuthRegister() {
                     name="firstname"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="John"
+                    placeholder="Juan"
                     fullWidth
                     error={Boolean(touched.firstname && errors.firstname)}
                   />
@@ -103,7 +103,7 @@ export default function AuthRegister() {
                     name="lastname"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="Doe"
+                    placeholder="Dela Cruz"
                     inputProps={{}}
                   />
                 </Stack>
@@ -113,6 +113,53 @@ export default function AuthRegister() {
                   </FormHelperText>
                 )}
               </Grid>
+
+              <Grid item xs={12}>
+                <Stack spacing={1}>
+                  <InputLabel htmlFor="lastname-signup">Position*</InputLabel>
+                  <OutlinedInput
+                    fullWidth
+                    error={Boolean(touched.lastname && errors.lastname)}
+                    id="lastname-signup"
+                    type="lastname"
+                    value={values.lastname}
+                    name="lastname"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    placeholder="Associate Professor"
+                    inputProps={{}}
+                  />
+                </Stack>
+                {touched.lastname && errors.lastname && (
+                  <FormHelperText error id="helper-text-lastname-signup">
+                    {errors.lastname}
+                  </FormHelperText>
+                )}
+              </Grid>
+              
+              <Grid item xs={12}>
+                <Stack spacing={1}>
+                  <InputLabel htmlFor="lastname-signup">Department*</InputLabel>
+                  <OutlinedInput
+                    fullWidth
+                    error={Boolean(touched.lastname && errors.lastname)}
+                    id="lastname-signup"
+                    type="lastname"
+                    value={values.lastname}
+                    name="lastname"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    placeholder="Information Technology"
+                    inputProps={{}}
+                  />
+                </Stack>
+                {touched.lastname && errors.lastname && (
+                  <FormHelperText error id="helper-text-lastname-signup">
+                    {errors.lastname}
+                  </FormHelperText>
+                )}
+              </Grid>
+              
               <Grid item xs={12}>
                 <Stack spacing={1}>
                   <InputLabel htmlFor="email-signup">Email Address*</InputLabel>
@@ -135,73 +182,7 @@ export default function AuthRegister() {
                   </FormHelperText>
                 )}
               </Grid>
-              <Grid item xs={12}>
-                <Stack spacing={1}>
-                  <InputLabel htmlFor="password-signup">Password</InputLabel>
-                  <OutlinedInput
-                    fullWidth
-                    error={Boolean(touched.password && errors.password)}
-                    id="password-signup"
-                    type={showPassword ? 'text' : 'password'}
-                    value={values.password}
-                    name="password"
-                    onBlur={handleBlur}
-                    onChange={(e) => {
-                      handleChange(e);
-                      changePassword(e.target.value);
-                    }}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={handleClickShowPassword}
-                          onMouseDown={handleMouseDownPassword}
-                          edge="end"
-                          color="secondary"
-                        >
-                          {showPassword ? <EyeOutlined /> : <EyeInvisibleOutlined />}
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                    placeholder="******"
-                    inputProps={{}}
-                  />
-                </Stack>
-                {touched.password && errors.password && (
-                  <FormHelperText error id="helper-text-password-signup">
-                    {errors.password}
-                  </FormHelperText>
-                )}
-                <FormControl fullWidth sx={{ mt: 2 }}>
-                  <Grid container spacing={2} alignItems="center">
-                    <Grid item>
-                      <Box sx={{ bgcolor: level?.color, width: 85, height: 8, borderRadius: '7px' }} />
-                    </Grid>
-                    <Grid item>
-                      <Typography variant="subtitle1" fontSize="0.75rem">
-                        {level?.label}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12}>
-                <Typography variant="body2">
-                  By Signing up, you agree to our &nbsp;
-                  <Link variant="subtitle2" component={RouterLink} to="#">
-                    Terms of Service
-                  </Link>
-                  &nbsp; and &nbsp;
-                  <Link variant="subtitle2" component={RouterLink} to="#">
-                    Privacy Policy
-                  </Link>
-                </Typography>
-              </Grid>
-              {errors.submit && (
-                <Grid item xs={12}>
-                  <FormHelperText error>{errors.submit}</FormHelperText>
-                </Grid>
-              )}
+              
               <Grid item xs={12}>
                 <AnimateButton>
                   <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">

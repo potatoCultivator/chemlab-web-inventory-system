@@ -26,8 +26,7 @@ export default function ToolsAndEquipments() {
       {/* row 1 */}
       <Grid item xs={12} sx={{ mb: -2.25 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h5">Tools and Equipments</Typography>
-          <AddItemDialog onDone={handleRefreshProcessTab} />
+          <Typography variant="h5">Tools and Equipment</Typography>
         </Box>
       </Grid>
       <Grid item xs={12}>
