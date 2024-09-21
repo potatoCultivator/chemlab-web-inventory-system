@@ -25,7 +25,7 @@ export default function AddItemDialog({ onDone }) {
     quantity: 0, // number
     current_quantity: 0, // number
     category: 'glassware', // string
-    condition: 'good_condition', // string
+    condition: 'Good', // string
     image: '', // string
     date: new Date()
   });

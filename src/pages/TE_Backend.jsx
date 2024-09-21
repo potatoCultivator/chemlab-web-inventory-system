@@ -1,5 +1,5 @@
 import { firestore, storage } from '../firebase'; // Adjust the path as necessary
-import { collection, addDoc, writeBatch, doc, getDocs, updateDoc, deleteDoc } from "firebase/firestore"; 
+import { collection, addDoc, writeBatch, doc, getDocs, updateDoc, deleteDoc, onSnapshot } from "firebase/firestore"; 
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { sendEmail } from './emailService'; // Import the email service
 
@@ -53,10 +53,18 @@ async function fetchAllTools() {
     return rows;
   }
 
-  async function countRows() {
+  async function countRows(setCount) {
     const db = firestore;
-    const querySnapshot = await getDocs(collection(db, "tools"));
-    return querySnapshot.docs.length; // Returns the count of documents in the collection
+    const toolsCollection = collection(db, "tools");
+  
+    // Initial fetch to get the count
+    const querySnapshot = await getDocs(toolsCollection);
+    setCount(querySnapshot.docs.length); // Set the initial count
+  
+    // Set up a listener for real-time updates
+    onSnapshot(toolsCollection, (snapshot) => {
+      setCount(snapshot.docs.length); // Update the count when the collection changes
+    });
   }
 
   async function updateTool(toolId, updatedData) {

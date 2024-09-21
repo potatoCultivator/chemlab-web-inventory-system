@@ -10,13 +10,13 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-
-// third-party
-import { NumericFormat } from 'react-number-format';
+import { useEffect, useState } from 'react';
 
 // project import
 import Dot from 'components/@extended/Dot';
 import { borow_return_headCells, rows } from './constants';
+
+import { fetchAllBorrowers } from 'pages/TE_Backend';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -70,17 +70,17 @@ function OrderStatus({ status }) {
   let title;
 
   switch (status) {
-    case 0:
+    case 'pending':
       color = 'warning';
       title = 'Pending';
       break;
-    case 1:
+    case 'approved':
       color = 'success';
       title = 'Approved';
       break;
-    case 2:
+    case 'declined':
       color = 'error';
-      title = 'Rejected';
+      title = 'Declined';
       break;
     default:
       color = 'primary';
@@ -100,6 +100,16 @@ function OrderStatus({ status }) {
 export default function SummaryTable() {
   const order = 'asc';
   const orderBy = 'tracking_no';
+  const [borrowers, setBorrowers] = useState([]);
+
+  useEffect(() => {
+    const fetchBorrowers = async () => {
+      const res = await fetchAllBorrowers();
+      console.log(res);
+      setBorrowers(res);
+    };
+    fetchBorrowers();
+  }, []);
 
   return (
     <Box>
@@ -127,10 +137,11 @@ export default function SummaryTable() {
                   tabIndex={-1}
                   key={row.tracking_no}
                 >
-                  <TableCell component="th" id={labelId} scope="row">
+                  {/* <TableCell component="th" id={labelId} scope="row">
                     <Link color="secondary"> {row.tracking_no}</Link>
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell>{row.name}</TableCell>
+                  <TableCell>{row.borrower}</TableCell>
                   <TableCell align="right">{row.quantity}</TableCell>
                   <TableCell><OrderStatus status={row.status} /></TableCell>
                   <TableCell align="right">{row.condition}</TableCell>

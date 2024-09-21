@@ -33,16 +33,16 @@ const headCells = [
 
   const borow_return_headCells = [
     {
-      id: 'tracking_no',
-      align: 'left',
-      disablePadding: false,
-      label: 'Tracking No.'
-    },
-    {
       id: 'item',
       align: 'left',
       disablePadding: true,
       label: 'Item'
+    },
+    {
+      id: 'borrower',
+      align: 'left',
+      disablePadding: true,
+      label: 'borrower'
     },
     {
       id: 'quantity',
@@ -65,21 +65,21 @@ const headCells = [
   ];
 
     // mock data for borrow/return table
-    function createData(tracking_no, name, quantity, status, condition) {
-        return { tracking_no, name, quantity, status, condition };
-      }
-      
-      const rows = [
-        createData(84564564, 'Beaker', 40, 0, 'Good'), // Approved
-        createData(98764564, 'Microscope', 10, 1, 'Bad'), // Pending
-        createData(98756325, 'Test Tube', 355, 0, 'Good'), // Approved
-        createData(98652366, 'Bunsen Burner', 50, 1, 'Bad'), // Pending
-        createData(13286564, 'Pipette', 100, 0, 'Good'), // Approved
-        createData(86739658, 'Graduated Cylinder', 99, 0, 'Good'), // Approved
-        createData(13256498, 'Flask', 125, 1, 'Bad'), // Pending
-        createData(98753263, 'Petri Dish', 89, 0, 'Good'), // Approved
-        createData(98753275, 'Centrifuge', 5, 1, 'Bad'), // Pending
-        createData(98753291, 'Thermometer', 100, 0, 'Good') // Approved
-      ];
+function createData(tracking_no, name, borrower, quantity, status, condition) {
+  return { tracking_no, name, borrower, quantity, status, condition };
+}
+
+const rows = [
+  createData(84564564, 'Beaker', 'John Doe', 40, 'approved', 'Good'),
+  createData(98764564, 'Microscope', 'Jane Smith', 10, 'pending', 'Bad'),
+  createData(98756325, 'Test Tube', 'Alice Johnson', 355, 'approved', 'Good'),
+  createData(98652366, 'Bunsen Burner', 'Bob Williams', 50, 'pending', 'Bad'),
+  createData(13286564, 'Pipette', 'Chris Evans', 100, 'approved', 'Good'),
+  createData(86739658, 'Graduated Cylinder', 'David Lee', 99, 'approved', 'Good'),
+  createData(13256498, 'Flask', 'Eve Thompson', 125, 'pending', 'Bad'),
+  createData(98753263, 'Petri Dish', 'Frank Wright', 89, 'approved', 'Good'),
+  createData(98753275, 'Centrifuge', 'Grace Kim', 5, 'pending', 'Bad'),
+  createData(98753291, 'Thermometer', 'Hank Miller', 100, 'approved', 'Good')
+];
 
     export { headCells, borow_return_headCells, rows };

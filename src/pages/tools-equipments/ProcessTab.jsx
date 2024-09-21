@@ -61,22 +61,23 @@ export default function ProcessTab({ refresh }) {
   };
 
   useEffect(() => {
-    const fetchRowCoun = async () => {
-      // This effect will run every time the `refresh` prop changes
+    const fetchRowCount = async () => {
       console.log('ProcessTab re-rendered due to refresh prop change:', refresh);
       setRefreshTable(prev => !prev); 
       try {
-        const fetchCount = await countRows();
-        setCount(fetchCount);
-      }
-      catch {
+        await countRows(setCount); // Pass setCount to countRows
+      } catch (error) {
         console.error('Error fetching tools:', error);
-
       }
-    }
-    fetchRowCoun();
-    // Add any logic needed to refresh the content
+    };
+    fetchRowCount();
   }, [refresh]);
+
+  useEffect(() => {
+    // This effect will run every time the `count` state changes
+    console.log('Count state changed:', count);
+    // Add any logic needed to handle the count change
+  }, [count]);
 
 
   return (
