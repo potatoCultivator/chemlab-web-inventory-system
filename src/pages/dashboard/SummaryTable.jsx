@@ -114,6 +114,7 @@ export default function SummaryTable() {
   const approvedBorrowers = Array.isArray(borrowers) 
     ? borrowers.filter(borrower => borrower.isApproved === 'approved' || borrower.isApproved === 'approved_admin') 
     : [];
+
   return (
     <Box>
       <TableContainer
@@ -129,7 +130,7 @@ export default function SummaryTable() {
         <Table aria-labelledby="tableTitle">
           <OrderTableHead order={order} orderBy={orderBy} />
           <TableBody>
-            {approvedBorrowers.flatMap(borrower => 
+            {approvedBorrowers.length > 0 && approvedBorrowers.flatMap(borrower => 
               borrower.equipmentDetails.map(equipment => ({
                 ...equipment,
                 borrower: borrower.borrowername,
