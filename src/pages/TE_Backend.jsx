@@ -95,15 +95,23 @@ async function deleteTool(toolId) {
   return fileUrl;
 }
 
-async function fetchAllBorrowers() {
+function fetchAllBorrowers(callback) {
   const db = firestore;
-  const querySnapshot = await getDocs(collection(db, 'borrower'));
-  
-  const rows = querySnapshot.docs.map(doc => ({
-    ...doc.data() // Spread the document data
-  }));
+  const borrowerCollection = collection(db, 'borrower');
 
-  return rows;
+  // Set up a real-time listener
+  const unsubscribe = onSnapshot(borrowerCollection, (querySnapshot) => {
+    const rows = querySnapshot.docs.map(doc => ({
+      ...doc.data(), // Spread the document data
+      id: doc.id // Include the document ID
+    }));
+
+    // Execute the callback with the updated data
+    callback(rows);
+  });
+
+  // Return the unsubscribe function to allow for cleanup
+  return unsubscribe;
 }
 
 async function uploadInstructor(instructorData) {

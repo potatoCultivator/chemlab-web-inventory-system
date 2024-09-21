@@ -22,14 +22,15 @@ export default function BorrowerSlipTable() {
   const [borrowers, setBorrowers] = useState([]);
 
   useEffect(() => {
-    const fetchBorrowers = async () => {
-      const res = await fetchAllBorrowers();
-      console.log(res);
-      setBorrowers(res);
-    };
-    fetchBorrowers();
+    // Set up the listener and get the unsubscribe function
+    const unsubscribe = fetchAllBorrowers(setBorrowers);
+
+    // Clean up the listener on component unmount
+    return () => unsubscribe();
   }, []);
-    
+
+  // Ensure borrowers is defined and is an array before filtering
+  const approvedBorrowers = Array.isArray(borrowers) ? borrowers.filter(borrower => borrower.isApproved === 'approved') : [];
 
   return (
     <Box sx={{ height: '655px', overflowY: 'auto' }}> {/* Set a fixed height and make it scrollable */}
@@ -45,8 +46,8 @@ export default function BorrowerSlipTable() {
           }
         }}
       >
-        {borrowers.map((borrower) => (
-          <BorrowerSlip  borrower={borrower} />
+        {approvedBorrowers.map(borrower => (
+          <BorrowerSlip borrower={borrower} key={borrower.id} />
         ))}
       </List>
     </Box>
