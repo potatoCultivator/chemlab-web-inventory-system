@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { useEffect, useState } from 'react';
 
-// project import
+// project imports
 import Dot from 'components/@extended/Dot';
 import { borow_return_headCells } from './constants';
 

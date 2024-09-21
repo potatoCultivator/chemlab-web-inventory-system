@@ -14,7 +14,7 @@ import Typography from '@mui/material/Typography';
 // project import
 import MainCard from 'components/MainCard';
 import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
-import SummaryTable from './SummaryTable';
+// import SummaryTable from './SummaryTable';
 import SaleReportCard from './SaleReportCard';
 import BorrowersReport from './BorrowersReport';
 
@@ -86,7 +86,7 @@ export default function DashboardDefault() {
           <Grid item />
         </Grid>
         <MainCard sx={{ mt: 2 }} content={false}>
-          <SummaryTable />
+          {/* <SummaryTable /> */}
         </MainCard>
       </Grid>
       
