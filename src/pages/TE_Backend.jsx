@@ -135,8 +135,6 @@ async function uploadInstructor(instructorData) {
   // Commit the batch
   await batch.commit();
 
-  console.log('Instructor added to the database');
-
   // Send email to the instructor
   const emailSubject = 'Your Account Information';
   const emailText = `Your account has been created. Your details are as follows:\n\nEmail: ${instructorData.email}\nPassword: ${instructorData.password}`;
