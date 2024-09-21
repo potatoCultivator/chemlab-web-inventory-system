@@ -131,11 +131,11 @@ export default function SummaryTable() {
           <OrderTableHead order={order} orderBy={orderBy} />
           <TableBody>
             {approvedBorrowers.length > 0 && approvedBorrowers.flatMap(borrower => 
-              borrower.equipmentDetails.map(equipment => ({
+              Array.isArray(borrower.equipmentDetails) ? borrower.equipmentDetails.map(equipment => ({
                 ...equipment,
                 borrower: borrower.borrowername,
                 isApproved: borrower.isApproved
-              }))
+              })) : []
             ).sort((a, b) => getComparator(order, orderBy)(a, b)).map((row, index) => {
               const labelId = `enhanced-table-checkbox-${index}`;
 
