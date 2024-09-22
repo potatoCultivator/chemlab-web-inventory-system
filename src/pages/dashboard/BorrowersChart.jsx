@@ -41,7 +41,7 @@ const columnChartOptions = {
     colors: ['transparent']
   },
   xaxis: {
-    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
+    categories:['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
   },
   yaxis: {
     title: {
@@ -74,13 +74,13 @@ const columnChartOptions = {
 };
 
 const initialSeries = [
-  {
-    name: 'Income',
-    data: [180, 90, 135, 114, 120, 145]
+    {
+    name: 'Borrowed Items',
+    data: [180, 90, 135, 114, 120, 145, 160] // Added data for Sunday
   },
   {
-    name: 'Cost Of Sales',
-    data: [120, 45, 78, 150, 168, 99]
+    name: 'Returned Items',
+    data: [120, 45, 78, 150, 168, 99, 110] // Added data for Sunday
   }
 ];
 
@@ -90,11 +90,11 @@ export default function BorrowersChart() {
   const theme = useTheme();
 
   const [legend, setLegend] = useState({
-    income: true,
-    cos: true
+    borrowedItem: true,
+    returnedItem: true
   });
 
-  const { income, cos } = legend;
+  const { borrowedItem, returnedItem } = legend;
 
   const { primary, secondary } = theme.palette.text;
   const line = theme.palette.divider;
@@ -113,31 +113,31 @@ export default function BorrowersChart() {
   const [options, setOptions] = useState(columnChartOptions);
 
   useEffect(() => {
-    if (income && cos) {
+    if (borrowedItem && returnedItem) {
       setSeries(initialSeries);
-    } else if (income) {
+    } else if (borrowedItem) {
       setSeries([
         {
-          name: 'Income',
-          data: [180, 90, 135, 114, 120, 145]
+          name: 'Borrowed Items',
+          data: [181, 90, 135, 114, 120, 145]
         }
       ]);
-    } else if (cos) {
+    } else if (returnedItem) {
       setSeries([
         {
-          name: 'Cost Of Sales',
+          name: 'Returned Items',
           data: [120, 45, 78, 150, 168, 99]
         }
       ]);
     } else {
       setSeries([]);
     }
-  }, [income, cos]);
+  }, [borrowedItem, returnedItem]);
 
   useEffect(() => {
     setOptions((prevState) => ({
       ...prevState,
-      colors: !(income && cos) && cos ? [primaryMain] : [warning, primaryMain],
+      colors: !(borrowedItem && returnedItem) && returnedItem ? [primaryMain] : [warning, primaryMain],
       xaxis: {
         labels: {
           style: {
@@ -161,7 +161,7 @@ export default function BorrowersChart() {
         }
       }
     }));
-  }, [primary, secondary, line, warning, primaryMain, successDark, income, cos, xsDown]);
+  }, [primary, secondary, line, warning, primaryMain, successDark, borrowedItem, returnedItem, xsDown]);
 
   return (
     <MainCard sx={{ mt: 1 }} content={false}>
@@ -176,10 +176,10 @@ export default function BorrowersChart() {
           <FormControl component="fieldset">
             <FormGroup row>
               <FormControlLabel
-                control={<Checkbox color="warning" checked={income} onChange={handleLegendChange} name="income" />}
+                control={<Checkbox color="warning" checked={borrowedItem} onChange={handleLegendChange} name="borrowedItem" />}
                 label="Borrowed Items"
               />
-              <FormControlLabel control={<Checkbox checked={cos} onChange={handleLegendChange} name="cos" />} label="Returned Item" />
+              <FormControlLabel control={<Checkbox checked={returnedItem} onChange={handleLegendChange} name="returnedItem" />} label="Returned Items" />
             </FormGroup>
           </FormControl>
         </Stack>

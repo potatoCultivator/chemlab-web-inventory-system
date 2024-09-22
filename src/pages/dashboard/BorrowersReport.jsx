@@ -7,29 +7,24 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
 // project import
-import SalesChart from './SalesChart';
 import BorrowersChart from './BorrowersChart';
 
 // sales report status
 const status = [
   {
-    value: 'today',
-    label: 'Today'
+    value: 'week',
+    label: 'This Week'
   },
   {
     value: 'month',
     label: 'This Month'
-  },
-  {
-    value: 'year',
-    label: 'This Year'
   }
 ];
 
 // ==============================|| DEFAULT - SALES REPORT ||============================== //
 
 export default function BorrowersReport() {
-  const [value, setValue] = useState('today');
+  const [value, setValue] = useState('week');
 
   return (
     <>
