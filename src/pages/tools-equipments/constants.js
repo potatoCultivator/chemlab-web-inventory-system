@@ -68,7 +68,7 @@ const headCells = [
         id: 'action',
         align: 'right',
         disablePadding: false,
-        label: 'Edit/Delete'
+        label: 'Edit / Delete'
       }
   ];
 

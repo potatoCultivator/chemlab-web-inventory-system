@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { fetchInstructors } from '../TE_Backend';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
 function createData(tracking_no, name, position, department, email) {
   return { tracking_no, name, position, department, email };
@@ -57,6 +59,13 @@ const headCells = [
     disablePadding: false,
     label: 'Email' 
   }
+  ,
+  { 
+    id: 'edit_delete',
+    numeric: false,
+    disablePadding: false,
+    label: 'Edit / Delete' 
+  }
 ];
 
 export default function InstructorTable() {
@@ -82,7 +91,7 @@ export default function InstructorTable() {
             {headCells.map((headCell) => (
               <TableCell
                 key={headCell.id}
-                align={headCell.numeric ? 'right' : 'left'}
+                align={['email', 'department'].includes(headCell.id) ? 'center' : (headCell.id === 'edit_delete' ? 'right' : (headCell.numeric ? 'right' : 'left'))}
                 padding={headCell.disablePadding ? 'none' : 'normal'}
               >
                 {headCell.label}
@@ -95,8 +104,16 @@ export default function InstructorTable() {
             <TableRow key={row.tracking_no}>
               <TableCell>{row.name}</TableCell>
               <TableCell>{row.position}</TableCell>
-              <TableCell>{row.department}</TableCell>
-              <TableCell>{row.email}</TableCell>
+              <TableCell align="center">{row.department}</TableCell>
+              <TableCell align="center">{row.email}</TableCell>
+              <TableCell align="right">
+                <IconButton color="primary" size="large" onClick={() => handleEditClick(row)}>
+                  <EditOutlined />
+                </IconButton>
+                <IconButton color="error" size="large" onClick={() => handleDeleteClick(row)}>
+                  <DeleteOutlined />
+                </IconButton>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
