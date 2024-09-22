@@ -49,7 +49,7 @@ export default function BorrowersReport() {
           </TextField>
         </Grid>
       </Grid>
-      <BorrowersChart />
+      <BorrowersChart isWeekly={value === 'week'} />
     </>
   );
 }

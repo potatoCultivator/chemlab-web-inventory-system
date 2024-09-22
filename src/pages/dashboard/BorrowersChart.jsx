@@ -17,6 +17,9 @@ import MainCard from 'components/MainCard';
 // third-party
 import ReactApexChart from 'react-apexcharts';
 
+const week = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const month = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+
 // chart options
 const columnChartOptions = {
   chart: {
@@ -41,7 +44,7 @@ const columnChartOptions = {
     colors: ['transparent']
   },
   xaxis: {
-    categories:['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    categories: week, // Default to weekly categories
   },
   yaxis: {
     title: {
@@ -73,20 +76,32 @@ const columnChartOptions = {
   ]
 };
 
-const initialSeries = [
+const initialSeries = {
+  weekly: [
     {
-    name: 'Borrowed Items',
-    data: [180, 90, 135, 114, 120, 145, 160] // Added data for Sunday
-  },
-  {
-    name: 'Returned Items',
-    data: [120, 45, 78, 150, 168, 99, 110] // Added data for Sunday
-  }
-];
+      name: 'Borrowed Items',
+      data: [180, 90, 135, 114, 120, 145, 160] // Added data for Sunday
+    },
+    {
+      name: 'Returned Items',
+      data: [120, 45, 78, 150, 168, 99, 110] // Added data for Sunday
+    }
+  ],
+  monthly: [
+    {
+      name: 'Borrowed Items',
+      data: [720, 360, 540, 456] // Monthly data
+    },
+    {
+      name: 'Returned Items',
+      data: [480, 180, 312, 600] // Monthly data
+    }
+  ]
+};
 
 // ==============================|| SALES COLUMN CHART ||============================== //
 
-export default function BorrowersChart() {
+export default function BorrowersChart({ isWeekly }) {
   const theme = useTheme();
 
   const [legend, setLegend] = useState({
@@ -103,7 +118,7 @@ export default function BorrowersChart() {
   const primaryMain = theme.palette.primary.main;
   const successDark = theme.palette.success.dark;
 
-  const [series, setSeries] = useState(initialSeries);
+  const [series, setSeries] = useState(isWeekly ? initialSeries.weekly : initialSeries.monthly);
 
   const handleLegendChange = (event) => {
     setLegend({ ...legend, [event.target.name]: event.target.checked });
@@ -114,31 +129,32 @@ export default function BorrowersChart() {
 
   useEffect(() => {
     if (borrowedItem && returnedItem) {
-      setSeries(initialSeries);
+      setSeries(isWeekly ? initialSeries.weekly : initialSeries.monthly);
     } else if (borrowedItem) {
       setSeries([
         {
           name: 'Borrowed Items',
-          data: [181, 90, 135, 114, 120, 145]
+          data: isWeekly ? [180, 90, 135, 114, 120, 145, 160] : [720, 360, 540, 456]
         }
       ]);
     } else if (returnedItem) {
       setSeries([
         {
           name: 'Returned Items',
-          data: [120, 45, 78, 150, 168, 99]
+          data: isWeekly ? [120, 45, 78, 150, 168, 99, 110] : [480, 180, 312, 600]
         }
       ]);
     } else {
       setSeries([]);
     }
-  }, [borrowedItem, returnedItem]);
+  }, [borrowedItem, returnedItem, isWeekly]);
 
   useEffect(() => {
     setOptions((prevState) => ({
       ...prevState,
       colors: !(borrowedItem && returnedItem) && returnedItem ? [primaryMain] : [warning, primaryMain],
       xaxis: {
+        categories: isWeekly ? week : month, // Update categories based on isWeekly prop
         labels: {
           style: {
             colors: [secondary, secondary, secondary, secondary, secondary, secondary]
@@ -161,7 +177,7 @@ export default function BorrowersChart() {
         }
       }
     }));
-  }, [primary, secondary, line, warning, primaryMain, successDark, borrowedItem, returnedItem, xsDown]);
+  }, [primary, secondary, line, warning, primaryMain, successDark, borrowedItem, returnedItem, xsDown, isWeekly]);
 
   return (
     <MainCard sx={{ mt: 1 }} content={false}>
