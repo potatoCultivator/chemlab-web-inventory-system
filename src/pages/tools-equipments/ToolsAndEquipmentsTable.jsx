@@ -134,9 +134,18 @@ export default function TE_Table({ refresh, catValue }) {
   const handleSave = async () => {
     if (selectedItem) {
       console.log('Saving item:', selectedItem); // Debugging
-      await updateTool(selectedItem.id, selectedItem); // Call updateTool with the selected item's ID and updated data
+
+      // Convert numeric fields to numbers
+      const updatedItem = {
+        ...selectedItem,
+        capacity: Number(selectedItem.capacity),
+        quantity: Number(selectedItem.quantity),
+        current_quantity: Number(selectedItem.current_quantity)
+      };
+
+      await updateTool(updatedItem.id, updatedItem); // Call updateTool with the selected item's ID and updated data
       setTools((prevData) =>
-        prevData.map((tool) => (tool.id === selectedItem.id ? selectedItem : tool))
+        prevData.map((tool) => (tool.id === updatedItem.id ? updatedItem : tool))
       );
       handleClose();
     }
@@ -222,15 +231,6 @@ export default function TE_Table({ refresh, catValue }) {
             label="Unit"
             name="unit"
             value={selectedItem?.unit || ''}
-            onChange={handleChange}
-            fullWidth
-          />
-          <TextField
-            margin="dense"
-            label="Current Quantity"
-            name="current_quantity"
-            type='number'
-            value={selectedItem?.current_quantity || ''}
             onChange={handleChange}
             fullWidth
           />

@@ -71,6 +71,8 @@ async function fetchAllTools() {
     const db = firestore;
     const toolDocRef = doc(db, 'tools', toolId);
 
+    validateToolData(updatedData);
+
     // Update the document with the new data
     await updateDoc(toolDocRef, updatedData);
 
