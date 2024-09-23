@@ -145,25 +145,17 @@ async function uploadInstructor(instructorData) {
   }
 }
 
-async function fetchInstructors() {
-  console.log('Fetching instructors...');
-  const db = firestore;
-
-  // Reference to the "instructors" collection
-  const instructorsCollection = collection(db, 'instructor');
-
-  // Get all documents from the collection
-  const querySnapshot = await getDocs(instructorsCollection);
-
-  // Extract data from the documents
-  const instructors = querySnapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  }));
-
-  console.log('Instructors fetched:', instructors);
-  return instructors;
-}
+const fetchInstructors = (callback, errorCallback) => {
+  const instructorsCollection = collection(firestore, 'instructor');
+  return onSnapshot(instructorsCollection, (snapshot) => {
+    const data = snapshot.docs.map((doc, index) => ({
+      tracking_no: index + 1,
+      id: doc.id,
+      ...doc.data()
+    }));
+    callback(data);
+  }, errorCallback);
+};
 
 async function deleteInstructorAcc(accountID) {
   const db = firestore;
@@ -179,6 +171,17 @@ async function deleteInstructorAcc(accountID) {
   }
 }
 
+async function updateBorrower(borrowerId, updatedData) {
+  const db = firestore;
+  const borrowerDocRef = doc(db, 'borrower', borrowerId);
+
+  // validateBorrowerData(updatedData);
+
+  // Update the document with the new data
+  await updateDoc(borrowerDocRef, updatedData);
+
+  console.log(`Borrower with ID ${borrowerId} has been updated`);
+}
 
 export default uploadTE;
 
@@ -191,4 +194,5 @@ export {
   fetchAllBorrowers, 
   uploadInstructor,
   fetchInstructors,
-  deleteInstructorAcc }; // Export the functions for use in other modules
+  deleteInstructorAcc,
+  updateBorrower }; // Export the functions for use in other modules

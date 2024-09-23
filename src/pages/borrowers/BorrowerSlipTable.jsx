@@ -47,7 +47,7 @@ export default function BorrowerSlipTable({ status}) {
         }}
       >
         {approvedBorrowers.map(borrower => (
-          <BorrowerSlip borrower={borrower} key={borrower.id} />
+          <BorrowerSlip borrower={borrower} status={status} key={borrower.id} />
         ))}
       </List>
     </Box>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined } from '@ant-design/icons';
 
 // project import
 import { fetchInstructors, deleteInstructorAcc } from '../TE_Backend';
@@ -70,21 +70,19 @@ export default function InstructorTable() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await fetchInstructors();
-        const formattedData = data.map((instructor, index) => 
-          createData(index + 1, instructor.id, instructor.name, instructor.position, instructor.department, instructor.email)
-        );
-        setRows(formattedData);
-      } catch (error) {
-        console.error('Error fetching instructors:', error);
-      } finally {
-        setLoading(false);
+    const unsubscribe = fetchInstructors((data) => {
+      setRows(data);
+      setLoading(false);
+    }, (error) => {
+      console.error('Error fetching instructors:', error);
+      setLoading(false);
+    });
+
+    return () => {
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
       }
     };
-
-    fetchData();
   }, []);
 
   const handleDeleteClick = (item) => {
@@ -95,7 +93,6 @@ export default function InstructorTable() {
   const handleDeleteConfirm = async () => {
     try {
       await deleteInstructorAcc(itemToDelete.id);
-      setRows((prevRows) => prevRows.filter((instructor) => instructor.id !== itemToDelete.id));
       setDeleteDialogOpen(false);
       setItemToDelete(null);
       console.log(`Instructor with ID ${itemToDelete.id} has been deleted`);
@@ -124,7 +121,7 @@ export default function InstructorTable() {
           <Table>
             <InstructorTableHead order={order} orderBy={orderBy} />
             <TableBody>
-              {stableSort(rows, getComparator(order, orderBy)).map((row, index) => (
+              {stableSort(rows, getComparator(order, orderBy)).map((row) => (
                 <TableRow key={row.tracking_no}>
                   <TableCell>{row.name}</TableCell>
                   <TableCell>{row.position}</TableCell>

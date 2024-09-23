@@ -3,10 +3,12 @@ import React, { useEffect } from 'react';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 
 // project import
 import MainCard from 'components/MainCard';
 import BorrowerSlipTable from './BorrowerSlipTable';
+// import Button from 'themes/overrides/Button';
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
@@ -21,6 +23,7 @@ export default function Borrowers() {
       <Grid item xs={12} sx={{ mb: -2.25 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="h5">Borrowers</Typography>
+          <Button variant='outlined' color='primary'>History</Button>
         </Box>
       </Grid>
 
@@ -32,7 +35,7 @@ export default function Borrowers() {
       </Grid>
       <Grid item xs={12} sm={6}>
         <MainCard title='To Return'>
-          <BorrowerSlipTable status={'approved_admin'}/>
+          <BorrowerSlipTable status={'pending return'}/>
         </MainCard>
       </Grid>
       

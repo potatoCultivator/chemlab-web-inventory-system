@@ -18,9 +18,13 @@ import {
   TableContainer, 
   TableHead, 
   TableRow,
-  Divider } from '@mui/material';
+  Divider 
+} from '@mui/material';
 
-const BorrowerSlip = ({ borrower }) => {
+// firestore
+import { updateBorrower } from 'pages/TE_Backend';
+
+const BorrowerSlip = ({ borrower, status }) => {
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
@@ -29,6 +33,16 @@ const BorrowerSlip = ({ borrower }) => {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleApprove = async () => {
+    try {
+      await updateBorrower(borrower.id, {isApproved: status == "pending return"? "returned" : "admin approved"});
+      console.log(`Borrower with ID ${borrower.id} has been approved`);
+      handleClose();
+    } catch (error) {
+      console.error('Error approving borrower:', error);
+    }
   };
 
   return (
@@ -111,13 +125,10 @@ const BorrowerSlip = ({ borrower }) => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          {/* <Button onClick={handleClose} color="primary" variant="outlined">
-            Close
-          </Button> */}
           <Button onClick={handleClose} variant="text" sx={{ color: 'red', borderColor: 'red' }}>
             Reject
           </Button>
-          <Button onClick={handleClose} variant="text" sx={{ color: 'green', borderColor: 'green' }}>
+          <Button onClick={handleApprove} variant="text" sx={{ color: 'green', borderColor: 'green' }}>
             Approve
           </Button>
         </DialogActions>
@@ -125,5 +136,13 @@ const BorrowerSlip = ({ borrower }) => {
     </>
   );
 };
+
+// pending
+// approved
+// declined
+// approved admin
+// declined admin 
+// pending return
+// returned
 
 export default BorrowerSlip;
