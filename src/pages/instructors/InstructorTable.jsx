@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { fetchInstructors } from '../TE_Backend';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
+import PropTypes from 'prop-types';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
-function createData(tracking_no, name, position, department, email) {
-  return { tracking_no, name, position, department, email };
-}
+// project import
+import { fetchInstructors, deleteInstructorAcc } from '../TE_Backend';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -35,89 +33,133 @@ function stableSort(array, comparator) {
 }
 
 const headCells = [
-  { 
-    id: 'name',
-    numeric: false,
-    disablePadding: false,
-    label: 'Name' 
-  },
-  { 
-    id: 'position',
-    numeric: false,
-    disablePadding: false,
-    label: 'Position' 
-  },
-  { 
-    id: 'department',
-    numeric: false,
-    disablePadding: false, 
-    label: 'Department' 
-  },
-  { 
-    id: 'email',
-    numeric: false,
-    disablePadding: false,
-    label: 'Email' 
-  }
-  ,
-  { 
-    id: 'edit_delete',
-    numeric: false,
-    disablePadding: false,
-    label: 'Edit / Delete' 
-  }
+  { id: 'name', numeric: false, disablePadding: false, label: 'Name' },
+  { id: 'position', numeric: false, disablePadding: false, label: 'Position' },
+  { id: 'department', numeric: false, disablePadding: false, label: 'Department' },
+  { id: 'email', numeric: false, disablePadding: false, label: 'Email' },
+  { id: 'delete', numeric: false, disablePadding: false, label: 'Delete' }
 ];
 
+function InstructorTableHead({ order, orderBy }) {
+  return (
+    <TableHead>
+      <TableRow>
+        {headCells.map((headCell) => (
+          <TableCell
+            key={headCell.id}
+            align={['email', 'department'].includes(headCell.id) ? 'center' : (headCell.id === 'delete' ? 'right' : (headCell.numeric ? 'right' : 'left'))}
+            padding={headCell.disablePadding ? 'none' : 'normal'}
+            sortDirection={orderBy === headCell.id ? order : false}
+          >
+            {headCell.label}
+          </TableCell>
+        ))}
+      </TableRow>
+    </TableHead>
+  );
+}
+
+InstructorTableHead.propTypes = { order: PropTypes.any, orderBy: PropTypes.string };
+
 export default function InstructorTable() {
+  const order = 'asc';
+  const orderBy = 'name';
   const [rows, setRows] = useState([]);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function getInstructors() {
-      const data = await fetchInstructors();
-      const formattedData = data.map((instructor, index) => 
-        createData(index + 1, instructor.name, instructor.position, instructor.department, instructor.email)
-      );
-      setRows(formattedData);
-    }
+    const fetchData = async () => {
+      try {
+        const data = await fetchInstructors();
+        const formattedData = data.map((instructor, index) => 
+          createData(index + 1, instructor.id, instructor.name, instructor.position, instructor.department, instructor.email)
+        );
+        setRows(formattedData);
+      } catch (error) {
+        console.error('Error fetching instructors:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    getInstructors();
+    fetchData();
   }, []);
 
+  const handleDeleteClick = (item) => {
+    setItemToDelete(item);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await deleteInstructorAcc(itemToDelete.id);
+      setRows((prevRows) => prevRows.filter((instructor) => instructor.id !== itemToDelete.id));
+      setDeleteDialogOpen(false);
+      setItemToDelete(null);
+      console.log(`Instructor with ID ${itemToDelete.id} has been deleted`);
+    } catch (error) {
+      console.error('Error deleting instructor:', error);
+      alert(`Failed to delete instructor: ${error.message}`);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+    setItemToDelete(null);
+  };
+
+  const handleEditClick = (row) => {
+    // Implement the edit functionality here
+    console.log('Editing instructor:', row);
+  };
+
   return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            {headCells.map((headCell) => (
-              <TableCell
-                key={headCell.id}
-                align={['email', 'department'].includes(headCell.id) ? 'center' : (headCell.id === 'edit_delete' ? 'right' : (headCell.numeric ? 'right' : 'left'))}
-                padding={headCell.disablePadding ? 'none' : 'normal'}
-              >
-                {headCell.label}
-              </TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {stableSort(rows, getComparator('asc', 'name')).map((row, index) => (
-            <TableRow key={row.tracking_no}>
-              <TableCell>{row.name}</TableCell>
-              <TableCell>{row.position}</TableCell>
-              <TableCell align="center">{row.department}</TableCell>
-              <TableCell align="center">{row.email}</TableCell>
-              <TableCell align="right">
-                <IconButton color="primary" size="large" onClick={() => handleEditClick(row)}>
-                  <EditOutlined />
-                </IconButton>
-                <IconButton color="error" size="large" onClick={() => handleDeleteClick(row)}>
-                  <DeleteOutlined />
-                </IconButton>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Box>
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <TableContainer component={Paper}>
+          <Table>
+            <InstructorTableHead order={order} orderBy={orderBy} />
+            <TableBody>
+              {stableSort(rows, getComparator(order, orderBy)).map((row, index) => (
+                <TableRow key={row.tracking_no}>
+                  <TableCell>{row.name}</TableCell>
+                  <TableCell>{row.position}</TableCell>
+                  <TableCell align="center">{row.department}</TableCell>
+                  <TableCell align="center">{row.email}</TableCell>
+                  <TableCell align="right">
+                    <IconButton color="error" size="large" onClick={() => handleDeleteClick(row)}>
+                      <DeleteOutlined />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
+
+      <Dialog open={deleteDialogOpen} onClose={handleDeleteCancel}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete this instructor?
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDeleteConfirm} color="error" sx={{ color: 'rgba(255, 0, 0, 0.7)' }}>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
+}
+
+function createData(tracking_no, id, name, position, department, email) {
+  return { tracking_no, id, name, position, department, email };
 }

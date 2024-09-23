@@ -165,6 +165,21 @@ async function fetchInstructors() {
   return instructors;
 }
 
+async function deleteInstructorAcc(accountID) {
+  const db = firestore;
+  const accDocRef = doc(db, 'instructor', accountID); // Ensure the collection name is correct
+
+  try {
+    // Delete the document
+    await deleteDoc(accDocRef);
+    console.log(`Instructor with ID ${accountID} has been deleted`);
+  } catch (error) {
+    console.error('Error deleting instructor:', error);
+    throw new Error(`Failed to delete instructor with ID ${accountID}: ${error.message}`);
+  }
+}
+
+
 export default uploadTE;
 
 export { 
@@ -175,4 +190,5 @@ export {
   uploadImageAndGetUrl, 
   fetchAllBorrowers, 
   uploadInstructor,
-  fetchInstructors }; // Export the functions for use in other modules
+  fetchInstructors,
+  deleteInstructorAcc }; // Export the functions for use in other modules

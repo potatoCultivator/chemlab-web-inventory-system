@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 // material-ui
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 
 // project import
@@ -15,6 +14,10 @@ import AddItemDialog from './AddItemDialog';
 
 export default function ToolsAndEquipments() {
   const [refreshProcessTab, setRefreshProcessTab] = useState(false);
+
+  useEffect(() => {
+    document.title = "Tools and Equipments • ChemLab ";
+  }, []);
 
   const handleRefreshProcessTab = () => {
     console.log('Toggling refreshProcessTab state');

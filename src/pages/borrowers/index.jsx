@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 // material-ui
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
@@ -11,6 +11,9 @@ import BorrowerSlipTable from './BorrowerSlipTable';
 // ==============================|| SAMPLE PAGE ||============================== //
 
 export default function Borrowers() {
+  useEffect(() => {
+    document.title = "Borrowers • ChemLab ";
+  }, []);
 
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>

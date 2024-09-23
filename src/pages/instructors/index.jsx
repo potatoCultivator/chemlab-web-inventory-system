@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react';
 // material-ui
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/system/Unstable_Grid/Grid';
@@ -11,6 +12,10 @@ import InstructorTable from './InstructorTable';
 // ==============================|| SAMPLE PAGE ||============================== //
 
 export default function Instructors() {
+    useEffect(() => {
+      document.title = "Instructors • ChemLab ";
+    }, []);
+
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
       {/* row 1 */}
