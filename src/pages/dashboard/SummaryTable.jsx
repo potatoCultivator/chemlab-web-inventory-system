@@ -46,7 +46,7 @@ function stableSort(array, comparator) {
 
 // ==============================|| ORDER TABLE - HEADER ||============================== //
 
-function OrderTableHead({ order, orderBy }) {
+function ToolTableHead({ order, orderBy }) {
   return (
     <TableHead>
       <TableRow>
@@ -65,7 +65,7 @@ function OrderTableHead({ order, orderBy }) {
   );
 }
 
-function OrderStatus({ status }) {
+function ToolStatus({ status }) {
   let color;
   let title;
 
@@ -74,17 +74,17 @@ function OrderStatus({ status }) {
       color = 'warning';
       title = 'Pending';
       break;
-    case 'approved_admin':
+    case 'admin approved':
       color = 'success';
       title = 'Approved';
       break;
-    case 'declined':
+    case 'admin declined':
       color = 'error';
       title = 'Declined';
       break;
     default:
-      color = 'primary';
-      title = 'None';
+      color = 'return';
+      title = 'Returned';
   }
 
   return (
@@ -112,7 +112,11 @@ export default function SummaryTable() {
 
   // Ensure borrowers is defined and is an array before using map and reduce
   const approvedBorrowers = Array.isArray(borrowers) 
-    ? borrowers.filter(borrower => borrower.isApproved === 'approved' || borrower.isApproved === 'approved_admin') 
+    ? borrowers.filter(borrower => 
+        borrower.isApproved === 'approved' || 
+        borrower.isApproved === 'admin approved' || 
+        borrower.isApproved === 'returned'
+      ) 
     : [];
 
   // Flatten the array without using flatMap
@@ -133,7 +137,8 @@ export default function SummaryTable() {
       <TableContainer
         sx={{
           width: '100%',
-          overflowX: 'auto',
+          height: '457px', // Set a fixed height for the table
+          overflowY: 'auto', // Enable vertical scrolling
           position: 'relative',
           display: 'block',
           maxWidth: '100%',
@@ -141,7 +146,7 @@ export default function SummaryTable() {
         }}
       >
         <Table aria-labelledby="tableTitle">
-          <OrderTableHead order={order} orderBy={orderBy} />
+          <ToolTableHead order={order} orderBy={orderBy} />
           <TableBody>
             {flattenedBorrowers.length > 0 && stableSort(flattenedBorrowers, getComparator(order, orderBy)).map((row, index) => {
               const labelId = `enhanced-table-checkbox-${index}`;
@@ -157,7 +162,7 @@ export default function SummaryTable() {
                   <TableCell>{row.name}</TableCell>
                   <TableCell>{row.borrower}</TableCell>
                   <TableCell align="right">{row.current_quantity}{row.unit}</TableCell>
-                  <TableCell><OrderStatus status={row.isApproved} /></TableCell>
+                  <TableCell><ToolStatus status={row.isApproved} /></TableCell>
                   <TableCell align="right">{row.condition}</TableCell>
                 </TableRow>
               );
@@ -169,6 +174,6 @@ export default function SummaryTable() {
   );
 }
 
-OrderTableHead.propTypes = { order: PropTypes.any, orderBy: PropTypes.string };
+ToolTableHead.propTypes = { order: PropTypes.any, orderBy: PropTypes.string };
 
-OrderStatus.propTypes = { status: PropTypes.string };
+ToolStatus.propTypes = { status: PropTypes.string };
