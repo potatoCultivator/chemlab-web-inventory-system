@@ -9,6 +9,7 @@ const DashboardDefault = Loadable(lazy(() => import('pages/dashboard/index')));
 const ToolsAndEquipment = Loadable(lazy(() => import('pages/tools-equipments/index')));
 const Borrowers = Loadable(lazy(() => import('pages/borrowers/index')));
 const Instructors = Loadable(lazy(() => import('pages/instructors/index')));
+const History = Loadable(lazy(() => import('pages/history/index')));
 
 // render - sample page
 const SamplePage = Loadable(lazy(() => import('pages/extra-pages/sample-page')));
@@ -34,6 +35,10 @@ const MainRoutes = {
     {
       path: 'instructors',
       element: <Instructors />
+    },
+    {
+      path: 'history',
+      element: <History />
     },
     {
       path: 'dashboard',

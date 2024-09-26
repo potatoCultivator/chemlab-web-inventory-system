@@ -1,5 +1,5 @@
 // assets
-import { DashboardOutlined, ToolOutlined, ExperimentOutlined, UserOutlined, ReadOutlined } from '@ant-design/icons';
+import { DashboardOutlined, ToolOutlined, ExperimentOutlined, UserOutlined, ReadOutlined, HistoryOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
@@ -7,7 +7,8 @@ const icons = {
   ToolOutlined,
   ExperimentOutlined,
   UserOutlined,
-  ReadOutlined
+  ReadOutlined,
+  HistoryOutlined
 };
 
 // ==============================|| MENU ITEMS - DASHBOARD ||============================== //
@@ -47,6 +48,14 @@ const dashboard = {
       type: 'item',
       url: '/instructors',
       icon: icons.UserOutlined,
+      breadcrumbs: false
+    },
+    {
+      id: 'history',
+      title: 'History',
+      type: 'item',
+      url: '/history',
+      icon: icons.HistoryOutlined,
       breadcrumbs: false
     }
   ]

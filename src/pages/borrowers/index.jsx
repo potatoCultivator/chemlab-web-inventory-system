@@ -23,7 +23,7 @@ export default function Borrowers() {
       <Grid item xs={12} sx={{ mb: -2.25 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="h5">Borrowers</Typography>
-          <Button variant='outlined' color='primary'>History</Button>
+          <Button variant='outlined' color='primary'>Current Borrowers</Button>
         </Box>
       </Grid>
 
