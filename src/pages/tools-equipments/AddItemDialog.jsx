@@ -22,7 +22,9 @@ export default function AddItemDialog({ onDone }) {
     name: '', // string
     capacity: 0, // number
     unit: 'kg', // string
-    quantity: 0, // number
+    quantity: 0, // number,
+    good_quantity: 0, // number
+    damaged_quantity: 0, // number
     current_quantity: 0, // number
     category: 'glassware', // string
     condition: 'Good', // string
@@ -116,6 +118,7 @@ export default function AddItemDialog({ onDone }) {
                     const value = e.target.value;
                     setItem(prevItem => ({ ...prevItem, quantity: value }));
                     setItem(prevItem => ({ ...prevItem, current_quantity: value }));
+                    setItem(prevItem => ({ ...prevItem, good_quantity: value }));
                   }}
                   helperText="Please enter the capacity of the item"
                 />

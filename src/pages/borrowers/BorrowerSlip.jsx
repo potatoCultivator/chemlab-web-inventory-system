@@ -18,8 +18,12 @@ import {
   TableContainer, 
   TableHead, 
   TableRow,
-  Divider 
+  Divider,
+  IconButton 
 } from '@mui/material';
+
+import { EditOutlined } from '@ant-design/icons';
+
 
 // firestore
 import { updateBorrower } from 'pages/TE_Backend';
@@ -116,7 +120,14 @@ const BorrowerSlip = ({ borrower, status }) => {
                     <TableRow key={eqIndex}>
                       <TableCell>{equipment.name}</TableCell>
                       <TableCell align='center'>{`${equipment.capacity} ${equipment.unit}`}</TableCell>
-                      <TableCell align='center'>{equipment.current_quantity}</TableCell>
+                      <TableCell align='center'>{equipment.good_quantity}</TableCell>
+                      {status === 'pending return' && (
+                        <TableCell align="right">
+                          <IconButton color="primary" size="large">
+                            <EditOutlined />
+                          </IconButton>
+                        </TableCell>
+                      )}
                     </TableRow>
                   ))}
                 </TableBody>
@@ -125,12 +136,25 @@ const BorrowerSlip = ({ borrower, status }) => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} variant="text" sx={{ color: 'red', borderColor: 'red' }}>
-            Reject
-          </Button>
-          <Button onClick={handleApprove} variant="text" sx={{ color: 'green', borderColor: 'green' }}>
-            Approve
-          </Button>
+        {status !== 'pending return'? (
+          <>
+            <Button onClick={handleClose} variant="text" sx={{ color: 'red', borderColor: 'red' }}>
+              Cancel
+            </Button>
+            <Button onClick={handleApprove} variant="text" sx={{ color: 'green', borderColor: 'green' }}>
+              Approve
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button onClick={handleClose} variant="text" sx={{ color: 'red', borderColor: 'red' }}>
+              Reject
+            </Button>
+            <Button onClick={handleApprove} variant="text" sx={{ color: 'green', borderColor: 'green' }}>
+              Return Equipments
+            </Button>
+          </>
+        )}
         </DialogActions>
       </Dialog>
     </>

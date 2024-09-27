@@ -6,10 +6,12 @@ import { sendEmail } from './emailService'; // Import the email service
 function validateToolData(data) {
   return {
     name: typeof data.name === 'string' ? data.name : '',
-    capacity: !isNaN(Number(data.capacity)) ? Number(data.capacity) : 0, // Convert to number if possible
+    capacity: !isNaN(Number(data.capacity)) ? Number(data.capacity) : 0, 
     unit: typeof data.unit === 'string' ? data.unit : 'kg',
-    quantity: !isNaN(Number(data.quantity)) ? Number(data.quantity) : 0, // Convert to number if possible
-    current_quantity: !isNaN(Number(data.current_quantity)) ? Number(data.current_quantity) : 0, // Convert to number if possible
+    quantity: !isNaN(Number(data.quantity)) ? Number(data.quantity) : 0, 
+    good_quantity: !isNaN(Number(data.good_quantity)) ? Number(data.good_quantity) : 0, 
+    damage_quantity: !isNaN(Number(data.damage_quantity)) ? Number(data.damage_quantity) : 0, 
+    current_quantity: !isNaN(Number(data.current_quantity)) ? Number(data.current_quantity) : 0, 
     category: typeof data.category === 'string' ? data.category : 'unknown',
     condition: typeof data.condition === 'string' ? data.condition : 'unknown',
     image: typeof data.image === 'string' ? data.image : '',
