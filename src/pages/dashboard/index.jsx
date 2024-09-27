@@ -83,17 +83,34 @@ export default function DashboardDefault() {
     <>
       {/* Joyride Tour */}
       <Joyride
-        steps={steps}
-        run={run}
-        continuous
-        showProgress
-        showSkipButton
-        styles={{
-          options: {
-            zIndex: 10000,
-          },
-        }}
-      />
+  steps={steps}
+  run={run}
+  continuous
+  showProgress
+  showSkipButton
+  disableOverlay={false} // Enable overlay to focus attention on steps
+  styles={{
+    options: {
+      zIndex: 10000,
+      primaryColor: '#007bff', // Change the primary color of the tooltip
+      textColor: '#fff', // Change text color in the tooltip
+      beaconSize: 20, // Change the size of the beacon
+      arrowColor: '#007bff', // Change arrow color
+      backgroundColor: '#333', // Change tooltip background color
+      overlayColor: 'rgba(0, 0, 0, 0.7)', // Change overlay color
+      spotlightBorders: true, // Enable borders on the spotlight
+      borderRadius: 8, // Change tooltip border radius
+    },
+    tooltip: {
+      padding: '15px', // Adjust padding in the tooltip
+      fontSize: '16px', // Change font size
+    },
+    buttonClose: {
+      display: 'none', // Hide the close button if not needed
+    },
+  }}
+/>
+
       
       <Grid container rowSpacing={4.5} columnSpacing={2.75}>
         {/* row 1 */}
