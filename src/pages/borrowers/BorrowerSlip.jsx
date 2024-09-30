@@ -136,25 +136,27 @@ const BorrowerSlip = ({ borrower, status }) => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-        {status !== 'pending return'? (
-          <>
-            <Button onClick={handleClose} variant="text" sx={{ color: 'red', borderColor: 'red' }}>
-              Cancel
-            </Button>
-            <Button onClick={handleApprove} variant="text" sx={{ color: 'green', borderColor: 'green' }}>
-              Approve
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button onClick={handleClose} variant="text" sx={{ color: 'red', borderColor: 'red' }}>
-              Reject
-            </Button>
-            <Button onClick={handleApprove} variant="text" sx={{ color: 'green', borderColor: 'green' }}>
-              Return Equipments
-            </Button>
-          </>
-        )}
+        {status === 'admin approved' ? null : (
+            status !== 'pending return' ? (
+              <>
+                <Button onClick={handleClose} variant="text" sx={{ color: 'red', borderColor: 'red' }}>
+                  Cancel
+                </Button>
+                <Button onClick={handleApprove} variant="text" sx={{ color: 'green', borderColor: 'green' }}>
+                  Approve
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button onClick={handleClose} variant="text" sx={{ color: 'red', borderColor: 'red' }}>
+                  Reject
+                </Button>
+                <Button onClick={handleApprove} variant="text" sx={{ color: 'green', borderColor: 'green' }}>
+                  Return Equipments
+                </Button>
+              </>
+            )
+          )}
         </DialogActions>
       </Dialog>
     </>

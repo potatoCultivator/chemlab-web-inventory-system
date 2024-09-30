@@ -1,21 +1,35 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 // material-ui
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 // project import
 import MainCard from 'components/MainCard';
 import BorrowerSlipTable from './BorrowerSlipTable';
-// import Button from 'themes/overrides/Button';
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
 export default function Borrowers() {
+  const [open, setOpen] = useState(false);
+
   useEffect(() => {
     document.title = "Borrowers • ChemLab ";
   }, []);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
@@ -23,7 +37,9 @@ export default function Borrowers() {
       <Grid item xs={12} sx={{ mb: -2.25 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="h5">Borrowers</Typography>
-          <Button variant='outlined' color='primary'>Current Borrowers</Button>
+          <Button variant='outlined' color='primary' onClick={handleClickOpen}>
+            Current Borrowers
+          </Button>
         </Box>
       </Grid>
 
@@ -37,8 +53,22 @@ export default function Borrowers() {
         <MainCard title='To Return'>
           <BorrowerSlipTable status={'pending return'}/>
         </MainCard>
-      </Grid>
-      
+      </Grid> 
+
+      {/* Dialog */}
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Current Borrowers</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            <BorrowerSlipTable status={'admin approved'}/>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Grid>
   );
 }
