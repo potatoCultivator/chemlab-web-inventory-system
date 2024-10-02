@@ -1,5 +1,5 @@
 import { firestore, storage } from '../firebase'; // Adjust the path as necessary
-import { collection, addDoc, writeBatch, doc, getDocs, updateDoc, deleteDoc, onSnapshot } from "firebase/firestore"; 
+import { collection, addDoc, writeBatch, doc, getDocs, updateDoc, deleteDoc, onSnapshot, getDoc } from "firebase/firestore"; 
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { sendEmail } from './emailService'; // Import the email service
 
@@ -15,70 +15,107 @@ function validateToolData(data) {
     category: typeof data.category === 'string' ? data.category : 'unknown',
     condition: typeof data.condition === 'string' ? data.condition : 'unknown',
     image: typeof data.image === 'string' ? data.image : '',
-      date: data.dateAdded instanceof Date ? data.dateAdded : new Date()
+    date: data.dateAdded instanceof Date ? data.dateAdded : new Date()
   };
 }
 
 async function uploadTE(toolData) {
-    const db = firestore;
-    const batch = writeBatch(db);
+  const db = firestore;
+  const batch = writeBatch(db);
 
-    // Reference to the "tools" collection
-    const toolsCollection = collection(db, 'tools');
+  // Reference to the "tools" collection
+  const toolsCollection = collection(db, 'tools');
 
-    // Create a new document reference
-    const newToolDoc = doc(toolsCollection);
+  // Create a new document reference
+  const newToolDoc = doc(toolsCollection);
 
-    // Validate and sanitize tool data
-    const validatedData = validateToolData(toolData);
+  // Validate and sanitize tool data
+  const validatedData = validateToolData(toolData);
 
-    // Add the tool data to the batch
-    batch.set(newToolDoc, validatedData);
+  // Add the tool data to the batch
+  batch.set(newToolDoc, validatedData);
 
-    // Commit the batch
-    await batch.commit();
+  // Commit the batch
+  await batch.commit();
 
-    console.log('Tool added to the database');
+  console.log('Tool added to the database');
 }
 
 async function fetchAllTools() {
-    const db = firestore;
-    const querySnapshot = await getDocs(collection(db, 'tools'));
-    
-    const rows = querySnapshot.docs.map(doc => ({
-      id: doc.id, // Include the document ID
-      ...doc.data() // Spread the document data
-    }));
+  const db = firestore;
+  const querySnapshot = await getDocs(collection(db, 'tools'));
   
-    // console.log(rows);
-  
-    return rows;
+  const rows = querySnapshot.docs.map(doc => ({
+    id: doc.id, // Include the document ID
+    ...doc.data() // Spread the document data
+  }));
+
+  return rows;
+}
+
+async function countRows(setCount) {
+  const db = firestore;
+  const toolsCollection = collection(db, "tools");
+
+  // Initial fetch to get the count
+  const querySnapshot = await getDocs(toolsCollection);
+  setCount(querySnapshot.docs.length); // Set the initial count
+
+  // Set up a listener for real-time updates
+  onSnapshot(toolsCollection, (snapshot) => {
+    setCount(snapshot.docs.length); // Update the count when the collection changes
+  });
+}
+
+async function updateTool(toolId, updatedData) {
+  const db = firestore;
+  const toolDocRef = doc(db, 'tools', toolId);
+
+  validateToolData(updatedData);
+
+  // Update the document with the new data
+  await updateDoc(toolDocRef, updatedData);
+
+  console.log(`Tool with ID ${toolId} has been updated`);
+}
+
+async function fetchToolQuantities(toolId) {
+  const db = firestore;
+  const toolDocRef = doc(db, 'tools', toolId);
+
+  try {
+    const toolDoc = await getDoc(toolDocRef);
+    if (toolDoc.exists()) {
+      const toolData = toolDoc.data();
+      const quantities = {
+        current_quantity: toolData.current_quantity,
+        good_quantity: toolData.good_quantity
+      };
+      console.log(`Tool Quantities: ${JSON.stringify(quantities)}`);
+      return quantities;
+    } else {
+      console.log('No such document!');
+      return null;
+    }
+  } catch (error) {
+    console.error('Error fetching tool quantities:', error);
+    throw error;
   }
+}
 
-  async function countRows(setCount) {
-    const db = firestore;
-    const toolsCollection = collection(db, "tools");
-  
-    // Initial fetch to get the count
-    const querySnapshot = await getDocs(toolsCollection);
-    setCount(querySnapshot.docs.length); // Set the initial count
-  
-    // Set up a listener for real-time updates
-    onSnapshot(toolsCollection, (snapshot) => {
-      setCount(snapshot.docs.length); // Update the count when the collection changes
-    });
+async function updateToolQuantity(toolId, newQuantity, goodQuantity) {
+  const db = firestore;
+  const toolDocRef = doc(db, 'tools', toolId);
+
+  try {
+    // Update the document with the new quantity
+    await updateDoc(toolDocRef, { current_quantity: newQuantity, good_quantity: goodQuantity });
+
+    console.log(`Tool with ID ${toolId} has been updated with new quantity: ${newQuantity}`);
+  } catch (error) {
+    console.error('Error updating tool quantity:', error);
+    throw error;
   }
-
-  async function updateTool(toolId, updatedData) {
-    const db = firestore;
-    const toolDocRef = doc(db, 'tools', toolId);
-
-    validateToolData(updatedData);
-
-    // Update the document with the new data
-    await updateDoc(toolDocRef, updatedData);
-
-    console.log(`Tool with ID ${toolId} has been updated`);
 }
 
 async function deleteTool(toolId) {
@@ -87,12 +124,9 @@ async function deleteTool(toolId) {
 
   // Delete the document
   await deleteDoc(toolDocRef);
-
-  // console.log(`Tool with ID ${toolId} has been deleted`);
 }
 
-// Function to upload image and get its URL
- async function uploadImageAndGetUrl(file) {
+async function uploadImageAndGetUrl(file) {
   const storageRef = ref(storage, `images/${file.name}`);
   await uploadBytes(storageRef, file);
   const fileUrl = await getDownloadURL(storageRef);
@@ -116,8 +150,8 @@ function fetchAllBorrowers(callback) {
 
   return unsubscribe;
 }
+
 async function uploadInstructor(instructorData) {
-  // console.log('Uploading instructor:', instructorData); // Log the data being uploaded
   const db = firestore;
   const batch = writeBatch(db);
 
@@ -134,7 +168,6 @@ async function uploadInstructor(instructorData) {
   await batch.commit();
 
   // Send email to the instructor
-  // const emailSubject = 'Your Account Information';
   const emailText = `Your account has been created. Your details are as follows:\n\nEmail: ${instructorData.email}\nPassword: ${instructorData.password}`;
   const toName = `${instructorData.name}`;
   const fromName = 'Your Organization Name'; // Replace with your organization name
@@ -177,10 +210,23 @@ async function updateBorrower(borrowerId, updatedData) {
   const db = firestore;
   const borrowerDocRef = doc(db, 'borrower', borrowerId);
 
-  // validateBorrowerData(updatedData);
-
   // Update the document with the new data
   await updateDoc(borrowerDocRef, updatedData);
+
+  // if (updatedData.isApproved === "admin approved") {
+  //   if (Array.isArray(updatedData.equipmentDetails)) {
+  //     for (const equipment of updatedData.equipmentDetails) {
+  //       const { id, good_quantity } = equipment;
+  //       console.log(`Equipment ID: ${id}, Good Quantity: ${good_quantity}`);
+
+  //       // Fetch the current quantity of the tool
+  //       const currentQuantity = await fetchToolQuantity(id);
+  //       await updateToolQuantity(id, currentQuantity - good_quantity);
+  //     }
+  //   } else {
+  //     console.error('Error: equipmentDetails is not an array or is undefined');
+  //   }
+  // }
 
   console.log(`Borrower with ID ${borrowerId} has been updated`);
 }
@@ -190,11 +236,14 @@ export default uploadTE;
 export { 
   fetchAllTools, 
   countRows, 
-  updateTool, 
+  updateTool,
+  fetchToolQuantities,
+  updateToolQuantity,
   deleteTool, 
   uploadImageAndGetUrl, 
   fetchAllBorrowers, 
   uploadInstructor,
   fetchInstructors,
   deleteInstructorAcc,
-  updateBorrower }; // Export the functions for use in other modules
+  updateBorrower 
+}; // Export the functions for use in other modules

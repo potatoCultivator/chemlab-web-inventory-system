@@ -24,9 +24,8 @@ import {
 
 import { EditOutlined } from '@ant-design/icons';
 
-
 // firestore
-import { updateBorrower } from 'pages/TE_Backend';
+import { updateBorrower, fetchToolQuantities, updateToolQuantity } from 'pages/TE_Backend';
 
 const BorrowerSlip = ({ borrower, status }) => {
   const [open, setOpen] = useState(false);
@@ -41,7 +40,24 @@ const BorrowerSlip = ({ borrower, status }) => {
 
   const handleApprove = async () => {
     try {
-      await updateBorrower(borrower.id, {isApproved: status == "pending return"? "returned" : "admin approved"});
+      const updatedData = { isApproved: status === "pending return" ? "returned" : "admin approved" };
+
+      if (updatedData.isApproved === "admin approved") {
+        if (Array.isArray(borrower.equipmentDetails)) {
+          for (const equipment of borrower.equipmentDetails) {
+            const { id, good_quantity } = equipment;
+            console.log(`Equipment ID: ${id}, Good Quantity: ${good_quantity}`);
+
+            // Fetch the current quantity of the tool
+            const currentQuantity = await fetchToolQuantities(id);
+            await updateToolQuantity(id, currentQuantity.current_quantity - good_quantity, currentQuantity.good_quantity - good_quantity);
+          }
+        } else {
+          console.error('Error: equipmentDetails is not an array or is undefined');
+        }
+      }
+
+      await updateBorrower(borrower.id, updatedData);
       console.log(`Borrower with ID ${borrower.id} has been approved`);
       handleClose();
     } catch (error) {
