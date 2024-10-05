@@ -24,7 +24,7 @@ export default function AddItemDialog({ onDone }) {
     unit: 'kg', // string
     quantity: 0, // number,
     good_quantity: 0, // number
-    damaged_quantity: 0, // number
+    damage_quantity: 0, // number
     current_quantity: 0, // number
     category: 'glassware', // string
     condition: 'Good', // string

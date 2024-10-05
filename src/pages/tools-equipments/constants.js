@@ -53,23 +53,35 @@ const headCells = [
       label: 'Capacity'
     },
     {
+      id: 'good quantity',
+      align: 'center',
+      disablePadding: false,
+      label: 'Good Quantity'
+    },
+    {
+      id: 'damaged quantity',
+      align: 'center',
+      disablePadding: false,
+      label: 'Damage Quantity'
+    },
+    {
       id: 'quantity',
       align: 'center',
       disablePadding: false,
       label: 'Quantity'
     },
     {
-        id: 'category',
-        align: 'center',
-        disablePadding: false,
-        label: 'Category'
-      },
-      {
-        id: 'action',
-        align: 'right',
-        disablePadding: false,
-        label: 'Edit / Delete'
-      }
+      id: 'category',
+      align: 'center',
+      disablePadding: false,
+      label: 'Category'
+    },
+    {
+      id: 'action',
+      align: 'right',
+      disablePadding: false,
+      label: 'Edit / Delete'
+    }
   ];
 
   // use for BorrowTable and ReturnTable

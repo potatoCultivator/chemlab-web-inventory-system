@@ -179,6 +179,8 @@ export default function TE_Table({ refresh, catValue }) {
                   >
                     <TableCell align='left'>{row.name}</TableCell>
                     <TableCell align="center">{row.capacity} {row.unit}</TableCell>
+                    <TableCell align='center'>{row.good_quantity}/{row.quantity}</TableCell>
+                    <TableCell align='center'>{row.damage_quantity}/{row.quantity}</TableCell>
                     <TableCell align='center'>{row.current_quantity}/{row.quantity}</TableCell>
                     <TableCell align="center">{row.category}</TableCell>
                     <TableCell align="right">
