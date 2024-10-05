@@ -213,21 +213,6 @@ async function updateBorrower(borrowerId, updatedData) {
   // Update the document with the new data
   await updateDoc(borrowerDocRef, updatedData);
 
-  // if (updatedData.isApproved === "admin approved") {
-  //   if (Array.isArray(updatedData.equipmentDetails)) {
-  //     for (const equipment of updatedData.equipmentDetails) {
-  //       const { id, good_quantity } = equipment;
-  //       console.log(`Equipment ID: ${id}, Good Quantity: ${good_quantity}`);
-
-  //       // Fetch the current quantity of the tool
-  //       const currentQuantity = await fetchToolQuantity(id);
-  //       await updateToolQuantity(id, currentQuantity - good_quantity);
-  //     }
-  //   } else {
-  //     console.error('Error: equipmentDetails is not an array or is undefined');
-  //   }
-  // }
-
   console.log(`Borrower with ID ${borrowerId} has been updated`);
 }
 

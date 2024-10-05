@@ -19,8 +19,12 @@ import {
   TableHead, 
   TableRow,
   Divider,
-  IconButton 
+  IconButton,
+  Backdrop,
+  CircularProgress,
+  Grid
 } from '@mui/material';
+import Slide from '@mui/material/Slide';
 
 import { EditOutlined } from '@ant-design/icons';
 
@@ -29,6 +33,10 @@ import { updateBorrower, fetchToolQuantities, updateToolQuantity } from 'pages/T
 
 const BorrowerSlip = ({ borrower, status }) => {
   const [open, setOpen] = useState(false);
+  const [isApproving, setIsApproving] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isEmpty, setIsEmpty] = useState(false);
+  // const [openDialog, setOpenDialog] = useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -38,30 +46,60 @@ const BorrowerSlip = ({ borrower, status }) => {
     setOpen(false);
   };
 
+  const handleCloseDialog = () => {
+    setIsLoading(false)
+  }
+
   const handleApprove = async () => {
+    setIsApproving(true);
+    handleClose();
+    setIsLoading(true);
+    setIsEmpty(false);
+  
     try {
       const updatedData = { isApproved: status === "pending return" ? "returned" : "admin approved" };
-
+  
       if (updatedData.isApproved === "admin approved") {
         if (Array.isArray(borrower.equipmentDetails)) {
+          // First, check all tools for their quantities
           for (const equipment of borrower.equipmentDetails) {
             const { id, good_quantity } = equipment;
-            console.log(`Equipment ID: ${id}, Good Quantity: ${good_quantity}`);
-
+            console.log(`Checking Equipment ID: ${id}, Good Quantity: ${good_quantity}`);
+  
             // Fetch the current quantity of the tool
-            const currentQuantity = await fetchToolQuantities(id);
-            await updateToolQuantity(id, currentQuantity.current_quantity - good_quantity, currentQuantity.good_quantity - good_quantity);
+            const quantities = await fetchToolQuantities(id);
+  
+            if (quantities.good_quantity < 1) {
+              setIsEmpty(true);
+              console.error(`Error: Equipment ID ${id} cannot be borrowed as its good quantity is less than 1`);
+              setIsApproving(false);
+              // setIsLoading(false);
+              return; // Exit the function to prevent approval
+            }
+          }
+  
+          // If all tools are available, update their quantities
+          for (const equipment of borrower.equipmentDetails) {
+            const { id, good_quantity } = equipment;
+            const quantities = await fetchToolQuantities(id);
+            await updateToolQuantity(id, quantities.current_quantity - good_quantity, quantities.good_quantity - good_quantity);
           }
         } else {
           console.error('Error: equipmentDetails is not an array or is undefined');
+          setIsApproving(false);
+          setIsLoading(false);
+          return; // Exit the function to prevent approval
         }
       }
-
+  
       await updateBorrower(borrower.id, updatedData);
       console.log(`Borrower with ID ${borrower.id} has been approved`);
       handleClose();
     } catch (error) {
       console.error('Error approving borrower:', error);
+    } finally {
+      setIsApproving(false);
+      // setIsLoading(false);
     }
   };
 
@@ -152,13 +190,13 @@ const BorrowerSlip = ({ borrower, status }) => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-        {status === 'admin approved' ? null : (
+          {status === 'admin approved' ? null : (
             status !== 'pending return' ? (
               <>
                 <Button onClick={handleClose} variant="text" sx={{ color: 'red', borderColor: 'red' }}>
                   Cancel
                 </Button>
-                <Button onClick={handleApprove} variant="text" sx={{ color: 'green', borderColor: 'green' }}>
+                <Button onClick={handleApprove} variant="text" sx={{ color: 'green', borderColor: 'green' }} disabled={isApproving}>
                   Approve
                 </Button>
               </>
@@ -167,12 +205,40 @@ const BorrowerSlip = ({ borrower, status }) => {
                 <Button onClick={handleClose} variant="text" sx={{ color: 'red', borderColor: 'red' }}>
                   Reject
                 </Button>
-                <Button onClick={handleApprove} variant="text" sx={{ color: 'green', borderColor: 'green' }}>
+                <Button onClick={handleApprove} variant="text" sx={{ color: 'green', borderColor: 'green' }} disabled={isApproving}>
                   Return Equipments
                 </Button>
               </>
             )
           )}
+        </DialogActions>
+      </Dialog>
+
+      {/* <Button variant="outlined" onClick={handleClickOpen}>
+        Slide in alert dialog
+      </Button> */}
+      <Dialog
+        open={isLoading}
+        // TransitionComponent={Transition}
+        keepMounted
+        onClose={isLoading}
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <DialogTitle>{"Confirming Borrower Request"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-slide-description">
+          {isEmpty ? (
+              <p>Some Equipment is out of stock</p>
+            ) : (
+              <Grid container justifyContent="center" alignItems="center" style={{ height: '100px' }}>
+                <CircularProgress />
+                <p>Please wait...</p>
+              </Grid>
+            )}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          {isEmpty ?  <Button onClick={handleCloseDialog}>Close</Button> : null}
         </DialogActions>
       </Dialog>
     </>
