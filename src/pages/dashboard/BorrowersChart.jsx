@@ -17,8 +17,34 @@ import MainCard from 'components/MainCard';
 // third-party
 import ReactApexChart from 'react-apexcharts';
 
+function getWeeksInCurrentMonth() {
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+  let weeks = [];
+  let currentWeek = [];
+
+  for (let day = startOfMonth; day <= endOfMonth; day.setDate(day.getDate() + 1)) {
+    currentWeek.push(new Date(day));
+    if (day.getDay() === 6 || day.getDate() === endOfMonth.getDate()) {
+      weeks.push(currentWeek);
+      currentWeek = [];
+    }
+  }
+
+  return weeks.length;
+}
+
+// console.log(getWeeksInCurrentMonth()); 
+const month = [];
+
+for (let i = 0; i < getWeeksInCurrentMonth(); i++) {
+  console.log(`Week ${i + 1}`);
+  month.push(`Week ${i + 1}`);
+}
+
 const week = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-const month = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
 
 // chart options
 const columnChartOptions = {

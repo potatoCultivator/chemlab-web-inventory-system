@@ -11,10 +11,34 @@ import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
 import SummaryTable from './SummaryTable';
 import BorrowersReport from './BorrowersReport';
 
+// Firebase
+import { fetchAdminApprovedBorrowersCount, addAdminApprovedBorrowersListener } from '../TE_Backend';
+
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
 export default function DashboardDefault() {
   const [run, setRun] = useState(true);
+  const [borrowersCount, setBorrowersCount] = useState(0);
+
+  useEffect(() => {
+    const getCount = async () => {
+      try {
+        const count = await fetchAdminApprovedBorrowersCount();
+        console.log(count);
+        setBorrowersCount(count);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getCount();
+
+    const unsubscribe = addAdminApprovedBorrowersListener((count) => {
+      setBorrowersCount(count);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
 
   const steps = [
     {
@@ -106,7 +130,7 @@ export default function DashboardDefault() {
         <Grid item xs={12} sm={6} md={4} lg={3} className="total-borrowed">
           <AnalyticEcommerce 
             title="Total Borrowed Tools/Equipments" 
-            count="30" 
+            count={borrowersCount}
             className="total-borrowed" 
           />
         </Grid>

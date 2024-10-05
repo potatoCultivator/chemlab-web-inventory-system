@@ -1,5 +1,5 @@
 import { firestore, storage } from '../firebase'; // Adjust the path as necessary
-import { collection, addDoc, writeBatch, doc, getDocs, updateDoc, deleteDoc, onSnapshot, getDoc } from "firebase/firestore"; 
+import { collection, query, where, addDoc, writeBatch, doc, getDocs, updateDoc, deleteDoc, onSnapshot, getDoc } from "firebase/firestore"; 
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { sendEmail } from './emailService'; // Import the email service
 
@@ -180,6 +180,47 @@ async function uploadInstructor(instructorData) {
   }
 }
 
+async function fetchAdminApprovedBorrowersCount() {
+  const db = firestore;
+  const borrowerCollection = collection(db, 'borrower');
+
+  // Create a query to filter borrowers with admin approved status
+  const adminApprovedQuery = query(borrowerCollection, where('isApproved', '==', 'admin approved'));
+
+  try {
+    // Fetch the documents using the query
+    const querySnapshot = await getDocs(adminApprovedQuery);
+
+    // Count the number of documents
+    const count = querySnapshot.size;
+
+    console.log(`Number of admin approved borrowers: ${count}`);
+    return count;
+  } catch (error) {
+    console.error('Error fetching admin approved borrowers count:', error);
+    throw error;
+  }
+}
+
+function addAdminApprovedBorrowersListener(callback) {
+  const db = firestore;
+  const borrowerCollection = collection(db, 'borrower');
+
+  // Create a query to filter borrowers with admin approved status
+  const adminApprovedQuery = query(borrowerCollection, where('isApproved', '==', 'admin approved'));
+
+  // Listen for real-time updates
+  const unsubscribe = onSnapshot(adminApprovedQuery, (snapshot) => {
+    const count = snapshot.size;
+    console.log(`Real-time update - Number of admin approved borrowers: ${count}`);
+    callback(count);
+  }, (error) => {
+    console.error('Error listening to admin approved borrowers:', error);
+  });
+
+  return unsubscribe;
+}
+
 const fetchInstructors = (callback, errorCallback) => {
   const instructorsCollection = collection(firestore, 'instructor');
   return onSnapshot(instructorsCollection, (snapshot) => {
@@ -230,5 +271,7 @@ export {
   uploadInstructor,
   fetchInstructors,
   deleteInstructorAcc,
-  updateBorrower 
+  updateBorrower,
+  fetchAdminApprovedBorrowersCount,
+  addAdminApprovedBorrowersListener
 }; // Export the functions for use in other modules
