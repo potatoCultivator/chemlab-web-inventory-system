@@ -143,8 +143,8 @@ export default function DashboardDefault() {
         </Grid>
         <Grid item xs={12} sm={6} md={4} lg={3} className="total-good-condition">
           <AnalyticEcommerce 
-            title="Total Good Condition Tools/Equipments" 
-            count="300" 
+            title="Current Borrowers" 
+            count={borrowersCount}
             className="total-good-condition" 
           />
         </Grid>
