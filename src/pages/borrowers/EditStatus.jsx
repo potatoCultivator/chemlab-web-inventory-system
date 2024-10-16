@@ -15,20 +15,6 @@ import { EditOutlined } from '@ant-design/icons';
 export default function EditStatus() {
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false); // Add loading state
-  const [image, setImage] = React.useState(null);
-  const [item, setItem] = React.useState({
-    name: '', // string
-    capacity: 0, // number
-    unit: 'kg', // string
-    quantity: 0, // number,
-    good_quantity: 0, // number
-    damage_quantity: 0, // number
-    current_quantity: 0, // number
-    category: 'glassware', // string
-    condition: 'Good', // string
-    image: '', // string
-    date: new Date()
-  });
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -74,7 +60,7 @@ export default function EditStatus() {
                   fullWidth
                   label="Good Quantity"
                   variant="outlined"
-                  value={item.name}
+                //   value={item.name}
                   type='number'
                   onChange={(e) => {setItem(prevItem => ({ ...prevItem, name: e.target.value }))}}
                 />
@@ -85,13 +71,7 @@ export default function EditStatus() {
                   label="Damaged Quantity"
                   variant="outlined"
                   type='number'
-                  value={item.quantity}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setItem(prevItem => ({ ...prevItem, quantity: value }));
-                    setItem(prevItem => ({ ...prevItem, current_quantity: value }));
-                    setItem(prevItem => ({ ...prevItem, good_quantity: value }));
-                  }}
+                //   value={item.quantity}
                 />
               </Grid>
             </Grid>
