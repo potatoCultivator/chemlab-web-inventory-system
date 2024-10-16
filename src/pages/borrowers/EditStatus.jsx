@@ -39,12 +39,6 @@ export default function EditStatus() {
     setLoading(false); // Reset loading state
   };
 
-  const handleImageChange = (event) => {
-    if (event.target.files && event.target.files[0]) {
-      setImage(event.target.files[0]);
-    }
-  };
-
   return (
     <React.Fragment>
     <IconButton color="primary" size="large" onClick={handleClickOpen}>
@@ -78,16 +72,17 @@ export default function EditStatus() {
               <Grid item xs={6}>
                 <TextField
                   fullWidth
-                  label="Name"
+                  label="Good Quantity"
                   variant="outlined"
                   value={item.name}
+                  type='number'
                   onChange={(e) => {setItem(prevItem => ({ ...prevItem, name: e.target.value }))}}
                 />
               </Grid>
               <Grid item xs={6}>
                 <TextField
                   fullWidth
-                  label="Quantity"
+                  label="Damaged Quantity"
                   variant="outlined"
                   type='number'
                   value={item.quantity}
