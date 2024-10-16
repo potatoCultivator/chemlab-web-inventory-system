@@ -7,18 +7,24 @@ import Joyride from 'react-joyride';
 
 // project import
 import MainCard from 'components/MainCard';
-import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
+import ToolAnalytics from 'components/cards/statistics/ToolAnalytics';
 import SummaryTable from './SummaryTable';
 import BorrowersReport from './BorrowersReport';
 
 // Firebase
-import { fetchAdminApprovedBorrowersCount, addAdminApprovedBorrowersListener } from '../TE_Backend';
+import { 
+        fetchAdminApprovedBorrowersCount, 
+        addAdminApprovedBorrowersListener,
+        fetchBorrowerEquipmentDetails,
+        fetchBorrowerEquipmentDetails_Returned } from '../TE_Backend';
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
 export default function DashboardDefault() {
   const [run, setRun] = useState(true);
   const [borrowersCount, setBorrowersCount] = useState(0);
+  const [ recentBorrowed, setRecentBorrowed ] = useState([]);
+  const [ returnedEquipment, setReturnedEquipment ] = useState([]);
 
   useEffect(() => {
     const getCount = async () => {
@@ -39,6 +45,34 @@ export default function DashboardDefault() {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    const getEquipmentDetails = async () => {
+      try {
+        const details = await fetchBorrowerEquipmentDetails();
+        setRecentBorrowed(details);
+      } catch (error) {
+        console.error('Error fetching equipment details:', error);
+        // setError(error);
+      } 
+    };
+    getEquipmentDetails();
+  }, []);
+
+  useEffect(() => {
+    const getEquipmentDetails = async () => {
+      try {
+        const details = await fetchBorrowerEquipmentDetails_Returned();
+        setReturnedEquipment(details);
+      } catch (error) {
+        console.error('Error fetching equipment details:', error);
+        // setError(error);
+      } 
+    }
+    getEquipmentDetails();
+  }, []);
+
+  console.log("record count:" + recentBorrowed.length);
+  console.log(recentBorrowed);
 
   const steps = [
     {
@@ -128,33 +162,55 @@ export default function DashboardDefault() {
         
         {/* Statistics Cards */}
         <Grid item xs={12} sm={6} md={4} lg={3} className="total-borrowed">
-          <AnalyticEcommerce 
+          <ToolAnalytics 
             title="Total Borrowed Tools/Equipments" 
-            count={borrowersCount}
-            className="total-borrowed" 
+            count={recentBorrowed.length}
+            className="total-borrowed"
+            percentage={59.3} 
           />
         </Grid>
         <Grid item xs={12} sm={6} md={4} lg={3} className="total-returned">
-          <AnalyticEcommerce 
+          <ToolAnalytics 
             title="Total Returned Tools/Equipments" 
-            count="49" 
-            className="total-returned" 
+            count={returnedEquipment.length}
+            className="total-returned"
+            percentage={59.3} 
           />
         </Grid>
         <Grid item xs={12} sm={6} md={4} lg={3} className="total-good-condition">
-          <AnalyticEcommerce 
+          <ToolAnalytics 
             title="Current Borrowers" 
             count={borrowersCount}
-            className="total-good-condition" 
+            className="total-good-condition"
+            percentage={59.3} 
           />
         </Grid>
         <Grid item xs={12} sm={6} md={4} lg={3} className="total-bad-condition" >
-          <AnalyticEcommerce 
-            title="Total Bad Condition Tools/Equipments" 
-            count="4" 
-            className="total-bad-condition" 
+          <ToolAnalytics 
+            title="Total Recent Borrowed Equipment" 
+            count={recentBorrowed.length} 
+            className="total-bad-condition"
+            percentage={59.3} 
           />
         </Grid>
+
+        {/* <Grid item xs={12} sx={{ mb: -2.25 }}>
+        <Typography variant="h5">Dashboard</Typography>
+      </Grid>
+      <Grid item xs={12} sm={6} md={4} lg={3}>
+        <ToolAnalytics title="Total Page Views" count="4,42,236" percentage={59.3} extra="35,000" />
+      </Grid>
+      <Grid item xs={12} sm={6} md={4} lg={3}>
+        <ToolAnalytics title="Total Users" count="78,250" percentage={70.5} extra="8,900" />
+      </Grid>
+      <Grid item xs={12} sm={6} md={4} lg={3}>
+        <ToolAnalytics title="Total Order" count="18,800" percentage={27.4} isLoss color="warning" extra="1,943" />
+      </Grid>
+      <Grid item xs={12} sm={6} md={4} lg={3}>
+        <ToolAnalytics title="Total Sales" count="$35,078" percentage={27.4} isLoss color="warning" extra="$20,395" />
+      </Grid> */}
+
+      <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
 
         {/* row 2 */}
         <Grid item xs={12} md={6} lg={6} className="recent-borrowed">

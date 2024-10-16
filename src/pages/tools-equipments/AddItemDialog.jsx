@@ -8,8 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Grid from '@mui/material/Grid';
 import CircularProgress from '@mui/material/CircularProgress'; // Import CircularProgress
 import { Box } from '@mui/system';
-import { UploadOutlined } from '@ant-design/icons'; 
-import { CameraOutlined, DeleteOutlined } from '@ant-design/icons';
+import { CameraOutlined } from '@ant-design/icons';
 
 // firebase import
 import uploadTE, { uploadImageAndGetUrl } from '../TE_Backend.jsx';

@@ -28,6 +28,8 @@ import Slide from '@mui/material/Slide';
 
 import { EditOutlined } from '@ant-design/icons';
 
+import EditStatus from './EditStatus';
+
 // firestore
 import { updateBorrower, fetchToolQuantities, updateToolQuantity } from 'pages/TE_Backend';
 
@@ -36,7 +38,8 @@ const BorrowerSlip = ({ borrower, status }) => {
   const [isApproving, setIsApproving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isEmpty, setIsEmpty] = useState(false);
-  // const [openDialog, setOpenDialog] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false); // State for edit dialog
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false); // State for reject confirmation dialog
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -47,8 +50,8 @@ const BorrowerSlip = ({ borrower, status }) => {
   };
 
   const handleCloseDialog = () => {
-    setIsLoading(false)
-  }
+    setIsLoading(false);
+  };
 
   const handleApprove = async () => {
     setIsApproving(true);
@@ -101,6 +104,29 @@ const BorrowerSlip = ({ borrower, status }) => {
       setIsApproving(false);
       // setIsLoading(false);
     }
+  };
+
+  const handleEditClick = () => {
+    setEditDialogOpen(true);
+  };
+
+  const handleEditDialogClose = () => {
+    setEditDialogOpen(false);
+  };
+
+  const handleRejectClick = () => {
+    setRejectDialogOpen(true);
+  };
+
+  const handleRejectDialogClose = () => {
+    setRejectDialogOpen(false);
+  };
+
+  const handleConfirmReject = () => {
+    // Add your reject logic here
+    console.log('Borrower request rejected');
+    setRejectDialogOpen(false);
+    setOpen(false);
   };
 
   return (
@@ -177,9 +203,7 @@ const BorrowerSlip = ({ borrower, status }) => {
                       <TableCell align='center'>{equipment.good_quantity}</TableCell>
                       {status === 'pending return' && (
                         <TableCell align="right">
-                          <IconButton color="primary" size="large">
-                            <EditOutlined />
-                          </IconButton>
+                            <EditStatus/>
                         </TableCell>
                       )}
                     </TableRow>
@@ -202,7 +226,7 @@ const BorrowerSlip = ({ borrower, status }) => {
               </>
             ) : (
               <>
-                <Button onClick={handleClose} variant="text" sx={{ color: 'red', borderColor: 'red' }}>
+                <Button onClick={handleRejectClick} variant="text" sx={{ color: 'red', borderColor: 'red' }}>
                   Reject
                 </Button>
                 <Button onClick={handleApprove} variant="text" sx={{ color: 'green', borderColor: 'green' }} disabled={isApproving}>
@@ -214,9 +238,24 @@ const BorrowerSlip = ({ borrower, status }) => {
         </DialogActions>
       </Dialog>
 
-      {/* <Button variant="outlined" onClick={handleClickOpen}>
-        Slide in alert dialog
-      </Button> */}
+      <Dialog open={editDialogOpen} onClose={handleEditDialogClose}>
+        <DialogTitle>Edit Equipment Details</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {/* Add your form or content for editing equipment details here */}
+            Edit form content goes here.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleEditDialogClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleEditDialogClose} color="primary">
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <Dialog
         open={isLoading}
         // TransitionComponent={Transition}
@@ -239,6 +278,23 @@ const BorrowerSlip = ({ borrower, status }) => {
         </DialogContent>
         <DialogActions>
           {isEmpty ?  <Button onClick={handleCloseDialog}>Close</Button> : null}
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={rejectDialogOpen} onClose={handleRejectDialogClose}>
+        <DialogTitle>Confirm Rejection</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to reject this borrower's request?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleRejectDialogClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmReject} color="primary">
+            Confirm
+          </Button>
         </DialogActions>
       </Dialog>
     </>

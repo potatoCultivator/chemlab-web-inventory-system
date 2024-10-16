@@ -78,6 +78,10 @@ function ToolStatus({ status }) {
       color = 'success';
       title = 'Approved';
       break;
+    case 'pending return':
+      color = 'success';
+      title = 'Approved';
+      break;
     case 'admin declined':
       color = 'error';
       title = 'Declined';
@@ -115,7 +119,8 @@ export default function SummaryTable() {
     ? borrowers.filter(borrower => 
         borrower.isApproved === 'approved' || 
         borrower.isApproved === 'admin approved' || 
-        borrower.isApproved === 'returned'
+        borrower.isApproved === 'returned'||
+        borrower.isApproved === 'pending return'
       ) 
     : [];
 
@@ -148,25 +153,33 @@ export default function SummaryTable() {
         <Table aria-labelledby="tableTitle">
           <ToolTableHead order={order} orderBy={orderBy} />
           <TableBody>
-            {flattenedBorrowers.length > 0 && stableSort(flattenedBorrowers, getComparator(order, orderBy)).map((row, index) => {
-              const labelId = `enhanced-table-checkbox-${index}`;
+            {flattenedBorrowers.length > 0 ? (
+              stableSort(flattenedBorrowers, getComparator(order, orderBy)).map((row, index) => {
+                const labelId = `enhanced-table-checkbox-${index}`;
 
-              return (
-                <TableRow
-                  hover
-                  role="checkbox"
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  tabIndex={-1}
-                  key={row.id}
-                >
-                  <TableCell>{row.name}</TableCell>
-                  <TableCell>{row.borrower}</TableCell>
-                  <TableCell align="right">{row.current_quantity}{row.unit}</TableCell>
-                  <TableCell><ToolStatus status={row.isApproved} /></TableCell>
-                  <TableCell align="right">{row.condition}</TableCell>
-                </TableRow>
-              );
-            })}
+                return (
+                  <TableRow
+                    hover
+                    role="checkbox"
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    tabIndex={-1}
+                    key={row.id}
+                  >
+                    <TableCell>{row.name}</TableCell>
+                    <TableCell>{row.borrower}</TableCell>
+                    <TableCell align="right">{row.current_quantity}{row.unit}</TableCell>
+                    <TableCell><ToolStatus status={row.isApproved} /></TableCell>
+                    <TableCell align="right">{row.condition}</TableCell>
+                  </TableRow>
+                );
+              })
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5} align="center">
+                  No items to display
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>

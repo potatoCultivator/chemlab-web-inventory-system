@@ -202,6 +202,34 @@ async function fetchAdminApprovedBorrowersCount() {
   }
 }
 
+async function fetchBorrowerEquipmentDetails() {
+  try {
+    const borrowerCollection = collection(firestore, 'borrower');
+    const adminApprovedQuery = query(borrowerCollection, where('isApproved', '==', 'admin approved'));
+    const querySnapshot = await getDocs(adminApprovedQuery);
+
+    const equipmentDetailsList = querySnapshot.docs.map(doc => doc.data().equipmentDetails || []);
+    return equipmentDetailsList.flat(); // Flatten the array of arrays
+  } catch (error) {
+    console.error('Error fetching equipment details for admin approved borrowers:', error);
+    throw error;
+  }
+}
+
+async function fetchBorrowerEquipmentDetails_Returned() {
+  try {
+    const borrowerCollection = collection(firestore, 'borrower');
+    const adminApprovedQuery = query(borrowerCollection, where('isApproved', '==', 'returned'));
+    const querySnapshot = await getDocs(adminApprovedQuery);
+
+    const equipmentDetailsList = querySnapshot.docs.map(doc => doc.data().equipmentDetails || []);
+    return equipmentDetailsList.flat(); // Flatten the array of arrays
+  } catch (error) {
+    console.error('Error fetching equipment details for admin approved borrowers:', error);
+    throw error;
+  }
+}
+
 function addAdminApprovedBorrowersListener(callback) {
   const db = firestore;
   const borrowerCollection = collection(db, 'borrower');
@@ -220,6 +248,8 @@ function addAdminApprovedBorrowersListener(callback) {
 
   return unsubscribe;
 }
+
+
 
 const fetchInstructors = (callback, errorCallback) => {
   const instructorsCollection = collection(firestore, 'instructor');
@@ -251,6 +281,9 @@ async function updateBorrower(borrowerId, updatedData) {
   const db = firestore;
   const borrowerDocRef = doc(db, 'borrower', borrowerId);
 
+  // Add date of update to the updatedData object
+  updatedData.dateUpdated = new Date();
+
   // Update the document with the new data
   await updateDoc(borrowerDocRef, updatedData);
 
@@ -273,5 +306,7 @@ export {
   deleteInstructorAcc,
   updateBorrower,
   fetchAdminApprovedBorrowersCount,
-  addAdminApprovedBorrowersListener
+  addAdminApprovedBorrowersListener,
+  fetchBorrowerEquipmentDetails,
+  fetchBorrowerEquipmentDetails_Returned
 }; // Export the functions for use in other modules
