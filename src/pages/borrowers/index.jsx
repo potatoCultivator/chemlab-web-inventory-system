@@ -13,6 +13,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 // project import
 import MainCard from 'components/MainCard';
 import BorrowerSlipTable from './BorrowerSlipTable';
+import ParentComponent from './ParentComponent';
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
@@ -42,6 +43,8 @@ export default function Borrowers() {
           </Button>
         </Box>
       </Grid>
+
+      {/* <ParentComponent /> */}
 
       {/* row 2 */}
       <Grid item xs={12} sm={6}>

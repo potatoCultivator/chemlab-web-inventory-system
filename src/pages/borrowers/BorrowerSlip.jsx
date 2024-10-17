@@ -41,6 +41,17 @@ const BorrowerSlip = ({ borrower, status }) => {
   const [editDialogOpen, setEditDialogOpen] = useState(false); // State for edit dialog
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false); // State for reject confirmation dialog
 
+  const [initialEquipment, setInitialEquipment] = useState(borrower.equipmentDetails);
+
+  const handleUpdate = (updatedEquipment) => {
+    setInitialEquipment((prevEquipment) =>
+      prevEquipment.map((equipment) =>
+        equipment.id === updatedEquipment.id ? updatedEquipment : equipment
+      )
+    );
+    console.log('Updated equipment:', initialEquipment);
+  };
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -192,18 +203,20 @@ const BorrowerSlip = ({ borrower, status }) => {
                   <TableRow>
                     <TableCell>Name</TableCell>
                     <TableCell>Capacity</TableCell>
-                    <TableCell> Qty</TableCell>
+                    <TableCell> good qty</TableCell>
+                    <TableCell> damaged qty</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {borrower.equipmentDetails.map((equipment, eqIndex) => (
-                    <TableRow key={eqIndex}>
+                  {initialEquipment.map((equipment, id) => (
+                    <TableRow key={id}>
                       <TableCell>{equipment.name}</TableCell>
                       <TableCell align='center'>{`${equipment.capacity} ${equipment.unit}`}</TableCell>
                       <TableCell align='center'>{equipment.good_quantity}</TableCell>
+                      <TableCell align='center'>{equipment.damaged_quantity}</TableCell>
                       {status === 'pending return' && (
                         <TableCell align="right">
-                            <EditStatus/>
+                            <EditStatus onSave={handleUpdate} initialEquipment={equipment}/>
                         </TableCell>
                       )}
                     </TableRow>
