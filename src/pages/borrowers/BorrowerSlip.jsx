@@ -19,8 +19,6 @@ import {
   TableHead, 
   TableRow,
   Divider,
-  IconButton,
-  Backdrop,
   CircularProgress,
   Grid
 } from '@mui/material';
@@ -133,11 +131,29 @@ const BorrowerSlip = ({ borrower, status }) => {
     setRejectDialogOpen(false);
   };
 
-  const handleConfirmReject = () => {
-    // Add your reject logic here
-    console.log('Borrower request rejected');
-    setRejectDialogOpen(false);
-    setOpen(false);
+  const handleConfirmReject = async () => {
+    setIsLoading(true);
+    try {
+      const updatedEquipmentDetails = initialEquipment.map((equipment) => ({
+        id: equipment.id,
+        good_quantity: equipment.good_quantity,
+        damaged_quantity: equipment.damaged_quantity,
+      }));
+
+      const updatedData = {
+        isApproved: 'rejected',
+        equipmentDetails: updatedEquipmentDetails,
+      };
+
+      await updateBorrower(borrower.id, updatedData);
+      console.log(`Borrower with ID ${borrower.id} has been rejected`);
+      setRejectDialogOpen(false);
+      setOpen(false);
+    } catch (error) {
+      console.error('Error rejecting borrower:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
