@@ -94,7 +94,7 @@ const BorrowerSlip = ({ borrower, status }) => {
           for (const equipment of borrower.equipmentDetails) {
             const { id, good_quantity } = equipment;
             const quantities = await fetchToolQuantities(id);
-            await updateToolQuantity(id, quantities.current_quantity - good_quantity, quantities.good_quantity - good_quantity);
+            await updateToolQuantity(id, quantities.current_quantity - good_quantity, quantities.good_quantity - good_quantity, quantities.damage_quantity);
           }
         } else {
           console.error('Error: equipmentDetails is not an array or is undefined');
@@ -144,6 +144,28 @@ const BorrowerSlip = ({ borrower, status }) => {
         isApproved: 'rejected',
         equipmentDetails: updatedEquipmentDetails,
       };
+
+        if (updatedData.isApproved === "rejected") {
+        for (const equipment of borrower.equipmentDetails) {
+          const { id, good_quantity, damaged_quantity } = equipment;
+          const quantities = await fetchToolQuantities(id);
+          console.log(`Checking Equipment ID: ${id}, Good Quantity: ${quantities.current_quantity}, Damaged Quantity: ${quantities.damage_quantity}`);
+      
+          // Ensure the quantities are numbers and handle invalid values
+          const currentQuantity = parseInt(quantities.current_quantity, 10) || 0;
+          const goodQuantity = parseInt(quantities.good_quantity, 10) || 0;
+          const damageQuantity = parseInt(quantities.damage_quantity, 10) || 0;
+          const equipmentGoodQuantity = parseInt(good_quantity, 10) || 0;
+          const equipmentDamagedQuantity = parseInt(damaged_quantity, 10) || 0;
+      
+          await updateToolQuantity(
+            id,
+            currentQuantity + equipmentGoodQuantity,
+            goodQuantity + equipmentGoodQuantity,
+            damageQuantity + equipmentDamagedQuantity
+          );
+        }
+      }
 
       await updateBorrower(borrower.id, updatedData);
       console.log(`Borrower with ID ${borrower.id} has been rejected`);

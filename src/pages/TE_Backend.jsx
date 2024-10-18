@@ -89,7 +89,8 @@ async function fetchToolQuantities(toolId) {
       const toolData = toolDoc.data();
       const quantities = {
         current_quantity: toolData.current_quantity,
-        good_quantity: toolData.good_quantity
+        good_quantity: toolData.good_quantity,
+        damage_quantity: toolData.damage_quantity
       };
       console.log(`Tool Quantities: ${JSON.stringify(quantities)}`);
       return quantities;
@@ -103,15 +104,19 @@ async function fetchToolQuantities(toolId) {
   }
 }
 
-async function updateToolQuantity(toolId, newQuantity, goodQuantity) {
+async function updateToolQuantity(toolId, newQuantity, goodQuantity, damageQuantity) {
   const db = firestore;
   const toolDocRef = doc(db, 'tools', toolId);
 
   try {
-    // Update the document with the new quantity
-    await updateDoc(toolDocRef, { current_quantity: newQuantity, good_quantity: goodQuantity });
+    // Update the document with the new quantities
+    await updateDoc(toolDocRef, {
+      current_quantity: newQuantity,
+      good_quantity: goodQuantity,
+      damage_quantity: damageQuantity
+    });
 
-    console.log(`Tool with ID ${toolId} has been updated with new quantity: ${newQuantity}`);
+    console.log(`Tool with ID ${toolId} has been updated with new quantities: current_quantity=${newQuantity}, good_quantity=${goodQuantity}, damage_quantity=${damageQuantity}`);
   } catch (error) {
     console.error('Error updating tool quantity:', error);
     throw error;
