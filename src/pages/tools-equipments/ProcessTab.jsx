@@ -50,11 +50,16 @@ function a11yProps(index) {
 export default function ProcessTab({ refresh }) {
   const [value, setValue] = useState(0);
   const [catValue, setCatValue] = useState('all');
+  const [searchValue, setSearchValue] = useState('');
   const [refreshTable, setRefreshTable] = useState(refresh);
   const [returned, setReturned] = useState(0);
-  const [borrowed, setRorrowed] = useState(0);
+  const [borrowed, setBorrowed] = useState(0);
   const [count, setCount] = useState(0);
   const theme = useTheme();
+
+  const handleSearchChange = (value) => {
+    setSearchValue(value);
+  };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -78,7 +83,6 @@ export default function ProcessTab({ refresh }) {
     console.log('Count state changed:', count);
     // Add any logic needed to handle the count change
   }, [count]);
-
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -150,7 +154,7 @@ export default function ProcessTab({ refresh }) {
 
               {/* Category */}
               <Box sx={{ flexGrow: 0, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginLeft: 'auto' }}>
-                <Search />
+                <Search handleSearchChange={handleSearchChange} />
               </Box>
               <Box sx={{ flexGrow: 0.01, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
               <TextField
@@ -173,15 +177,21 @@ export default function ProcessTab({ refresh }) {
           </Box>
         </MainCard>
         <MainCard>
-          <CustomTabPanel value={value} index={0}>
-            <ToolsAndEquipmentsTable refresh={refreshTable} catValue={catValue}/>
-          </CustomTabPanel>
-          <CustomTabPanel value={value} index={1}>
-            <ReturnTable />
-          </CustomTabPanel>
-          <CustomTabPanel value={value} index={2}>
-            <BorrowTable />
-          </CustomTabPanel>
+          {searchValue ? (
+            <ToolsAndEquipmentsTable refresh={refreshTable} catValue={catValue} searchValue={searchValue} />
+          ) : (
+            <>
+              <CustomTabPanel value={value} index={0}>
+                <ToolsAndEquipmentsTable refresh={refreshTable} catValue={catValue} searchValue={searchValue} />
+              </CustomTabPanel>
+              <CustomTabPanel value={value} index={1}>
+                <ReturnTable />
+              </CustomTabPanel>
+              <CustomTabPanel value={value} index={2}>
+                <BorrowTable />
+              </CustomTabPanel>
+            </>
+          )}
         </MainCard>
       </Box>
     </Box>

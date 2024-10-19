@@ -65,7 +65,7 @@ function TE_TableHead({ order, orderBy }) {
   );
 }
 
-export default function TE_Table({ refresh, catValue }) {
+export default function TE_Table({ refresh, catValue, searchValue }) {
   const order = 'asc';
   const orderBy = 'no';
   const [tools, setTools] = useState([]);
@@ -148,7 +148,11 @@ export default function TE_Table({ refresh, catValue }) {
     setSelectedItem((prevItem) => ({ ...prevItem, [name]: value }));
   };
 
-  const filteredRows = catValue === 'all' ? tools : tools.filter(tool => tool.category === catValue);
+  const filteredRows = tools.filter(tool => 
+    (catValue === 'all' || tool.category === catValue) &&
+    (tool.name?.toLowerCase().includes(searchValue.toLowerCase()) || 
+     tool.category?.toLowerCase().includes(searchValue.toLowerCase()))
+  );
 
   return (
     <Box>
@@ -289,3 +293,9 @@ export default function TE_Table({ refresh, catValue }) {
 }
 
 TE_TableHead.propTypes = { order: PropTypes.any, orderBy: PropTypes.string };
+
+TE_Table.propTypes = {
+  refresh: PropTypes.bool.isRequired,
+  catValue: PropTypes.string.isRequired,
+  searchValue: PropTypes.string.isRequired,
+};
