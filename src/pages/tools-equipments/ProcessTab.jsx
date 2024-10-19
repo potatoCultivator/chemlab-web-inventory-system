@@ -1,6 +1,6 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import { Tabs, Tab, Box, Chip } from '@mui/material';
+import { Tabs, Tab, Box, Chip, Grid } from '@mui/material';
 import { alpha } from '@mui/system';
 import { useTheme } from '@mui/material/styles';
 import MenuItem from '@mui/material/MenuItem';
@@ -158,30 +158,32 @@ export default function ProcessTab({ refresh }) {
                 }
                 {...a11yProps(2)}
               />
-
-              {/* Category */}
-              <Box sx={{ flexGrow: 0, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginLeft: 'auto' }}>
-                <Search handleSearchChange={handleSearchChange} />
-              </Box>
-              <Box sx={{ flexGrow: 0.01, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-              <TextField
-                    id="standard-select-currency"
-                    size="small"
-                    select
-                    value={catValue}
-                    onChange={(e) => setCatValue(e.target.value)}
-                    sx={{ '& .MuiInputBase-input': { py: 0.75, fontSize: '0.875rem' } }}
-                >
-                    {category.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                    </MenuItem>
-                    ))}
-                </TextField>
-              </Box>
-              
             </Tabs>
           </Box>
+        </MainCard>
+        <MainCard>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={12} md={6}>
+              <Search handleSearchChange={handleSearchChange} />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                id="standard-select-currency"
+                size="small"
+                select
+                value={catValue}
+                onChange={(e) => setCatValue(e.target.value)}
+                sx={{ '& .MuiInputBase-input': { py: 0.75, fontSize: '0.875rem' } }}
+                fullWidth
+              >
+                {category.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+          </Grid>
         </MainCard>
         <MainCard>
           {searchValue ? (
