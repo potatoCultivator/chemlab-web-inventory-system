@@ -84,6 +84,13 @@ export default function ProcessTab({ refresh }) {
     // Add any logic needed to handle the count change
   }, [count]);
 
+  useEffect(() => {
+    // Automatically switch to 'All' tab when searchValue is empty
+    if (!searchValue) {
+      setValue(0);
+    }
+  }, [searchValue]);
+
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ width: '100%' }}>
