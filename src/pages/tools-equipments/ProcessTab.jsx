@@ -17,7 +17,8 @@ import { category } from './constants';
 import Search from './Search';
 import SummaryTable from './SummaryTable';
 
-import { countRows, fetchBorrowerEquipmentDetails } from 'pages/TE_Backend';
+import { countRows, fetchBorrowerEquipmentDetails,
+  fetchBorrowerEquipmentDetails_Returned  } from 'pages/TE_Backend';
 
 // Function
 function CustomTabPanel(props) {
@@ -94,18 +95,30 @@ export default function ProcessTab({ refresh }) {
     }
   }, [searchValue]);
   
-  // useEffect(() => {
-  //   const fetchCount = async () => {
-  //     try {
-  //       const details = await fetchBorrowerEquipmentDetails();
-  //       // const returnedCount = details.filter((detail) => detail.status === 'returned').length;
-  //       setBorrowed(borrowedCount.good_quantity);
-  //     } catch (error) {
-  //       console.error('Error fetching equipment details:', error);
-  //     }
-  //   };
-  //   fetchCount();
-  // }, []);
+  useEffect(() => {
+    const getEquipmentDetails = async () => {
+      try {
+        const details_borrowed = await fetchBorrowerEquipmentDetails();
+        const details_returned = await fetchBorrowerEquipmentDetails_Returned();
+        let cnt = 0;
+        let cnt_ret = 0;
+        details_returned.forEach((item) => {
+          cnt_ret += item.good_quantity;
+        });
+
+        details_borrowed.forEach((item) => {
+          cnt += item.good_quantity;
+        });
+        setBorrowed(cnt);
+        setReturned(cnt_ret);
+        // setRecentBorrowed(details);
+      } catch (error) {
+        console.error('Error fetching equipment details:', error);
+        // setError(error);
+      } 
+    };
+    getEquipmentDetails();
+  }, []);
 
   return (
     <Box sx={{ width: '100%' }}>

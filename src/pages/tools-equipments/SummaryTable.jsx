@@ -16,7 +16,7 @@ import { useEffect, useState } from 'react';
 import Dot from 'components/@extended/Dot';
 import { borow_return_headCells } from './constants';
 
-import { fetchAllBorrowers } from '../TE_Backend'; // Adjust the import path as needed
+import { fetchAllBorrowers } from '../TE_Backend'; 
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -162,7 +162,7 @@ export default function SummaryTable({ status }) {
                   >
                     <TableCell>{row.name}</TableCell>
                     <TableCell>{row.borrower}</TableCell>
-                    <TableCell align="right">{row.current_quantity}{row.unit}</TableCell>
+                    <TableCell align="center">{row.good_quantity}</TableCell>
                     <TableCell><ToolStatus status={row.isApproved} /></TableCell>
                     <TableCell align="right">{row.condition}</TableCell>
                   </TableRow>
