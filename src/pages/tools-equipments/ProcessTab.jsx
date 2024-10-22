@@ -15,8 +15,9 @@ import ReturnTable from './ReturnTable';
 import BorrowTable from './BorrowTable';
 import { category } from './constants';
 import Search from './Search';
+import SummaryTable from './SummaryTable';
 
-import { countRows } from 'pages/TE_Backend';
+import { countRows, fetchBorrowerEquipmentDetails } from 'pages/TE_Backend';
 
 // Function
 function CustomTabPanel(props) {
@@ -92,6 +93,19 @@ export default function ProcessTab({ refresh }) {
       setValue(0);
     }
   }, [searchValue]);
+  
+  // useEffect(() => {
+  //   const fetchCount = async () => {
+  //     try {
+  //       const details = await fetchBorrowerEquipmentDetails();
+  //       // const returnedCount = details.filter((detail) => detail.status === 'returned').length;
+  //       setBorrowed(borrowedCount.good_quantity);
+  //     } catch (error) {
+  //       console.error('Error fetching equipment details:', error);
+  //     }
+  //   };
+  //   fetchCount();
+  // }, []);
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -225,10 +239,10 @@ export default function ProcessTab({ refresh }) {
                 <ToolsAndEquipmentsTable refresh={refreshTable} catValue={catValue} searchValue={searchValue} />
               </CustomTabPanel>
               <CustomTabPanel value={value} index={1}>
-                <ReturnTable />
+                <SummaryTable status={'returned'}/>
               </CustomTabPanel>
               <CustomTabPanel value={value} index={2}>
-                <BorrowTable />
+                <SummaryTable status={'admin approved'} />
               </CustomTabPanel>
             </>
           )}

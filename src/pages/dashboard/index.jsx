@@ -23,7 +23,7 @@ import {
 export default function DashboardDefault() {
   const [run, setRun] = useState(true);
   const [borrowersCount, setBorrowersCount] = useState(0);
-  const [ recentBorrowed, setRecentBorrowed ] = useState([]);
+  const [ recentBorrowed, setRecentBorrowed ] = useState(0);
   const [ returnedEquipment, setReturnedEquipment ] = useState([]);
 
   useEffect(() => {
@@ -49,7 +49,12 @@ export default function DashboardDefault() {
     const getEquipmentDetails = async () => {
       try {
         const details = await fetchBorrowerEquipmentDetails();
-        setRecentBorrowed(details);
+        let cnt = 0;
+        details.forEach((item) => {
+          cnt = cnt + item.good_quantity;
+        });
+        setRecentBorrowed(cnt);
+        // setRecentBorrowed(details);
       } catch (error) {
         console.error('Error fetching equipment details:', error);
         // setError(error);
@@ -164,7 +169,7 @@ export default function DashboardDefault() {
         <Grid item xs={12} sm={6} md={4} lg={3} className="total-borrowed">
           <ToolAnalytics 
             title="Total Borrowed Tools/Equipments" 
-            count={recentBorrowed.length}
+            count={recentBorrowed}
             className="total-borrowed"
             percentage={59.3} 
           />
@@ -188,7 +193,7 @@ export default function DashboardDefault() {
         <Grid item xs={12} sm={6} md={4} lg={3} className="total-bad-condition" >
           <ToolAnalytics 
             title="Total Recent Borrowed Equipment" 
-            count={recentBorrowed.length} 
+            count={recentBorrowed} 
             className="total-bad-condition"
             percentage={59.3} 
           />
