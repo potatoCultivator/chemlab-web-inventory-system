@@ -52,7 +52,7 @@ function a11yProps(index) {
 
 export default function ProcessTab({ refresh }) {
   const [value, setValue] = useState(0);
-  const [catValue, setCatValue] = useState('all');
+  const [catValue, setCatValue] = useState('All');
   const [searchValue, setSearchValue] = useState('');
   const [refreshTable, setRefreshTable] = useState(refresh);
   const [returned, setReturned] = useState(0);
