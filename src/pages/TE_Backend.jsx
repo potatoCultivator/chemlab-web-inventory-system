@@ -2,6 +2,7 @@ import { firestore, storage } from '../firebase'; // Adjust the path as necessar
 import { collection, query, where, addDoc, writeBatch, doc, getDocs, updateDoc, deleteDoc, onSnapshot, getDoc } from "firebase/firestore"; 
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { sendEmail } from './emailService'; // Import the email service
+import { format, getMonth, getYear } from 'date-fns';
 
 function validateToolData(data) {
   return {
@@ -294,12 +295,58 @@ async function updateBorrower(borrowerId, updatedData) {
   console.log(`Borrower with ID ${borrowerId} has been updated`);
 }
 
+// async function chartData(data) {
+//   const db = firestore;
+//   const batch = writeBatch(db);
+
+//   const chartdata = collection(db, 'chartdata');
+//   batch.set(doc(chartdata), data);
+//   await batch.commit();
+// }
+
+// import { firestore, collection, doc, getDocs, query, where, writeBatch } from 'firebase/firestore';
+// import { format, getMonth, getYear } from 'date-fns';
+
 async function chartData(data) {
   const db = firestore;
   const batch = writeBatch(db);
 
-  const chartdata = collection(db, 'chartdata');
-  batch.set(doc(chartdata), data);
+  const chartdataCollection = collection(db, 'chartdata');
+
+  // Format the date to get day, month, and year
+  const day = format(data.date, 'dd');
+  const month = getMonth(data.date) + 1; // getMonth returns 0-based month
+  const year = getYear(data.date);
+
+  // Query to check if a document with the same day, month, and year exists
+  const q = query(
+    chartdataCollection,
+    where('day', '==', day),
+    where('month', '==', month),
+    where('year', '==', year)
+  );
+
+  const querySnapshot = await getDocs(q);
+
+  if (!querySnapshot.empty) {
+    // Document exists, update the count
+    querySnapshot.forEach((docSnapshot) => {
+      const docRef = doc(chartdataCollection, docSnapshot.id);
+      batch.update(docRef, {
+        count: docSnapshot.data().count + data.count,
+      });
+    });
+  } else {
+    // Document does not exist, create a new one
+    const newDocRef = doc(chartdataCollection);
+    batch.set(newDocRef, {
+      ...data,
+      day: day,
+      month: month,
+      year: year,
+    });
+  }
+
   await batch.commit();
 }
 

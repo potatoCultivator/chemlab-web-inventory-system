@@ -22,6 +22,7 @@ import {
   CircularProgress,
   Grid
 } from '@mui/material';
+import { format, getMonth, getYear } from 'date-fns';
 import Slide from '@mui/material/Slide';
 
 import { EditOutlined } from '@ant-design/icons';
@@ -31,6 +32,7 @@ import EditStatus from './EditStatus';
 // firestore
 import { updateBorrower, fetchToolQuantities, updateToolQuantity, chartData } from 'pages/TE_Backend';
 import { date } from 'yup';
+import { count } from 'firebase/firestore';
 
 const BorrowerSlip = ({ borrower, status }) => {
   const [open, setOpen] = useState(false);
@@ -67,68 +69,85 @@ const BorrowerSlip = ({ borrower, status }) => {
   const handleWarningClose = () => {
     setWarningOpen(false);
   };
+const handleAdminApproved = async () => {
+  setIsApproving(true);
+  handleClose();
+  setIsLoading(true);
+  setIsEmpty(false);
 
-  const handleAdminApproved = async () => {
-    setIsApproving(true);
-    handleClose();
-    setIsLoading(true);
-    setIsEmpty(false);
-  
-    try {
-      const updatedData = { isApproved: "admin approved" };
-  
-      if (Array.isArray(borrower.equipmentDetails)) {
-        // First, check all tools for their quantities
-        for (const equipment of borrower.equipmentDetails) {
-          const { id, good_quantity } = equipment;
-          console.log(`Checking Equipment ID: ${id}, Good Quantity: ${good_quantity}`);
-  
-          // Fetch the current quantity of the tool
-          const quantities = await fetchToolQuantities(id);
-  
-          if (quantities.good_quantity < 1) {
-            setIsEmpty(true);
-            console.error(`Error: Equipment ID ${id} cannot be borrowed as its good quantity is less than 1`);
-            setIsApproving(false);
-            setIsLoading(false);
-            return; // Exit the function to prevent approval
-          }
+  try {
+    const updatedData = { isApproved: "admin approved" };
+
+    if (Array.isArray(borrower.equipmentDetails)) {
+      // First, check all tools for their quantities
+      for (const equipment of borrower.equipmentDetails) {
+        const { id, good_quantity } = equipment;
+        console.log(`Checking Equipment ID: ${id}, Good Quantity: ${good_quantity}`);
+
+        // Fetch the current quantity of the tool
+        const quantities = await fetchToolQuantities(id);
+
+        if (quantities.good_quantity < 1) {
+          setIsEmpty(true);
+          console.error(`Error: Equipment ID ${id} cannot be borrowed as its good quantity is less than 1`);
+          setIsApproving(false);
+          setIsLoading(false);
+          return; // Exit the function to prevent approval
         }
-  
-        // If all tools are available, update their quantities
-        for (const equipment of borrower.equipmentDetails) {
-          const { id, good_quantity } = equipment;
-          const quantities = await fetchToolQuantities(id);
-          await updateToolQuantity(
-            id,
-            quantities.current_quantity - good_quantity,
-            quantities.good_quantity - good_quantity,
-            quantities.damage_quantity
-          );
-        }
-      } else {
-        console.error('Error: equipmentDetails is not an array or is undefined');
-        setIsApproving(false);
-        setIsLoading(false);
-        return; // Exit the function to prevent approval
       }
-  
-      const data = {
-        status: "borrowed",
-        date: new Date().toISOString() // Use new Date().toISOString() to get the current date in ISO format
-      };
-      await chartData(data);
-  
-      await updateBorrower(borrower.id, updatedData);
-      console.log(`Borrower with ID ${borrower.id} has been approved`);
-      handleClose();
-    } catch (error) {
-      console.error('Error approving borrower:', error);
-    } finally {
+
+      // If all tools are available, update their quantities
+      for (const equipment of borrower.equipmentDetails) {
+        const { id, good_quantity } = equipment;
+        const quantities = await fetchToolQuantities(id);
+        await updateToolQuantity(
+          id,
+          quantities.current_quantity - good_quantity,
+          quantities.good_quantity - good_quantity,
+          quantities.damage_quantity
+        );
+      }
+    } else {
+      console.error('Error: equipmentDetails is not an array or is undefined');
       setIsApproving(false);
       setIsLoading(false);
+      return; // Exit the function to prevent approval
     }
-  };
+
+    let count = 0;
+    for (const equipment of borrower.equipmentDetails) {
+      const { id, good_quantity } = equipment;
+      console.log(`Checking Equipment ID: ${id}, Good Quantity: ${good_quantity}`);
+
+      // Fetch the current quantity of the tool
+      const quantities = await fetchToolQuantities(id);
+      console.log(`Fetched Quantities for Equipment ID: ${id}, Good Quantity: ${quantities.good_quantity}`);
+      count += good_quantity; // Use good_quantity from borrower.equipmentDetails
+    }
+
+    console.log(`Total Count of Good Quantities: ${count}`);    
+    // Inside your function
+    const now = new Date();
+    const data = {
+      status: "borrowed",
+      count: count,
+      date: now,
+      day: format(now, 'dd'),
+      month: getMonth(now) + 1, // getMonth returns 0-based month
+      year: getYear(now)
+    };
+    await chartData(data);
+
+    await updateBorrower(borrower.id, updatedData);
+    console.log(`Borrower with ID ${borrower.id} has been approved`);
+    handleClose();
+  } catch (error) {
+    console.error('Error approving borrower:', error);
+  } finally {
+    setIsApproving(false);
+    setIsLoading(false);
+  }
+};
 
   const handlePendingReturn = async () => {
     // if(initialEquipment.some(equipment => equipment._quantity === 0)) {
