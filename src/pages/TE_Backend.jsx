@@ -245,7 +245,6 @@ function addAdminApprovedBorrowersListener(callback) {
   // Listen for real-time updates
   const unsubscribe = onSnapshot(adminApprovedQuery, (snapshot) => {
     const count = snapshot.size;
-    console.log(`Real-time update - Number of admin approved borrowers: ${count}`);
     callback(count);
   }, (error) => {
     console.error('Error listening to admin approved borrowers:', error);
@@ -295,6 +294,15 @@ async function updateBorrower(borrowerId, updatedData) {
   console.log(`Borrower with ID ${borrowerId} has been updated`);
 }
 
+async function chartData(data) {
+  const db = firestore;
+  const batch = writeBatch(db);
+
+  const chartdata = collection(db, 'chartdata');
+  batch.set(doc(chartdata), data);
+  await batch.commit();
+}
+
 export default uploadTE;
 
 export { 
@@ -313,5 +321,6 @@ export {
   fetchAdminApprovedBorrowersCount,
   addAdminApprovedBorrowersListener,
   fetchBorrowerEquipmentDetails,
-  fetchBorrowerEquipmentDetails_Returned
+  fetchBorrowerEquipmentDetails_Returned,
+  chartData
 }; // Export the functions for use in other modules

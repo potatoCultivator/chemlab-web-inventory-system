@@ -180,7 +180,7 @@ export default function BorrowersChart({ isWeekly }) {
       ...prevState,
       colors: !(borrowedItem && returnedItem) && returnedItem ? [primaryMain] : [warning, primaryMain],
       xaxis: {
-        categories: isWeekly ? week : month, // Update categories based on isWeekly prop
+        categories: isWeekly ? week : month,
         labels: {
           style: {
             colors: [secondary, secondary, secondary, secondary, secondary, secondary]

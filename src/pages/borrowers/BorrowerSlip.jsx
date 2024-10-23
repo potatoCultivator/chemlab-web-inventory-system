@@ -29,7 +29,8 @@ import { EditOutlined } from '@ant-design/icons';
 import EditStatus from './EditStatus';
 
 // firestore
-import { updateBorrower, fetchToolQuantities, updateToolQuantity } from 'pages/TE_Backend';
+import { updateBorrower, fetchToolQuantities, updateToolQuantity, chartData } from 'pages/TE_Backend';
+import { date } from 'yup';
 
 const BorrowerSlip = ({ borrower, status }) => {
   const [open, setOpen] = useState(false);
@@ -38,6 +39,7 @@ const BorrowerSlip = ({ borrower, status }) => {
   const [isEmpty, setIsEmpty] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false); // State for edit dialog
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false); // State for reject confirmation dialog
+  const [warningOpen, setWarningOpen] = useState(false); // State for warning dialog
 
   const [initialEquipment, setInitialEquipment] = useState(borrower.equipmentDetails);
 
@@ -62,80 +64,11 @@ const BorrowerSlip = ({ borrower, status }) => {
     setIsLoading(false);
   };
 
-  // const handleApprove = async () => {
-  //   setIsApproving(true);
-  //   handleClose();
-  //   setIsLoading(true);
-  //   setIsEmpty(false);
-  
-  //   try {
-  //     const updatedData = { isApproved: status === "pending return" ? "returned" : "admin approved" };
-  
-  //     if (updatedData.isApproved === "admin approved") {
-  //       if (Array.isArray(borrower.equipmentDetails)) {
-  //         // First, check all tools for their quantities
-  //         for (const equipment of borrower.equipmentDetails) {
-  //           const { id, good_quantity } = equipment;
-  //           console.log(`Checking Equipment ID: ${id}, Good Quantity: ${good_quantity}`);
-  
-  //           // Fetch the current quantity of the tool
-  //           const quantities = await fetchToolQuantities(id);
-  
-  //           if (quantities.good_quantity < 1) {
-  //             setIsEmpty(true);
-  //             console.error(`Error: Equipment ID ${id} cannot be borrowed as its good quantity is less than 1`);
-  //             setIsApproving(false);
-  //             // setIsLoading(false);
-  //             return; // Exit the function to prevent approval
-  //           }
-  //         }
-  
-  //         // If all tools are available, update their quantities
-  //         for (const equipment of borrower.equipmentDetails) {
-  //           const { id, good_quantity } = equipment;
-  //           const quantities = await fetchToolQuantities(id);
-  //           await updateToolQuantity(id, quantities.current_quantity - good_quantity, quantities.good_quantity - good_quantity, quantities.damage_quantity);
-  //         }
-  //       } else if (updatedData.isApproved === "returned") {
-  //         for (const equipment of borrower.equipmentDetails) {
-  //           const { id, good_quantity, damaged_quantity } = equipment;
-  //           const quantities = await fetchToolQuantities(id);
-  //           console.log(`Checking Equipment ID: ${id}, Good Quantity: ${quantities.current_quantity}, Damaged Quantity: ${quantities.damage_quantity}`);
-        
-  //           // Ensure the quantities are numbers and handle invalid values
-  //           const currentQuantity = parseInt(quantities.current_quantity, 10) || 0;
-  //           const goodQuantity = parseInt(quantities.good_quantity, 10) || 0;
-  //           const damageQuantity = parseInt(quantities.damage_quantity, 10) || 0;
-  //           const equipmentGoodQuantity = parseInt(good_quantity, 10) || 0;
-  //           const equipmentDamagedQuantity = parseInt(damaged_quantity, 10) || 0;
-        
-  //           await updateToolQuantity(
-  //             id,
-  //             currentQuantity + equipmentGoodQuantity,
-  //             goodQuantity + equipmentGoodQuantity,
-  //             damageQuantity + equipmentDamagedQuantity
-  //           );
-  //         }
-  //       } else {
-  //         console.error('Error: equipmentDetails is not an array or is undefined');
-  //         setIsApproving(false);
-  //         setIsLoading(false);
-  //         return; // Exit the function to prevent approval
-  //       }
-  //     }
-  
-  //     await updateBorrower(borrower.id, updatedData);
-  //     console.log(`Borrower with ID ${borrower.id} has been approved`);
-  //     handleClose();
-  //   } catch (error) {
-  //     console.error('Error approving borrower:', error);
-  //   } finally {
-  //     setIsApproving(false);
-  //     // setIsLoading(false);
-  //   }
-  // };
+  const handleWarningClose = () => {
+    setWarningOpen(false);
+  };
 
-    const handleAdminApproved = async () => {
+  const handleAdminApproved = async () => {
     setIsApproving(true);
     handleClose();
     setIsLoading(true);
@@ -157,6 +90,7 @@ const BorrowerSlip = ({ borrower, status }) => {
             setIsEmpty(true);
             console.error(`Error: Equipment ID ${id} cannot be borrowed as its good quantity is less than 1`);
             setIsApproving(false);
+            setIsLoading(false);
             return; // Exit the function to prevent approval
           }
         }
@@ -179,6 +113,12 @@ const BorrowerSlip = ({ borrower, status }) => {
         return; // Exit the function to prevent approval
       }
   
+      const data = {
+        status: "borrowed",
+        date: new Date().toISOString() // Use new Date().toISOString() to get the current date in ISO format
+      };
+      await chartData(data);
+  
       await updateBorrower(borrower.id, updatedData);
       console.log(`Borrower with ID ${borrower.id} has been approved`);
       handleClose();
@@ -186,10 +126,16 @@ const BorrowerSlip = ({ borrower, status }) => {
       console.error('Error approving borrower:', error);
     } finally {
       setIsApproving(false);
+      setIsLoading(false);
     }
   };
 
-    const handlePendingReturn = async () => {
+  const handlePendingReturn = async () => {
+    // if(initialEquipment.some(equipment => equipment._quantity === 0)) {
+    //   setWarningOpen(true);
+    //   return;
+    // }
+    
     setIsApproving(true);
     handleClose();
     setIsLoading(true);
@@ -202,7 +148,6 @@ const BorrowerSlip = ({ borrower, status }) => {
         for (const equipment of borrower.equipmentDetails) {
           const { id, good_quantity, damaged_quantity } = equipment;
           const quantities = await fetchToolQuantities(id);
-          console.log(`Checking Equipment ID: ${id}, Good Quantity: ${quantities.current_quantity}, Damaged Quantity: ${quantities.damage_quantity}`);
   
           // Ensure the quantities are numbers and handle invalid values
           const currentQuantity = parseInt(quantities.current_quantity, 10) || 0;
@@ -235,7 +180,7 @@ const BorrowerSlip = ({ borrower, status }) => {
     }
   };
 
-    const handleApprove = async () => {
+  const handleApprove = async () => {
     if (status === "pending return") {
       await handlePendingReturn();
     } else {
@@ -264,37 +209,18 @@ const BorrowerSlip = ({ borrower, status }) => {
     try {
       const updatedEquipmentDetails = initialEquipment.map((equipment) => ({
         id: equipment.id,
-        good_quantity: equipment.good_quantity,
-        damaged_quantity: equipment.damaged_quantity,
+        good_quantity: parseInt(equipment.good_quantity, 10),
+        damaged_quantity: parseInt(equipment.damaged_quantity, 10),
+        capacity: equipment.capacity,
+        name: equipment.name,
+        unit: equipment.unit,
       }));
-
+  
       const updatedData = {
         isApproved: 'rejected',
         equipmentDetails: updatedEquipmentDetails,
       };
-
-      //   if (updatedData.isApproved === "rejected") {
-      //   for (const equipment of borrower.equipmentDetails) {
-      //     const { id, good_quantity, damaged_quantity } = equipment;
-      //     const quantities = await fetchToolQuantities(id);
-      //     console.log(`Checking Equipment ID: ${id}, Good Quantity: ${quantities.current_quantity}, Damaged Quantity: ${quantities.damage_quantity}`);
-      
-      //     // Ensure the quantities are numbers and handle invalid values
-      //     const currentQuantity = parseInt(quantities.current_quantity, 10) || 0;
-      //     const goodQuantity = parseInt(quantities.good_quantity, 10) || 0;
-      //     const damageQuantity = parseInt(quantities.damage_quantity, 10) || 0;
-      //     const equipmentGoodQuantity = parseInt(good_quantity, 10) || 0;
-      //     const equipmentDamagedQuantity = parseInt(damaged_quantity, 10) || 0;
-      
-      //     await updateToolQuantity(
-      //       id,
-      //       currentQuantity + equipmentGoodQuantity,
-      //       goodQuantity + equipmentGoodQuantity,
-      //       damageQuantity + equipmentDamagedQuantity
-      //     );
-      //   }
-      // }
-
+  
       await updateBorrower(borrower.id, updatedData);
       console.log(`Borrower with ID ${borrower.id} has been rejected`);
       setRejectDialogOpen(false);
@@ -459,6 +385,23 @@ const BorrowerSlip = ({ borrower, status }) => {
           {isEmpty ?  <Button onClick={handleCloseDialog}>Close</Button> : null}
         </DialogActions>
       </Dialog>
+       
+      {/* <Dialog open={warningOpen} onClose={handleWarningClose}>
+        <DialogTitle>Warning</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Ayaw pag uli og guba
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleWarningClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleWarningClose} color="primary">
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog> */}
 
       <Dialog open={rejectDialogOpen} onClose={handleRejectDialogClose}>
         <DialogTitle>Confirm Rejection</DialogTitle>
