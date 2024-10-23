@@ -1,39 +1,39 @@
 // Use In processtab.jsx
 const category = [
     {
-        value: 'all',
+        value: 'All',
         label: 'All',
       },
     {
-      value: 'glassware',
+      value: 'Glassware',
       label: 'Glassware',
     },
     {
-      value: 'plasticware',
+      value: 'Plasticware',
       label: 'Plasticware',
     },
     {
-      value: 'metalware',
+      value: 'Metalware',
       label: 'Metalware',
     },
     {
-      value: 'heating',
+      value: 'Heating',
       label: 'Heating',
     },
     {
-      value: 'measuring',
+      value: 'Measuring',
       label: 'Measuring',
     },
     {
-      value: 'container',
+      value: 'Container',
       label: 'Container',
     },
     {
-      value: 'separator',
+      value: 'Separation Equipment',
       label: 'Separation Equipment',
     },
     {
-      value: 'mixing',
+      value: 'Mixing & Stirring',
       label: 'Mixing & Stirring',
     }
   ];

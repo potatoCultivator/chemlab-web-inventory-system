@@ -2,7 +2,7 @@ import { firestore, storage } from '../firebase'; // Adjust the path as necessar
 import { collection, query, where, addDoc, writeBatch, doc, getDocs, updateDoc, deleteDoc, onSnapshot, getDoc } from "firebase/firestore"; 
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { sendEmail } from './emailService'; // Import the email service
-import { format, getMonth, getYear } from 'date-fns';
+import { format, getMonth, getYear, getWeek, getWeekOfMonth } from 'date-fns';
 
 function validateToolData(data) {
   return {
@@ -304,8 +304,8 @@ async function updateBorrower(borrowerId, updatedData) {
 //   await batch.commit();
 // }
 
-// import { firestore, collection, doc, getDocs, query, where, writeBatch } from 'firebase/firestore';
-// import { format, getMonth, getYear } from 'date-fns';
+
+// import { format, getMonth, getYear, getWeek, getWeekOfMonth } from 'date-fns';
 
 async function chartData(data) {
   const db = firestore;
@@ -313,16 +313,18 @@ async function chartData(data) {
 
   const chartdataCollection = collection(db, 'chartdata');
 
-  // Format the date to get day, month, and year
+  // Format the date to get day, month, week, weekOfMonth, and year
   const day = format(data.date, 'dd');
   const month = getMonth(data.date) + 1; // getMonth returns 0-based month
+  const weekOfMonth = getWeekOfMonth(data.date);
   const year = getYear(data.date);
 
-  // Query to check if a document with the same day, month, and year exists
+  // Query to check if a document with the same day, month, week, weekOfMonth, and year exists
   const q = query(
     chartdataCollection,
     where('day', '==', day),
     where('month', '==', month),
+    where('weekOfMonth', '==', weekOfMonth),
     where('year', '==', year)
   );
 
@@ -343,6 +345,7 @@ async function chartData(data) {
       ...data,
       day: day,
       month: month,
+      weekOfMonth: weekOfMonth,
       year: year,
     });
   }

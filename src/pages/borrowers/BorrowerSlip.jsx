@@ -22,7 +22,7 @@ import {
   CircularProgress,
   Grid
 } from '@mui/material';
-import { format, getMonth, getYear } from 'date-fns';
+import { format, getMonth, getYear, getWeekOfMonth } from 'date-fns';
 import Slide from '@mui/material/Slide';
 
 import { EditOutlined } from '@ant-design/icons';
@@ -128,13 +128,15 @@ const handleAdminApproved = async () => {
     console.log(`Total Count of Good Quantities: ${count}`);    
     // Inside your function
     const now = new Date();
+    const weekOfMonth = getWeekOfMonth(now);
     const data = {
       status: "borrowed",
       count: count,
       date: now,
       day: format(now, 'dd'),
       month: getMonth(now) + 1, // getMonth returns 0-based month
-      year: getYear(now)
+      year: getYear(now),
+      weekOfMonth: weekOfMonth // Get the week number within the month
     };
     await chartData(data);
 

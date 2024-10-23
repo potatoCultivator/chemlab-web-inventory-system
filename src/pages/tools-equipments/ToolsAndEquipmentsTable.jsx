@@ -149,7 +149,7 @@ export default function TE_Table({ refresh, catValue, searchValue }) {
   };
 
   const filteredRows = tools.filter(tool => 
-    (catValue === 'all' || tool.category === catValue) &&
+    (catValue === 'All' || tool.category === catValue) &&
     (tool.name?.toLowerCase().includes(searchValue.toLowerCase()) || 
      tool.category?.toLowerCase().includes(searchValue.toLowerCase()))
   );
