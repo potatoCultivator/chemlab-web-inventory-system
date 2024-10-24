@@ -353,6 +353,31 @@ async function chartData(data) {
   await batch.commit();
 }
 
+async function fetchChartData_borrowed(callback) {
+  const db = firestore;
+  const chartdataCollection = collection(db, 'chartdata');
+
+  const statBorrowed = query(chartdataCollection, where('status', '==', 'borrowed'));
+  // Set up a real-time listener
+  const unsubscribe = onSnapshot(statBorrowed, (querySnapshot) => {
+    const rows = querySnapshot.docs.map(doc => ({
+      id: doc.id, // Include the document ID
+      ...doc.data() // Spread the document data
+    }));
+
+    console.log('Borrowed chart data:', rows);
+    // Execute the callback with the updated data
+    callback(rows);
+  });
+
+  return unsubscribe;
+}
+
+// async function fetchChartData_borrowed() {
+//   cost 
+// }
+
+
 export default uploadTE;
 
 export { 
@@ -372,5 +397,6 @@ export {
   addAdminApprovedBorrowersListener,
   fetchBorrowerEquipmentDetails,
   fetchBorrowerEquipmentDetails_Returned,
-  chartData
+  chartData,
+  fetchChartData_borrowed
 }; // Export the functions for use in other modules

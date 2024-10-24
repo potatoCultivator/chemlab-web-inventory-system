@@ -17,6 +17,9 @@ import MainCard from 'components/MainCard';
 // third-party
 import ReactApexChart from 'react-apexcharts';
 
+// firebase
+import { fetchChartData_borrowed } from 'pages/TE_Backend';
+
 function getWeeksInCurrentMonth() {
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -128,6 +131,18 @@ const initialSeries = {
 // ==============================|| SALES COLUMN CHART ||============================== //
 
 export default function BorrowersChart({ isWeekly }) {
+  const [borrowedData, setBorrowedData] = useState([]);
+
+  useEffect(() => {
+    // Set up the listener and get the unsubscribe function
+    const unsubscribe = fetchChartData_borrowed(setBorrowedData);
+
+    // Clean up the listener on component unmount
+    return () => unsubscribe();
+  }, []);
+
+  console.log(borrowedData);
+
   const theme = useTheme();
 
   const [legend, setLegend] = useState({

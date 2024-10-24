@@ -129,11 +129,12 @@ const handleAdminApproved = async () => {
     // Inside your function
     const now = new Date();
     const weekOfMonth = getWeekOfMonth(now);
+    const currentDayString = format(now, 'dd');
     const data = {
       status: "borrowed",
       count: count,
       date: now,
-      day: format(now, 'dd'),
+      day: parseInt(currentDayString, 10),
       month: getMonth(now) + 1, // getMonth returns 0-based month
       year: getYear(now),
       weekOfMonth: weekOfMonth // Get the week number within the month
