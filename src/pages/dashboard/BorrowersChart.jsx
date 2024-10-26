@@ -10,6 +10,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import { format, getMonth, getYear, getWeekOfMonth, getDay } from 'date-fns';
 
 // project import
 import MainCard from 'components/MainCard';
@@ -19,6 +20,7 @@ import ReactApexChart from 'react-apexcharts';
 
 // firebase
 import { fetchChartData_borrowed } from 'pages/TE_Backend';
+import { get } from 'lodash';
 
 function getWeeksInCurrentMonth() {
   const now = new Date();
@@ -28,26 +30,42 @@ function getWeeksInCurrentMonth() {
   let weeks = [];
   let currentWeek = [];
 
-  for (let day = startOfMonth; day <= endOfMonth; day.setDate(day.getDate() + 1)) {
+  for (let day = new Date(startOfMonth); day <= endOfMonth; day.setDate(day.getDate() + 1)) {
     currentWeek.push(new Date(day));
     if (day.getDay() === 6 || day.getDate() === endOfMonth.getDate()) {
-      weeks.push(currentWeek);
+      weeks.push([...currentWeek]);
       currentWeek = [];
     }
   }
 
-  return weeks.length;
+  return weeks;
 }
 
-// console.log(getWeeksInCurrentMonth()); 
-const month = [];
+// Get all weeks in the current month
+const weeksInCurrentMonth = getWeeksInCurrentMonth();
 
-for (let i = 0; i < getWeeksInCurrentMonth(); i++) {
-  console.log(`Week ${i + 1}`);
-  month.push(`Week ${i + 1}`);
+// Get the current date
+const now = new Date();
+
+// Find the current week
+const currentWeek = weeksInCurrentMonth.find(week => 
+  week.some(day => 
+    day.getDate() === now.getDate()
+  )
+);
+
+// Display the days of the current week
+if (currentWeek) {
+  console.log('Current week days:');
+  currentWeek.forEach(day => {
+    console.log(day.toDateString());
+  });
+} else {
+  console.log('Current week not found.');
 }
 
-const week = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const month = weeksInCurrentMonth.map((_, i) => `Week ${i + 1}`);
+const week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 // chart options
 const columnChartOptions = {
@@ -109,21 +127,21 @@ const initialSeries = {
   weekly: [
     {
       name: 'Borrowed Items',
-      data: [180, 90, 135, 114, 120, 145, 160] // Added data for Sunday
+      data: [] 
     },
     {
       name: 'Returned Items',
-      data: [120, 45, 78, 150, 168, 99, 110] // Added data for Sunday
+      data: []
     }
   ],
   monthly: [
     {
       name: 'Borrowed Items',
-      data: [720, 360, 540, 456] // Monthly data
+      data: []
     },
     {
       name: 'Returned Items',
-      data: [480, 180, 312, 600] // Monthly data
+      data: []
     }
   ]
 };
@@ -132,18 +150,11 @@ const initialSeries = {
 
 export default function BorrowersChart({ isWeekly }) {
   const [borrowedData, setBorrowedData] = useState([]);
-
-  useEffect(() => {
-    // Set up the listener and get the unsubscribe function
-    const unsubscribe = fetchChartData_borrowed(setBorrowedData);
-
-    // Clean up the listener on component unmount
-    return () => unsubscribe();
-  }, []);
-
-  console.log(borrowedData);
+  const [series, setSeries] = useState(isWeekly ? initialSeries.weekly : initialSeries.monthly);
+  const [options, setOptions] = useState(columnChartOptions);
 
   const theme = useTheme();
+  const xsDown = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [legend, setLegend] = useState({
     borrowedItem: true,
@@ -154,41 +165,64 @@ export default function BorrowersChart({ isWeekly }) {
 
   const { primary, secondary } = theme.palette.text;
   const line = theme.palette.divider;
-
   const warning = theme.palette.warning.main;
   const primaryMain = theme.palette.primary.main;
   const successDark = theme.palette.success.dark;
 
-  const [series, setSeries] = useState(isWeekly ? initialSeries.weekly : initialSeries.monthly);
-
-  const handleLegendChange = (event) => {
-    setLegend({ ...legend, [event.target.name]: event.target.checked });
-  };
-
-  const xsDown = useMediaQuery(theme.breakpoints.down('sm'));
-  const [options, setOptions] = useState(columnChartOptions);
+  useEffect(() => {
+    // Set up the listener and get the unsubscribe function
+    const unsubscribe = fetchChartData_borrowed(setBorrowedData);
+    return () => unsubscribe;
+  }, []);
 
   useEffect(() => {
+    const getWeekData = (borrowedData) => {
+      const weekData = Array(7).fill(0); // Initialize an array with 7 elements, one for each day of the week
+      const now = new Date();
+    
+      if (Array.isArray(borrowedData)) {
+        borrowedData.forEach(borrowed => {
+          const borrowedDate = borrowed.date.toDate(); // Convert Firebase Timestamp to JavaScript Date
+          const borrowedYear = getYear(borrowedDate);
+          const borrowedMonth = getMonth(borrowedDate) + 1; // getMonth returns 0-based month
+          const borrowedWeekOfMonth = getWeekOfMonth(borrowedDate);
+          const borrowedDayOfWeek = getDay(borrowedDate); // Get the day of the week (0-6)
+    
+          console.log(`Borrowed Date: ${borrowedDate.toDateString()}, Day of Week: ${borrowedDayOfWeek}`);
+    
+          if (borrowedYear === getYear(now) && borrowedMonth === (getMonth(now) + 1) && borrowedWeekOfMonth === getWeekOfMonth(now)) {
+            weekData[borrowedDayOfWeek] += borrowed.count; // Use the day of the week as the index
+            console.log('Week data:', borrowedDate.toDateString());
+          }
+        });
+      }
+    
+      console.log('Week data:', weekData);
+      return weekData;
+    };
+
+    initialSeries.weekly[0].data = getWeekData(borrowedData);
+
     if (borrowedItem && returnedItem) {
       setSeries(isWeekly ? initialSeries.weekly : initialSeries.monthly);
     } else if (borrowedItem) {
       setSeries([
         {
           name: 'Borrowed Items',
-          data: isWeekly ? [180, 90, 135, 114, 120, 145, 160] : [720, 360, 540, 456]
+          data: isWeekly ? initialSeries.weekly[0].data : initialSeries.monthly[0].data
         }
       ]);
     } else if (returnedItem) {
       setSeries([
         {
           name: 'Returned Items',
-          data: isWeekly ? [120, 45, 78, 150, 168, 99, 110] : [480, 180, 312, 600]
+          data: isWeekly ? initialSeries.weekly[1].data : initialSeries.monthly[1].data
         }
       ]);
     } else {
       setSeries([]);
     }
-  }, [borrowedItem, returnedItem, isWeekly]);
+  }, [borrowedItem, returnedItem, isWeekly, borrowedData]);
 
   useEffect(() => {
     setOptions((prevState) => ({
@@ -219,6 +253,10 @@ export default function BorrowersChart({ isWeekly }) {
       }
     }));
   }, [primary, secondary, line, warning, primaryMain, successDark, borrowedItem, returnedItem, xsDown, isWeekly]);
+
+  const handleLegendChange = (event) => {
+    setLegend({ ...legend, [event.target.name]: event.target.checked });
+  };
 
   return (
     <MainCard sx={{ mt: 1 }} content={false}>

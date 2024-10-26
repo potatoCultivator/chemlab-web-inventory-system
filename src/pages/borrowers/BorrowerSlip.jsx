@@ -22,7 +22,7 @@ import {
   CircularProgress,
   Grid
 } from '@mui/material';
-import { format, getMonth, getYear, getWeekOfMonth } from 'date-fns';
+import { format, getMonth, getYear, getWeekOfMonth, getDate } from 'date-fns';
 import Slide from '@mui/material/Slide';
 
 import { EditOutlined } from '@ant-design/icons';
@@ -125,16 +125,14 @@ const handleAdminApproved = async () => {
       count += good_quantity; // Use good_quantity from borrower.equipmentDetails
     }
 
-    console.log(`Total Count of Good Quantities: ${count}`);    
-    // Inside your function
     const now = new Date();
     const weekOfMonth = getWeekOfMonth(now);
-    const currentDayString = format(now, 'dd');
+    const day = getDate(now); // Get the day as an integer
     const data = {
       status: "borrowed",
       count: count,
-      date: now,
-      day: parseInt(currentDayString, 10),
+      date: now.getDate(),
+      day: day, // Use the integer day
       month: getMonth(now) + 1, // getMonth returns 0-based month
       year: getYear(now),
       weekOfMonth: weekOfMonth // Get the week number within the month

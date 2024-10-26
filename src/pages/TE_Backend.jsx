@@ -2,7 +2,7 @@ import { firestore, storage } from '../firebase'; // Adjust the path as necessar
 import { collection, query, where, addDoc, writeBatch, doc, getDocs, updateDoc, deleteDoc, onSnapshot, getDoc } from "firebase/firestore"; 
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { sendEmail } from './emailService'; // Import the email service
-import { format, getMonth, getYear, getWeek, getWeekOfMonth } from 'date-fns';
+import { format, getMonth, getYear, getWeek, getWeekOfMonth, getDate } from 'date-fns';
 
 function validateToolData(data) {
   return {
@@ -307,71 +307,84 @@ async function updateBorrower(borrowerId, updatedData) {
 
 // import { format, getMonth, getYear, getWeek, getWeekOfMonth } from 'date-fns';
 
+// import { firestore } from './firebase'; // Adjust the import path as necessary
+// import { collection, query, where, getDocs, writeBatch, doc, onSnapshot } from 'firebase/firestore';
+// import { getDate, getMonth, getYear, getWeek, getWeekOfMonth } from 'date-fns';
+
 async function chartData(data) {
-  const db = firestore;
-  const batch = writeBatch(db);
+  try {
+    const db = firestore;
+    const batch = writeBatch(db);
 
-  const chartdataCollection = collection(db, 'chartdata');
+    const chartdataCollection = collection(db, 'chartdata');
 
-  // Format the date to get day, month, week, weekOfMonth, and year
-  const day = format(data.date, 'dd');
-  const month = getMonth(data.date) + 1; // getMonth returns 0-based month
-  const weekOfMonth = getWeekOfMonth(data.date);
-  const year = getYear(data.date);
+    // Format the date to get day, month, week, weekOfMonth, and year
+    const day = getDate(data.date); // Use getDate to get the day as a number
+    const month = getMonth(data.date) + 1; // getMonth returns 0-based month
+    const week = getWeek(data.date);
+    const weekOfMonth = getWeekOfMonth(data.date);
+    const year = getYear(data.date);
 
-  // Query to check if a document with the same day, month, week, weekOfMonth, and year exists
-  const q = query(
-    chartdataCollection,
-    where('day', '==', day),
-    where('month', '==', month),
-    where('weekOfMonth', '==', weekOfMonth),
-    where('year', '==', year)
-  );
+    // Query to check if a document with the same day, month, week, weekOfMonth, and year exists
+    const q = query(
+      chartdataCollection,
+      where('day', '==', day),
+      where('month', '==', month),
+      where('weekOfMonth', '==', weekOfMonth),
+      where('year', '==', year)
+    );
 
-  const querySnapshot = await getDocs(q);
+    const querySnapshot = await getDocs(q);
 
-  if (!querySnapshot.empty) {
-    // Document exists, update the count
-    querySnapshot.forEach((docSnapshot) => {
-      const docRef = doc(chartdataCollection, docSnapshot.id);
-      batch.update(docRef, {
-        count: docSnapshot.data().count + data.count,
+    if (!querySnapshot.empty) {
+      // Document exists, update the count
+      querySnapshot.forEach((docSnapshot) => {
+        const docRef = doc(chartdataCollection, docSnapshot.id);
+        batch.update(docRef, {
+          count: docSnapshot.data().count + data.count,
+        });
       });
-    });
-  } else {
-    // Document does not exist, create a new one
-    const newDocRef = doc(chartdataCollection);
-    batch.set(newDocRef, {
-      ...data,
-      day: day,
-      month: month,
-      weekOfMonth: weekOfMonth,
-      year: year,
-    });
-  }
+    } else {
+      // Document does not exist, create a new one
+      const newDocRef = doc(chartdataCollection);
+      batch.set(newDocRef, {
+        ...data,
+        day: day,
+        month: month,
+        weekOfMonth: weekOfMonth,
+        year: year,
+      });
+    }
 
-  await batch.commit();
+    await batch.commit();
+  } catch (error) {
+    console.error('Error updating chart data:', error);
+  }
 }
 
 async function fetchChartData_borrowed(callback) {
-  const db = firestore;
-  const chartdataCollection = collection(db, 'chartdata');
+  try {
+    const db = firestore;
+    const chartdataCollection = collection(db, 'chartdata');
 
-  const statBorrowed = query(chartdataCollection, where('status', '==', 'borrowed'));
-  // Set up a real-time listener
-  const unsubscribe = onSnapshot(statBorrowed, (querySnapshot) => {
-    const rows = querySnapshot.docs.map(doc => ({
-      id: doc.id, // Include the document ID
-      ...doc.data() // Spread the document data
-    }));
+    const statBorrowed = query(chartdataCollection, where('status', '==', 'borrowed'));
+    // Set up a real-time listener
+    const unsubscribe = onSnapshot(statBorrowed, (querySnapshot) => {
+      const rows = querySnapshot.docs.map(doc => ({
+        id: doc.id, // Include the document ID
+        ...doc.data() // Spread the document data
+      }));
+      // Execute the callback with the updated data
+      callback(rows);
+    });
 
-    console.log('Borrowed chart data:', rows);
-    // Execute the callback with the updated data
-    callback(rows);
-  });
-
-  return unsubscribe;
+    return unsubscribe;
+  } catch (error) {
+    console.error('Error fetching chart data:', error);
+  }
 }
+
+// export { chartData, fetchChartData_borrowed };
 
 // async function fetchChartData_borrowed() {
 //   cost 
