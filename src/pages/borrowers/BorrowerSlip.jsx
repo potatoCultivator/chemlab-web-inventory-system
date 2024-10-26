@@ -69,6 +69,7 @@ const BorrowerSlip = ({ borrower, status }) => {
   const handleWarningClose = () => {
     setWarningOpen(false);
   };
+
 const handleAdminApproved = async () => {
   setIsApproving(true);
   handleClose();
@@ -155,7 +156,7 @@ const handleAdminApproved = async () => {
     //   setWarningOpen(true);
     //   return;
     // }
-    
+  
     setIsApproving(true);
     handleClose();
     setIsLoading(true);
@@ -190,6 +191,33 @@ const handleAdminApproved = async () => {
         return; // Exit the function to prevent approval
       }
   
+      let count = 0;
+      for (const equipment of borrower.equipmentDetails) {
+        const { id, good_quantity } = equipment;
+        console.log(`Checking Equipment ID: ${id}, Good Quantity: ${good_quantity}`);
+  
+        // Fetch the current quantity of the tool
+        const quantities = await fetchToolQuantities(id);
+        console.log(`Fetched Quantities for Equipment ID: ${id}, Good Quantity: ${quantities.good_quantity}`);
+        count += parseInt(good_quantity, 10) || 0; // Ensure good_quantity is a number
+      }
+  
+      const now = new Date();
+      const weekOfMonth = getWeekOfMonth(now);
+      const day = getDate(now); // Get the day as an integer
+      const data = {
+        status: "returned",
+        count: count,
+        date: now, // Use the Date object directly
+        day: day, // Use the integer day
+        month: getMonth(now) + 1, // getMonth returns 0-based month
+        year: getYear(now),
+        weekOfMonth: weekOfMonth // Get the week number within the month
+      };
+  
+      console.log('Uploading chart data:', data); // Debugging statement
+      await chartData(data);
+  
       await updateBorrower(borrower.id, updatedData);
       console.log(`Borrower with ID ${borrower.id} has been returned`);
       handleClose();
@@ -197,9 +225,9 @@ const handleAdminApproved = async () => {
       console.error('Error returning borrower:', error);
     } finally {
       setIsApproving(false);
+      setIsLoading(false);
     }
   };
-
   const handleApprove = async () => {
     if (status === "pending return") {
       await handlePendingReturn();

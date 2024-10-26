@@ -362,14 +362,14 @@ async function chartData(data) {
   }
 }
 
-async function fetchChartData_borrowed(callback) {
+async function fetchChartData(callback, status) {
   try {
     const db = firestore;
     const chartdataCollection = collection(db, 'chartdata');
 
-    const statBorrowed = query(chartdataCollection, where('status', '==', 'borrowed'));
+    const statQuery = query(chartdataCollection, where('status', '==', status));
     // Set up a real-time listener
-    const unsubscribe = onSnapshot(statBorrowed, (querySnapshot) => {
+    const unsubscribe = onSnapshot(statQuery, (querySnapshot) => {
       const rows = querySnapshot.docs.map(doc => ({
         id: doc.id, // Include the document ID
         ...doc.data() // Spread the document data
@@ -383,6 +383,7 @@ async function fetchChartData_borrowed(callback) {
     console.error('Error fetching chart data:', error);
   }
 }
+
 
 // export { chartData, fetchChartData_borrowed };
 
@@ -411,5 +412,5 @@ export {
   fetchBorrowerEquipmentDetails,
   fetchBorrowerEquipmentDetails_Returned,
   chartData,
-  fetchChartData_borrowed
+  fetchChartData
 }; // Export the functions for use in other modules

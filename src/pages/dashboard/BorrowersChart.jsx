@@ -19,7 +19,7 @@ import MainCard from 'components/MainCard';
 import ReactApexChart from 'react-apexcharts';
 
 // firebase
-import { fetchChartData_borrowed } from 'pages/TE_Backend';
+import { fetchChartData } from 'pages/TE_Backend';
 import { get } from 'lodash';
 
 function getWeeksInCurrentMonth() {
@@ -150,8 +150,10 @@ const initialSeries = {
 
 export default function BorrowersChart({ isWeekly }) {
   const [borrowedData, setBorrowedData] = useState([]);
+  const [returnedData, setReturnedData] = useState([]);
   const [series, setSeries] = useState(isWeekly ? initialSeries.weekly : initialSeries.monthly);
   const [options, setOptions] = useState(columnChartOptions);
+  const [loading, setLoading] = useState(true); // Add loading state
 
   const theme = useTheme();
   const xsDown = useMediaQuery(theme.breakpoints.down('sm'));
@@ -170,29 +172,39 @@ export default function BorrowersChart({ isWeekly }) {
   const successDark = theme.palette.success.dark;
 
   useEffect(() => {
-    // Set up the listener and get the unsubscribe function
-    const unsubscribe = fetchChartData_borrowed(setBorrowedData);
-    return () => unsubscribe;
+    // Set up the listener and get the unsubscribe function for borrowed items
+    const unsubscribeBorrowed = fetchChartData(setBorrowedData, 'borrowed');
+    // Set up the listener and get the unsubscribe function for returned items
+    const unsubscribeReturned = fetchChartData(setReturnedData, 'returned');
+    return () => {
+      unsubscribeBorrowed;
+      unsubscribeReturned;
+    };
   }, []);
 
   useEffect(() => {
-    const getWeekData = (borrowedData) => {
+    const getWeekData = (data) => {
       const weekData = Array(7).fill(0); // Initialize an array with 7 elements, one for each day of the week
       const now = new Date();
     
-      if (Array.isArray(borrowedData)) {
-        borrowedData.forEach(borrowed => {
-          const borrowedDate = borrowed.date.toDate(); // Convert Firebase Timestamp to JavaScript Date
-          const borrowedYear = getYear(borrowedDate);
-          const borrowedMonth = getMonth(borrowedDate) + 1; // getMonth returns 0-based month
-          const borrowedWeekOfMonth = getWeekOfMonth(borrowedDate);
-          const borrowedDayOfWeek = getDay(borrowedDate); // Get the day of the week (0-6)
+      if (Array.isArray(data)) {
+        data.forEach(item => {
+          let itemDate;
+          if (item.date.toDate) {
+            itemDate = item.date.toDate(); // Convert Firebase Timestamp to JavaScript Date
+          } else {
+            itemDate = new Date(item.date); // Assume it's already a Date object or a string
+          }
+          const itemYear = getYear(itemDate);
+          const itemMonth = getMonth(itemDate) + 1; // getMonth returns 0-based month
+          const itemWeekOfMonth = getWeekOfMonth(itemDate);
+          const itemDayOfWeek = getDay(itemDate); // Get the day of the week (0-6)
     
-          console.log(`Borrowed Date: ${borrowedDate.toDateString()}, Day of Week: ${borrowedDayOfWeek}`);
+          console.log(`Item Date: ${itemDate.toDateString()}, Day of Week: ${itemDayOfWeek}`);
     
-          if (borrowedYear === getYear(now) && borrowedMonth === (getMonth(now) + 1) && borrowedWeekOfMonth === getWeekOfMonth(now)) {
-            weekData[borrowedDayOfWeek] += borrowed.count; // Use the day of the week as the index
-            console.log('Week data:', borrowedDate.toDateString());
+          if (itemYear === getYear(now) && itemMonth === (getMonth(now) + 1) && itemWeekOfMonth === getWeekOfMonth(now)) {
+            weekData[itemDayOfWeek] += item.count; // Use the day of the week as the index
+            console.log('Week data:', itemDate.toDateString());
           }
         });
       }
@@ -201,7 +213,43 @@ export default function BorrowersChart({ isWeekly }) {
       return weekData;
     };
 
-    initialSeries.weekly[0].data = getWeekData(borrowedData);
+    const getMonthData = (data) => {
+      const monthData = Array(weeksInCurrentMonth.length).fill(0); // Initialize an array with elements for each week of the month
+      const now = new Date();
+
+      if (Array.isArray(data)) {
+        data.forEach(item => {
+          let itemDate;
+          if (item.date.toDate) {
+            itemDate = item.date.toDate(); // Convert Firebase Timestamp to JavaScript Date
+          } else {
+            itemDate = new Date(item.date); // Assume it's already a Date object or a string
+          }
+          const itemYear = getYear(itemDate);
+          const itemMonth = getMonth(itemDate) + 1; // getMonth returns 0-based month
+          const itemWeekOfMonth = getWeekOfMonth(itemDate);
+
+          console.log(`Item Date: ${itemDate.toDateString()}, Week of Month: ${itemWeekOfMonth}`);
+
+          if (itemYear === getYear(now) && itemMonth === (getMonth(now) + 1)) {
+            monthData[itemWeekOfMonth - 1] += item.count; // Use the week of the month as the index
+            console.log('Month data:', itemDate.toDateString());
+          }
+        });
+      }
+
+      console.log('Month data:', monthData);
+      return monthData;
+    };
+    
+    if (isWeekly) {
+      initialSeries.weekly[0].data = getWeekData(borrowedData);
+      initialSeries.weekly[1].data = getWeekData(returnedData);
+      console.log('Weekly series:', initialSeries.weekly);
+    } else {
+      initialSeries.monthly[0].data = getMonthData(borrowedData);
+      initialSeries.monthly[1].data = getMonthData(returnedData);
+    }
 
     if (borrowedItem && returnedItem) {
       setSeries(isWeekly ? initialSeries.weekly : initialSeries.monthly);
@@ -222,7 +270,9 @@ export default function BorrowersChart({ isWeekly }) {
     } else {
       setSeries([]);
     }
-  }, [borrowedItem, returnedItem, isWeekly, borrowedData]);
+
+    setLoading(false); // Update loading state
+  }, [borrowedItem, returnedItem, isWeekly, borrowedData, returnedData]);
 
   useEffect(() => {
     setOptions((prevState) => ({
@@ -279,7 +329,13 @@ export default function BorrowersChart({ isWeekly }) {
           </FormControl>
         </Stack>
         <Box id="chart" sx={{ bgcolor: 'transparent' }}>
-          <ReactApexChart options={options} series={series} type="bar" height={360} />
+          {loading ? (
+            <Typography variant="h6" color="secondary">
+              Loading data...
+            </Typography>
+          ) : (
+            <ReactApexChart options={options} series={series} type="bar" height={360} />
+          )}
         </Box>
       </Box>
     </MainCard>
