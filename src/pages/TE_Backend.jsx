@@ -310,6 +310,9 @@ async function updateBorrower(borrowerId, updatedData) {
 // import { firestore } from './firebase'; // Adjust the import path as necessary
 // import { collection, query, where, getDocs, writeBatch, doc, onSnapshot } from 'firebase/firestore';
 // import { getDate, getMonth, getYear, getWeek, getWeekOfMonth } from 'date-fns';
+// import { firestore } from 'path-to-your-firebase-config'; // Adjust the path to your Firebase config
+// import { writeBatch, collection, query, where, getDocs, doc } from 'firebase/firestore';
+// import { getDate, getMonth, getWeek, getWeekOfMonth, getYear } from 'date-fns';
 
 async function chartData(data) {
   try {
@@ -318,26 +321,26 @@ async function chartData(data) {
 
     const chartdataCollection = collection(db, 'chartdata');
 
-    // Format the date to get day, month, week, weekOfMonth, and year
+    // Format the date to get day, month, weekOfMonth, and year
     const day = getDate(data.date); // Use getDate to get the day as a number
     const month = getMonth(data.date) + 1; // getMonth returns 0-based month
-    const week = getWeek(data.date);
     const weekOfMonth = getWeekOfMonth(data.date);
     const year = getYear(data.date);
 
-    // Query to check if a document with the same day, month, week, weekOfMonth, and year exists
+    // Query to check if a document with the same day, month, weekOfMonth, year, and status exists
     const q = query(
       chartdataCollection,
       where('day', '==', day),
       where('month', '==', month),
       where('weekOfMonth', '==', weekOfMonth),
-      where('year', '==', year)
+      where('year', '==', year),
+      where('status', '==', data.status) // Filter by status (borrowed or returned)
     );
 
     const querySnapshot = await getDocs(q);
 
     if (!querySnapshot.empty) {
-      // Document exists, update the count
+      // Document exists with the same status, update the count
       querySnapshot.forEach((docSnapshot) => {
         const docRef = doc(chartdataCollection, docSnapshot.id);
         batch.update(docRef, {
@@ -361,6 +364,7 @@ async function chartData(data) {
     console.error('Error updating chart data:', error);
   }
 }
+
 
 async function fetchChartData(callback, status) {
   try {

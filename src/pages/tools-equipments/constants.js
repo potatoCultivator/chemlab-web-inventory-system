@@ -87,16 +87,16 @@ const headCells = [
   // use for BorrowTable and ReturnTable
   const borow_return_headCells = [
     {
-      id: 'tracking_no',
-      align: 'left',
-      disablePadding: false,
-      label: 'Tracking No.'
-    },
-    {
       id: 'item',
       align: 'left',
-      disablePadding: true,
+      disablePadding: false,
       label: 'Item'
+    },
+    {
+      id: 'borrower',
+      align: 'left',
+      disablePadding: true,
+      label: 'Borrower'
     },
     {
       id: 'quantity',

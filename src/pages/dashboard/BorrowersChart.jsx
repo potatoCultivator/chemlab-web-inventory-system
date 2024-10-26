@@ -40,9 +40,9 @@ const columnChartOptions = {
   dataLabels: { enabled: false },
   stroke: { show: true, width: 8, colors: ['transparent'] },
   xaxis: { categories: week },
-  yaxis: { title: { text: '$ (thousands)' } },
+  // yaxis: { title: { text: '$ (thousands)' } },
   fill: { opacity: 1 },
-  tooltip: { y: { formatter: val => `$ ${val} thousands` } },
+  tooltip: { y: { formatter: val => `${val}` } },
   legend: { show: false },
   responsive: [{ breakpoint: 600, options: { yaxis: { show: false } } }]
 };
