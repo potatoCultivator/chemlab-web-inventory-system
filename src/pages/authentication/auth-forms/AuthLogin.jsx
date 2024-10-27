@@ -67,7 +67,14 @@ export default function AuthLogin({ isDemo = false }) {
         setErrors({ submit: 'Login failed. Please check your credentials.' });
       }
     } catch (error) {
-      setErrors({ submit: error.message || 'Login failed. Please try again.' });
+      console.error('Login Error:', error); // Log error for debugging
+      if (error.message === 'auth/user-not-found)') {
+        setErrors({ submit: 'Account does not exist!' });
+      } else if (error.message === 'Firebase: Error (auth/wrong-password).') {
+        setErrors({ submit: 'Incorrect password. Please try again.' });
+      } else {
+        setErrors({ submit: 'Account does not exist!' });
+      }
     } finally {
       setSubmitting(false);
     }
@@ -163,16 +170,19 @@ export default function AuthLogin({ isDemo = false }) {
                     }
                     label={<Typography variant="h6">Keep me signed in</Typography>}
                   />
-                  <Link variant="h6" component={RouterLink} color="text.primary">
+                  {/* <Link variant="h6" component={RouterLink} color="text.primary">
                     Forgot Password?
-                  </Link>
+                  </Link> */}
+                  {errors.submit && (
+                 <FormHelperText error>{errors.submit}</FormHelperText>
+              )}
                 </Stack>
               </Grid>
-              {errors.submit && (
+              {/* {errors.submit && (
                 <Grid item xs={12}>
                   <FormHelperText error>{errors.submit}</FormHelperText>
                 </Grid>
-              )}
+              )} */}
               <Grid item xs={12}>
                 <AnimateButton>
                   <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
