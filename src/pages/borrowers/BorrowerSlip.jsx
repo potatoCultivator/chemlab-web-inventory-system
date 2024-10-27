@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   List, ListItem, ListItemText, ListItemAvatar, Avatar,
   Dialog, DialogTitle, DialogContent, DialogContentText,
@@ -22,10 +22,16 @@ const BorrowerSlip = ({ borrower, status }) => {
   const [initialEquipment, setInitialEquipment] = useState(borrower.equipmentDetails);
 
   const handleUpdate = (updatedEquipment) => {
+    console.log('Updating Equipment:', updatedEquipment); // Debugging statement
     setInitialEquipment((prev) =>
       prev.map((equipment) => (equipment.id === updatedEquipment.id ? updatedEquipment : equipment))
     );
   };
+
+  // Log the updated state after it changes
+  useEffect(() => {
+    console.log('Initial Equipment Updated:', initialEquipment); // Debugging statement
+  }, [initialEquipment]);
 
   const toggleDialog = (dialogType, value) => {
     switch (dialogType) {
@@ -37,6 +43,69 @@ const BorrowerSlip = ({ borrower, status }) => {
     }
   };
 
+  // const handleApprove = async () => {
+  //   setIsApproving(true);
+  //   toggleDialog("main", false);
+  //   toggleDialog("loading", true);
+  //   setIsEmpty(false);
+
+  //   try {
+  //     const updatedData = { isApproved: status === "pending return" ? "returned" : "admin approved" };
+  //     let count = 0;
+
+  //     if (Array.isArray(borrower.equipmentDetails)) {
+  //       for (const equipment of borrower.equipmentDetails) {
+  //         const { id, good_quantity, damaged_quantity = 0 } = equipment;
+  //         const quantities = await fetchToolQuantities(id);
+
+  //         if (quantities.good_quantity < good_quantity) {
+  //           setIsEmpty(true);
+  //           console.error(`Error: Equipment ID ${id} has insufficient quantity`);
+  //           return;
+  //         }
+
+  //         let newQuantities;
+  //         if(updatedData.isApproved === "returned") {
+  //             newQuantities = {
+  //             current_quantity: quantities.current_quantity + good_quantity,
+  //             good_quantity: quantities.good_quantity + good_quantity,
+  //             damage_quantity: quantities.damage_quantity + damaged_quantity,
+  //           };
+  //         } else {
+  //               newQuantities = {
+  //               current_quantity: quantities.current_quantity - good_quantity,
+  //               good_quantity: quantities.good_quantity - good_quantity,
+  //               damage_quantity: quantities.damage_quantity + damaged_quantity,
+  //           }
+  //         }
+  //         console.log('New Quantities:', newQuantities);
+  //         await updateToolQuantity(id, newQuantities.current_quantity, newQuantities.good_quantity, newQuantities.damage_quantity);
+  //       }
+
+  //       const now = new Date();
+  //       const data = {
+  //         status: updatedData.isApproved === "returned" ? "returned" : "borrowed",
+  //         count,
+  //         date: now,
+  //         day: getDate(now),
+  //         month: getMonth(now) + 1,
+  //         year: getYear(now),
+  //         weekOfMonth: getWeekOfMonth(now),
+  //       };
+  //       await chartData(data);
+  //       await updateBorrower(borrower.id, updatedData);
+  //       console.log(`Borrower with ID ${borrower.id} has been ${updatedData.isApproved}`);
+  //     } else {
+  //       console.error('Error: equipmentDetails is not an array or is undefined');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error approving borrower:', error);
+  //   } finally {
+  //     setIsApproving(false);
+  //     setIsLoading(false);
+  //   }
+  // };
+
   const handleApprove = async () => {
     setIsApproving(true);
     toggleDialog("main", false);
@@ -47,52 +116,47 @@ const BorrowerSlip = ({ borrower, status }) => {
       const updatedData = { isApproved: status === "pending return" ? "returned" : "admin approved" };
       let count = 0;
 
-      if (Array.isArray(borrower.equipmentDetails)) {
-        for (const equipment of borrower.equipmentDetails) {
-          const { id, good_quantity, damaged_quantity = 0 } = equipment;
-          const quantities = await fetchToolQuantities(id);
+      for (const equipment of initialEquipment) {
+        const { id, good_quantity, damaged_quantity = 0 } = equipment;
+        const quantities = await fetchToolQuantities(id);
 
-          if (quantities.good_quantity < good_quantity) {
-            setIsEmpty(true);
-            console.error(`Error: Equipment ID ${id} has insufficient quantity`);
-            return;
-          }
-
-          let newQuantities;
-          if(updatedData.isApproved === "returned") {
-              newQuantities = {
-              current_quantity: quantities.current_quantity + good_quantity,
-              good_quantity: quantities.good_quantity + good_quantity,
-              damage_quantity: quantities.damage_quantity + damaged_quantity,
-            };
-          } else {
-                newQuantities = {
-                current_quantity: quantities.current_quantity - good_quantity,
-                good_quantity: quantities.good_quantity - good_quantity,
-                damage_quantity: quantities.damage_quantity + damaged_quantity,
-            }
-          }
-
-          await updateToolQuantity(id, newQuantities.current_quantity, newQuantities.good_quantity, newQuantities.damage_quantity);
-          count += good_quantity;
+        if (quantities.good_quantity < good_quantity) {
+          setIsEmpty(true);
+          console.error(`Error: Equipment ID ${id} has insufficient quantity`);
+          return;
         }
 
-        const now = new Date();
-        const data = {
-          status: updatedData.isApproved === "returned" ? "returned" : "borrowed",
-          count,
-          date: now,
-          day: getDate(now),
-          month: getMonth(now) + 1,
-          year: getYear(now),
-          weekOfMonth: getWeekOfMonth(now),
-        };
-        await chartData(data);
-        await updateBorrower(borrower.id, updatedData);
-        console.log(`Borrower with ID ${borrower.id} has been ${updatedData.isApproved}`);
-      } else {
-        console.error('Error: equipmentDetails is not an array or is undefined');
+        let newQuantities;
+        if(updatedData.isApproved === "returned") {
+            newQuantities = {
+            current_quantity: quantities.current_quantity + good_quantity,
+            good_quantity: quantities.good_quantity + good_quantity,
+            damage_quantity: quantities.damage_quantity + damaged_quantity,
+          };
+        } else {
+              newQuantities = {
+              current_quantity: quantities.current_quantity - good_quantity,
+              good_quantity: quantities.good_quantity - good_quantity,
+              damage_quantity: quantities.damage_quantity + damaged_quantity,
+          }
+        }
+        console.log('New Quantities:', newQuantities);
+        await updateToolQuantity(id, newQuantities.current_quantity, newQuantities.good_quantity, newQuantities.damage_quantity);
       }
+
+      const now = new Date();
+      const data = {
+        status: updatedData.isApproved === "returned" ? "returned" : "borrowed",
+        count,
+        date: now,
+        day: getDate(now),
+        month: getMonth(now) + 1,
+        year: getYear(now),
+        weekOfMonth: getWeekOfMonth(now),
+      };
+      await chartData(data);
+      await updateBorrower(borrower.id, updatedData);
+      console.log(`Borrower with ID ${borrower.id} has been ${updatedData.isApproved}`);
     } catch (error) {
       console.error('Error approving borrower:', error);
     } finally {
@@ -151,18 +215,6 @@ const BorrowerSlip = ({ borrower, status }) => {
             primary={<Typography variant="h6">{borrower.borrowername}</Typography>}
             secondary={<Typography variant="body2" color="textSecondary">Course: {borrower.course} | Date: {borrower.date.toDate().toLocaleString()}</Typography>}
           />
-          <List>
-            {borrower.equipmentDetails.slice(0, 2).map((equipment, idx) => (
-              <ListItem key={idx}>
-                <ListItemText primary={equipment.name} secondary={`Capacity: ${equipment.capacity} ${equipment.unit}`} />
-              </ListItem>
-            ))}
-            {borrower.equipmentDetails.length > 2 && (
-              <ListItem>
-                <ListItemText primary={<Typography color="primary">and {borrower.equipmentDetails.length - 2} more...</Typography>} />
-              </ListItem>
-            )}
-          </List>
         </ListItem>
       </Tooltip>
       <Divider />

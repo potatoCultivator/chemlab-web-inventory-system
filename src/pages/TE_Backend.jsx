@@ -295,25 +295,6 @@ async function updateBorrower(borrowerId, updatedData) {
   console.log(`Borrower with ID ${borrowerId} has been updated`);
 }
 
-// async function chartData(data) {
-//   const db = firestore;
-//   const batch = writeBatch(db);
-
-//   const chartdata = collection(db, 'chartdata');
-//   batch.set(doc(chartdata), data);
-//   await batch.commit();
-// }
-
-
-// import { format, getMonth, getYear, getWeek, getWeekOfMonth } from 'date-fns';
-
-// import { firestore } from './firebase'; // Adjust the import path as necessary
-// import { collection, query, where, getDocs, writeBatch, doc, onSnapshot } from 'firebase/firestore';
-// import { getDate, getMonth, getYear, getWeek, getWeekOfMonth } from 'date-fns';
-// import { firestore } from 'path-to-your-firebase-config'; // Adjust the path to your Firebase config
-// import { writeBatch, collection, query, where, getDocs, doc } from 'firebase/firestore';
-// import { getDate, getMonth, getWeek, getWeekOfMonth, getYear } from 'date-fns';
-
 async function chartData(data) {
   try {
     const db = firestore;

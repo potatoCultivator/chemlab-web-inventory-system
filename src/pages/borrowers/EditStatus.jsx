@@ -29,11 +29,15 @@ export default function EditStatus({ onSave, initialEquipment }) {
 
   const handleSave = () => {
     setLoading(true);
-    setTimeout(() => {
-      onSave({ ...initialEquipment, good_quantity: goodQuantity, damaged_quantity: damagedQuantity });
-      setLoading(false);
-      setOpen(false);
-    }, 1000);
+    const updatedEquipment = {
+      ...initialEquipment,
+      good_quantity: parseInt(goodQuantity, 10),
+      damaged_quantity: parseInt(damagedQuantity, 10)
+    };
+    console.log('Updated Equipment:', updatedEquipment); // Debugging statement
+    onSave(updatedEquipment);
+    setLoading(false);
+    setOpen(false);
   };
 
   return (
