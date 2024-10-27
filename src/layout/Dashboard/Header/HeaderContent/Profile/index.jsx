@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
+// import axios from 'axios';
 
-// material-ui
+// Material-UI imports
 import { useTheme } from '@mui/material/styles';
 import ButtonBase from '@mui/material/ButtonBase';
 import CardContent from '@mui/material/CardContent';
@@ -15,19 +16,21 @@ import Tabs from '@mui/material/Tabs';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
-// project import
+// Project imports
 import ProfileTab from './ProfileTab';
 import SettingTab from './SettingTab';
 import Avatar from 'components/@extended/Avatar';
 import MainCard from 'components/MainCard';
 import Transitions from 'components/@extended/Transitions';
 
-// assets
+// Assets
 import SettingOutlined from '@ant-design/icons/SettingOutlined';
 import UserOutlined from '@ant-design/icons/UserOutlined';
 import avatar1 from 'assets/images/users/avatar-1.png';
 
-// tab panel wrapper
+import { fetchUserProfile } from 'pages/TE_Backend';
+
+// Tab panel wrapper
 function TabPanel({ children, value, index, ...other }) {
   return (
     <div role="tabpanel" hidden={value !== index} id={`profile-tabpanel-${index}`} aria-labelledby={`profile-tab-${index}`} {...other}>
@@ -47,9 +50,39 @@ function a11yProps(index) {
 
 export default function Profile() {
   const theme = useTheme();
-
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(0);
+  const [data, setData] = useState({ firstname: '', lastname: '' });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userData = await fetchUserProfile(); // Fetch user profile
+        console.log('User Data:', userData.email);
+        const { firstname, lastname } = userData;
+
+        console.log('First Name:', firstname);
+        console.log('Last Name:', lastname);
+
+        if (firstname && lastname) {
+          setData({ firstname, lastname });
+        } else {
+          console.error('First name or last name is missing in the response.');
+          setError('Profile data is incomplete.');
+        }
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
   };
@@ -60,8 +93,6 @@ export default function Profile() {
     }
     setOpen(false);
   };
-
-  const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -88,7 +119,7 @@ export default function Profile() {
         <Stack direction="row" spacing={1.25} alignItems="center" sx={{ p: 0.5 }}>
           <Avatar alt="profile user" src={avatar1} size="sm" />
           <Typography variant="subtitle1" sx={{ textTransform: 'capitalize' }}>
-            Fullname
+            {data ? `${data.firstname} ${data.lastname}` : 'Fullname'}
           </Typography>
         </Stack>
       </ButtonBase>
@@ -121,9 +152,9 @@ export default function Profile() {
                         <Stack direction="row" spacing={1.25} alignItems="center">
                           <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
                           <Stack>
-                            <Typography variant="h6">Fullname</Typography>
+                            <Typography variant="h6">{data ? `${data.firstname} ${data.lastname}` : 'Fullname'}</Typography>
                             <Typography variant="body2" color="text.secondary">
-                              Admin
+                              {/* Use a fallback for role */}
                             </Typography>
                           </Stack>
                         </Stack>
@@ -154,15 +185,16 @@ export default function Profile() {
                           textTransform: 'capitalize'
                         }}
                         icon={<SettingOutlined style={{ marginBottom: 0, marginRight: '10px' }} />}
-                        label="Setting"
+                        label="Settings"
                         {...a11yProps(1)}
                       />
                     </Tabs>
                   </Box>
-                  <TabPanel value={value} index={0} dir={theme.direction}>
+
+                  <TabPanel value={value} index={0}>
                     <ProfileTab />
                   </TabPanel>
-                  <TabPanel value={value} index={1} dir={theme.direction}>
+                  <TabPanel value={value} index={1}>
                     <SettingTab />
                   </TabPanel>
                 </MainCard>
@@ -174,5 +206,3 @@ export default function Profile() {
     </Box>
   );
 }
-
-TabPanel.propTypes = { children: PropTypes.node, value: PropTypes.number, index: PropTypes.number, other: PropTypes.any };

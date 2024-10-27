@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+// import axios from 'axios';
 
 // Material-UI components
 import Button from '@mui/material/Button';
@@ -29,7 +30,7 @@ import AnimateButton from 'components/@extended/AnimateButton';
 import EyeOutlined from '@ant-design/icons/EyeOutlined';
 import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
 import FirebaseSocial from './FirebaseSocial';
-import { loginUser } from 'src/pages/TE_Backend';
+import { loginUser,fetchUserProfile } from 'src/pages/TE_Backend';
 
 // ============================|| JWT - LOGIN ||============================ // 
 
@@ -47,16 +48,33 @@ export default function AuthLogin({ isDemo = false }) {
   };
 
   const handleLogin = async (values, { setErrors, setSubmitting }) => {
-    console.log('Login Values:', values); // Debugging: check if email is empty or undefined
     try {
-      await loginUser(values); // Pass the entire values object
-      navigate('/dashboard/default', { replace: true });
+      const response = await loginUser(values);
+      if (response.success) {
+        const { user } = response;
+        const token = await user.getIdToken();
+        localStorage.setItem('token', token);
+  
+        // Fetch user profile using the UID
+        const userProfile = await fetchUserProfile(user.uid); // Fetch user profile
+        if (userProfile) {
+          localStorage.setItem('firstName', userProfile.firstName);
+          localStorage.setItem('lastName', userProfile.lastName);
+        }
+  
+        navigate('/dashboard/default', { replace: true });
+      } else {
+        setErrors({ submit: 'Login failed. Please check your credentials.' });
+      }
     } catch (error) {
-      setErrors({ submit: error.message });
+      setErrors({ submit: error.message || 'Login failed. Please try again.' });
     } finally {
       setSubmitting(false);
     }
   };
+  
+  
+
 
   return (
     <>

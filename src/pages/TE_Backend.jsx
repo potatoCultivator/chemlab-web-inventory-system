@@ -427,6 +427,62 @@ async function loginUser({ email, password }) {
   }
 }
 
+// /**
+//  * Fetch user profile from Firestore.
+//  * @param {string} uid - The unique identifier of the user.
+//  * @returns {Promise<Object>} The user profile data.
+//  */
+// const fetchUserProfile = async (uid) => {
+//   try {
+//     const userDocRef = doc(db, 'admin_users', uid); // Reference to the user's document
+//     const userDoc = await getDoc(userDocRef); // Fetch the document
+
+//     if (userDoc.exists()) {
+//       return userDoc.data(); // Return user profile data
+//     } else {
+//       throw new Error('User profile not found');
+//     }
+//   } catch (error) {
+//     console.error('Error fetching user profile:', error);
+//     throw error; // Rethrow the error for handling in the calling function
+//   }
+// };
+
+const fetchUserProfile = async (uid) => {
+  const db = firestore;
+
+  if (!uid) {
+    const user = auth.currentUser; // Get the current user if uid is not provided
+    if (!user) {
+      throw new Error('No user is signed in.');
+    }
+    uid = user.uid;
+  }
+
+  try {
+    const userDocRef = doc(db, 'admin_users', uid);
+    const userDoc = await getDoc(userDocRef);
+
+    if (userDoc.exists()) {
+      return userDoc.data(); // Return the user data
+    } else {
+      throw new Error('User profile not found.');
+    }
+  } catch (error) {
+    throw new Error(`Error fetching user profile: ${error.message}`);
+  }
+};
+
+const updateUserProfile = async (uid, updatedData) => {
+  const db = firestore;
+  const docRef = doc(db, 'admin_users', uid); // Reference to the user document in Firestore
+  try {
+    await updateDoc(docRef, updatedData); // Update the document with new data
+    console.log('Profile updated successfully.');
+  } catch (error) {
+    console.error('Error updating profile:', error);
+  }
+};
 
 
 export default uploadTE;
@@ -451,5 +507,7 @@ export {
   chartData,
   fetchChartData,
   registerUser,
-  loginUser
+  loginUser,
+  fetchUserProfile,
+  updateUserProfile
 }; // Export the functions for use in other modules
