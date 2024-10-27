@@ -1,8 +1,9 @@
-import { firestore, storage } from '../firebase'; // Adjust the path as necessary
-import { collection, query, where, addDoc, writeBatch, doc, getDocs, updateDoc, deleteDoc, onSnapshot, getDoc } from "firebase/firestore"; 
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { firestore, storage, auth } from '../firebase'; // Adjust the path as necessary
+import { collection, query, where, writeBatch, doc, getDocs, updateDoc, deleteDoc, onSnapshot, getDoc, setDoc } from "firebase/firestore"; 
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { sendEmail } from './emailService'; // Import the email service
-import { format, getMonth, getYear, getWeek, getWeekOfMonth, getDate } from 'date-fns';
+import { getMonth, getYear, getWeekOfMonth, getDate } from 'date-fns';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword  } from 'firebase/auth';
 
 function validateToolData(data) {
   return {
@@ -376,6 +377,57 @@ async function fetchChartData(callback, status) {
 //   cost 
 // }
 
+/**
+ * Registers a new user with Firebase Authentication and saves user data in Firestore.
+ * @param {Object} userInfo - Object containing user's information.
+ * @param {string} userInfo.email - User's email.
+ * @param {string} userInfo.password - User's password.
+ * @param {string} userInfo.firstname - User's first name.
+ * @param {string} userInfo.lastname - User's last name.
+ * @returns {Promise} - Resolves if the user is registered successfully.
+ */
+async function registerUser({ email, password, firstname, lastname }) {
+  try {
+    // Create user with email and password
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    // Save additional data in Firestore
+    await setDoc(doc(firestore, 'admin_users', user.uid), {
+      firstname,
+      lastname,
+      email
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error registering user:", error);
+    throw new Error(error.message);
+  }
+}
+
+// /**
+//  * Logs in an admin user with Firebase Authentication.
+//  * @param {Object} userInfo - Object containing user's login information.
+//  * @param {string} userInfo.email - User's email.
+//  * @param {string} userInfo.password - User's password.
+//  * @returns {Promise} - Resolves with the user credentials if successful.
+//  */
+async function loginUser({ email, password }) {
+  try {
+    // Log in the user with email and password
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    
+    console.log("User logged in:", userCredential.user);
+    
+    return { success: true, user: userCredential.user };
+  } catch (error) {
+    console.error("Error logging in user:", error);
+    throw new Error(error.message);
+  }
+}
+
+
 
 export default uploadTE;
 
@@ -397,5 +449,7 @@ export {
   fetchBorrowerEquipmentDetails,
   fetchBorrowerEquipmentDetails_Returned,
   chartData,
-  fetchChartData
+  fetchChartData,
+  registerUser,
+  loginUser
 }; // Export the functions for use in other modules

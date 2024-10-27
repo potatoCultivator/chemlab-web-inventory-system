@@ -3,7 +3,7 @@ import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
-// material-ui
+// Material-UI components
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import Divider from '@mui/material/Divider';
@@ -18,31 +18,44 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-// third party
+// Third-party
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 
-// project import
+// Project import
 import AnimateButton from 'components/@extended/AnimateButton';
 
-// assets
+// Assets
 import EyeOutlined from '@ant-design/icons/EyeOutlined';
 import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
 import FirebaseSocial from './FirebaseSocial';
+import { loginUser } from 'src/pages/TE_Backend';
 
-// ============================|| JWT - LOGIN ||============================ //
+// ============================|| JWT - LOGIN ||============================ // 
 
 export default function AuthLogin({ isDemo = false }) {
   const [checked, setChecked] = React.useState(false);
   const navigate = useNavigate();
-
   const [showPassword, setShowPassword] = React.useState(false);
+  
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
+  };
+
+  const handleLogin = async (values, { setErrors, setSubmitting }) => {
+    console.log('Login Values:', values); // Debugging: check if email is empty or undefined
+    try {
+      await loginUser(values); // Pass the entire values object
+      navigate('/dashboard/default', { replace: true });
+    } catch (error) {
+      setErrors({ submit: error.message });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -57,14 +70,7 @@ export default function AuthLogin({ isDemo = false }) {
           email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
           password: Yup.string().max(255).required('Password is required')
         })}
-
-        onSubmit={(values, { setSubmitting }) => {
-          // Simulate a login request
-          setTimeout(() => {
-            navigate('/dashboard/default', { replace: true });
-            setSubmitting(false);
-          }, 500);
-        }}
+        onSubmit={handleLogin}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit}>
@@ -96,7 +102,7 @@ export default function AuthLogin({ isDemo = false }) {
                   <OutlinedInput
                     fullWidth
                     error={Boolean(touched.password && errors.password)}
-                    id="-password-login"
+                    id="password-login" // Fixed typo here
                     type={showPassword ? 'text' : 'password'}
                     value={values.password}
                     name="password"
@@ -137,7 +143,7 @@ export default function AuthLogin({ isDemo = false }) {
                         size="small"
                       />
                     }
-                    label={<Typography variant="h6">Keep me sign in</Typography>}
+                    label={<Typography variant="h6">Keep me signed in</Typography>}
                   />
                   <Link variant="h6" component={RouterLink} color="text.primary">
                     Forgot Password?

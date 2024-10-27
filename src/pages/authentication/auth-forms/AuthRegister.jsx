@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // material-ui
 import Button from '@mui/material/Button';
@@ -23,15 +24,17 @@ import { Formik } from 'formik';
 import AnimateButton from 'components/@extended/AnimateButton';
 import { strengthColor, strengthIndicator } from 'utils/password-strength';
 
+import { registerUser } from 'pages/TE_Backend';
+
 // assets
 import EyeOutlined from '@ant-design/icons/EyeOutlined';
 import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
 
-// ============================|| JWT - REGISTER ||============================ //
-
 export default function AuthRegister() {
   const [level, setLevel] = useState();
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -49,6 +52,24 @@ export default function AuthRegister() {
     changePassword('');
   }, []);
 
+  const handleRegister = async (values, { setErrors, setSubmitting }) => {
+    try {
+      await registerUser(values); // Attempt to register the user
+      navigate('/'); // Navigate to login page upon successful registration
+    } catch (error) {
+      if (error.message === 'Firebase: Error (auth/email-already-in-use).') {
+        // Handle the case where the email is already registered
+        setErrors({ submit: 'This email is already registered. Please use a different email or log in.' });
+      } else {
+        // Handle other potential errors
+        setErrors({ submit: error.message });
+      }
+    } finally {
+      setSubmitting(false); // Reset submitting state
+    }
+  };
+  
+
   return (
     <>
       <Formik
@@ -56,7 +77,6 @@ export default function AuthRegister() {
           firstname: '',
           lastname: '',
           email: '',
-          company: '',
           password: '',
           submit: null
         }}
@@ -66,10 +86,12 @@ export default function AuthRegister() {
           email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
           password: Yup.string().max(255).required('Password is required')
         })}
+        onSubmit={handleRegister}  // This is the key part
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
           <form noValidate onSubmit={handleSubmit}>
             <Grid container spacing={3}>
+              {/* First Name */}
               <Grid item xs={12} md={6}>
                 <Stack spacing={1}>
                   <InputLabel htmlFor="firstname-signup">First Name*</InputLabel>
@@ -91,6 +113,8 @@ export default function AuthRegister() {
                   </FormHelperText>
                 )}
               </Grid>
+
+              {/* Last Name */}
               <Grid item xs={12} md={6}>
                 <Stack spacing={1}>
                   <InputLabel htmlFor="lastname-signup">Last Name*</InputLabel>
@@ -113,6 +137,8 @@ export default function AuthRegister() {
                   </FormHelperText>
                 )}
               </Grid>
+
+              {/* Email */}
               <Grid item xs={12}>
                 <Stack spacing={1}>
                   <InputLabel htmlFor="email-signup">Email Address*</InputLabel>
@@ -135,6 +161,8 @@ export default function AuthRegister() {
                   </FormHelperText>
                 )}
               </Grid>
+
+              {/* Password */}
               <Grid item xs={12}>
                 <Stack spacing={1}>
                   <InputLabel htmlFor="password-signup">Password</InputLabel>
@@ -185,6 +213,8 @@ export default function AuthRegister() {
                   </Grid>
                 </FormControl>
               </Grid>
+
+              {/* Terms */}
               <Grid item xs={12}>
                 <Typography variant="body2">
                   By Signing up, you agree to our &nbsp;
@@ -197,15 +227,18 @@ export default function AuthRegister() {
                   </Link>
                 </Typography>
               </Grid>
+
+              {/* Submit Button */}
               {errors.submit && (
                 <Grid item xs={12}>
                   <FormHelperText error>{errors.submit}</FormHelperText>
                 </Grid>
               )}
+              
               <Grid item xs={12}>
                 <AnimateButton>
                   <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
-                    Create Account
+                    {isSubmitting ? 'Creating Account...' : 'Create Account'}
                   </Button>
                 </AnimateButton>
               </Grid>
