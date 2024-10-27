@@ -1,8 +1,7 @@
 import { lazy } from 'react';
-
-// project import
 import Loadable from 'components/Loadable';
 import Dashboard from 'layout/Dashboard';
+import ProtectedRoute from 'components/ProtectedRoute';
 
 // Lazy load components
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard/index')));
@@ -10,9 +9,6 @@ const ToolsAndEquipment = Loadable(lazy(() => import('pages/tools-equipments/ind
 const Borrowers = Loadable(lazy(() => import('pages/borrowers/index')));
 const Instructors = Loadable(lazy(() => import('pages/instructors/index')));
 const History = Loadable(lazy(() => import('pages/history/index')));
-
-// render - sample page
-const SamplePage = Loadable(lazy(() => import('pages/extra-pages/sample-page')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -26,19 +22,19 @@ const MainRoutes = {
     },
     {
       path: 'tools-equipments',
-      element: <ToolsAndEquipment />
+      element: <ProtectedRoute element={<ToolsAndEquipment />} /> // Protect this route
     },
     {
       path: 'borrowers',
-      element: <Borrowers />
+      element: <ProtectedRoute element={<Borrowers />} /> // Protect this route
     },
     {
       path: 'instructors',
-      element: <Instructors />
+      element: <ProtectedRoute element={<Instructors />} /> // Protect this route
     },
     {
       path: 'history',
-      element: <History />
+      element: <ProtectedRoute element={<History />} /> // Protect this route
     },
     {
       path: 'dashboard',
