@@ -11,8 +11,6 @@ import ToolAnalytics from 'components/cards/statistics/ToolAnalytics';
 import SummaryTable from './SummaryTable';
 import BorrowersReport from './BorrowersReport';
 
-import UserProfile from 'pages/admin-profile/UserProfile';
-
 // Firebase
 import { 
         fetchAdminApprovedBorrowersCount, 
@@ -223,8 +221,6 @@ export default function DashboardDefault() {
           <BorrowersReport className="borrowers-report" />
         </Grid>
       </Grid>
-
-      <UserProfile />
     </>
   );
 }
