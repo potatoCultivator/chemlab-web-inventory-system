@@ -237,6 +237,30 @@ async function fetchBorrowerEquipmentDetails_Returned() {
   }
 }
 
+async function fetchBorrowers(callback) {
+  const borrowerCollection = collection(firestore, 'borrower');
+
+  // Filter only borrowers with isApproved set to 'returned', 'admin approved', or 'pending return'
+  const returnedBorrowersQuery = query(
+    borrowerCollection,
+    where('isApproved', 'in', ['returned', 'admin approved', 'pending return']) // Fixed closing parenthesis
+  );
+
+  // Set up a real-time listener with the filtered query
+  const unsubscribe = onSnapshot(returnedBorrowersQuery, (querySnapshot) => {
+    const rows = querySnapshot.docs.map((doc) => ({
+      ...doc.data(), // Spread the document data
+      id: doc.id // Include the document ID
+    }));
+
+    // Execute the callback with the filtered data
+    callback(rows);
+  });
+
+  return unsubscribe;
+}
+
+
 function addAdminApprovedBorrowersListener(callback) {
   const db = firestore;
   const borrowerCollection = collection(db, 'borrower');
@@ -370,13 +394,6 @@ async function fetchChartData(callback, status) {
   }
 }
 
-
-// export { chartData, fetchChartData_borrowed };
-
-// async function fetchChartData_borrowed() {
-//   cost 
-// }
-
 /**
  * Registers a new user with Firebase Authentication and saves user data in Firestore.
  * @param {Object} userInfo - Object containing user's information.
@@ -406,13 +423,6 @@ async function registerUser({ email, password, firstname, lastname }) {
   }
 }
 
-// /**
-//  * Logs in an admin user with Firebase Authentication.
-//  * @param {Object} userInfo - Object containing user's login information.
-//  * @param {string} userInfo.email - User's email.
-//  * @param {string} userInfo.password - User's password.
-//  * @returns {Promise} - Resolves with the user credentials if successful.
-//  */
 async function loginUser({ email, password }) {
   try {
     // Log in the user with email and password
@@ -426,27 +436,6 @@ async function loginUser({ email, password }) {
     throw new Error(error.message);
   }
 }
-
-// /**
-//  * Fetch user profile from Firestore.
-//  * @param {string} uid - The unique identifier of the user.
-//  * @returns {Promise<Object>} The user profile data.
-//  */
-// const fetchUserProfile = async (uid) => {
-//   try {
-//     const userDocRef = doc(db, 'admin_users', uid); // Reference to the user's document
-//     const userDoc = await getDoc(userDocRef); // Fetch the document
-
-//     if (userDoc.exists()) {
-//       return userDoc.data(); // Return user profile data
-//     } else {
-//       throw new Error('User profile not found');
-//     }
-//   } catch (error) {
-//     console.error('Error fetching user profile:', error);
-//     throw error; // Rethrow the error for handling in the calling function
-//   }
-// };
 
 const fetchUserProfile = async (uid) => {
   const db = firestore;
@@ -509,5 +498,6 @@ export {
   registerUser,
   loginUser,
   fetchUserProfile,
-  updateUserProfile
+  updateUserProfile,
+  fetchBorrowers
 }; // Export the functions for use in other modules

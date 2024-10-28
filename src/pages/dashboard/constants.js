@@ -57,10 +57,10 @@ const headCells = [
       label: 'Status'
     },
     {
-      id: 'condition',
-      align: 'right',
+      id: 'capacity',
+      align: 'center',
       disablePadding: false,
-      label: 'Condition'
+      label: 'Capacity'
     }
   ];
 

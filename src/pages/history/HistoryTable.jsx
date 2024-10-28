@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -9,29 +9,17 @@ import {
   Paper,
   Typography,
 } from '@mui/material';
-
-// Sample data for the history
-const historyData = [
-  {
-    id: 1,
-    date: '2024-10-28',
-    time: '10:00 AM',
-    activity: 'Login',
-    description: 'User logged in successfully.',
-    status: 'Success',
-  },
-  {
-    id: 2,
-    date: '2024-10-27',
-    time: '02:30 PM',
-    activity: 'Update',
-    description: 'Updated profile information.',
-    status: 'Success',
-  },
-  // Add more history entries as needed
-];
+import { format } from 'date-fns';
+import { fetchBorrowers } from 'pages/TE_Backend';
 
 const HistoryTable = () => {
+  const [borrowers, setBorrowers] = useState([]);
+
+  useEffect(() => {
+    const unsubscribe = fetchBorrowers(setBorrowers);
+    return () => unsubscribe;
+  }, []);
+
   return (
     <TableContainer component={Paper}>
       <Typography variant="h4" align="center" sx={{ margin: 2 }}>
@@ -41,20 +29,29 @@ const HistoryTable = () => {
         <TableHead>
           <TableRow>
             <TableCell>Date</TableCell>
-            <TableCell>Time</TableCell>
-            <TableCell>Activity Type</TableCell>
-            <TableCell>Description</TableCell>
-            <TableCell>Status</TableCell>
+            <TableCell align='center'>Borrower</TableCell>
+            <TableCell align='center'>Status</TableCell>
+            <TableCell align='center'>Instructor</TableCell>
+            <TableCell align='center'>Subject</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {historyData.map((row) => (
+          {borrowers.map((row) => (
             <TableRow key={row.id}>
-              <TableCell>{row.date}</TableCell>
-              <TableCell>{row.time}</TableCell>
-              <TableCell>{row.activity}</TableCell>
-              <TableCell>{row.description}</TableCell>
-              <TableCell>{row.status}</TableCell>
+              <TableCell>
+                {
+                  row.date && row.date.toDate ? 
+                  format(row.date.toDate(), 'yyyy-MM-dd') : 'N/A'
+                }
+              </TableCell>
+              <TableCell align='center'>{row.borrowername}</TableCell>
+              <TableCell align='center'>
+                {['pending return', 'admin approved'].includes(row.isApproved)
+                  ? 'in use'
+                  : row.isApproved}
+              </TableCell>
+              <TableCell align='center'>{row.instructor}</TableCell>
+              <TableCell align='center'>{row.subject}</TableCell>
             </TableRow>
           ))}
         </TableBody>

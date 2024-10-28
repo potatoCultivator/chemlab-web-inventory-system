@@ -169,7 +169,7 @@ export default function SummaryTable() {
                     <TableCell>{row.borrower}</TableCell>
                     <TableCell align="right">{row.good_quantity}</TableCell>
                     <TableCell><ToolStatus status={row.isApproved} /></TableCell>
-                    <TableCell align="right">{row.condition}</TableCell>
+                    <TableCell align="center">{row.capacity}{row.unit}</TableCell>
                   </TableRow>
                 );
               })

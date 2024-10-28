@@ -14,7 +14,7 @@ import Box from '@mui/material/Box';
 import ReactApexChart from 'react-apexcharts';
 import { fetchChartData } from 'pages/TE_Backend';
 import { get } from 'lodash';
-import { format, getMonth, getYear, getWeekOfMonth, getDay } from 'date-fns';
+import { startOfWeek, endOfWeek, isSameWeek, isSameMonth, getDay, getYear, getMonth, getWeekOfMonth } from 'date-fns';
 
 // chart options
 const columnChartOptions = {
@@ -63,32 +63,70 @@ export default function BorrowersChart({ isWeekly }) {
     };
   }, []);
 
-  // Process data for weekly/monthly charts
+  // // Process data for weekly/monthly charts
+  // const processData = (data, isWeekly) => {
+  //   const now = new Date();
+  //   if (isWeekly) {
+  //     const weekData = Array(7).fill(0);
+  //     data.forEach(item => {
+  //       const itemDate = item.date.toDate ? item.date.toDate() : new Date(item.date);
+  //       const itemDayOfWeek = getDay(itemDate);
+  //       if (getYear(itemDate) === getYear(now) && getMonth(itemDate) + 1 === getMonth(now) + 1) {
+  //         weekData[itemDayOfWeek] += item.count;
+  //       }
+  //     });
+  //     return weekData;
+  //   } else {
+  //     const monthData = Array(5).fill(0); // Assuming max 5 weeks in a month
+  //     data.forEach(item => {
+  //       const itemDate = item.date.toDate ? item.date.toDate() : new Date(item.date);
+  //       const itemWeekOfMonth = getWeekOfMonth(itemDate);
+  //       if (getYear(itemDate) === getYear(now) && getMonth(itemDate) + 1 === getMonth(now) + 1) {
+  //         monthData[itemWeekOfMonth - 1] += item.count;
+  //       }
+  //     });
+  //     return monthData;
+  //   }
+  // };
+
   const processData = (data, isWeekly) => {
     const now = new Date();
+  
     if (isWeekly) {
+      // Define the start and end dates for the current week
+      const weekStart = startOfWeek(now, { weekStartsOn: 0 }); // Change to 1 if you want the week to start on Monday
+      const weekEnd = endOfWeek(now, { weekStartsOn: 0 });
+  
       const weekData = Array(7).fill(0);
+  
       data.forEach(item => {
         const itemDate = item.date.toDate ? item.date.toDate() : new Date(item.date);
-        const itemDayOfWeek = getDay(itemDate);
-        if (getYear(itemDate) === getYear(now) && getMonth(itemDate) + 1 === getMonth(now) + 1) {
+  
+        // Check if the item's date falls within the current week
+        if (itemDate >= weekStart && itemDate <= weekEnd) {
+          const itemDayOfWeek = getDay(itemDate);
           weekData[itemDayOfWeek] += item.count;
         }
       });
+  
       return weekData;
     } else {
-      const monthData = Array(5).fill(0); // Assuming max 5 weeks in a month
+      // For monthly data, continue as usual
+      const monthData = Array(5).fill(0);
+  
       data.forEach(item => {
         const itemDate = item.date.toDate ? item.date.toDate() : new Date(item.date);
         const itemWeekOfMonth = getWeekOfMonth(itemDate);
-        if (getYear(itemDate) === getYear(now) && getMonth(itemDate) + 1 === getMonth(now) + 1) {
+  
+        // Check if item falls within the current year and month
+        if (getYear(itemDate) === getYear(now) && getMonth(itemDate) === getMonth(now)) {
           monthData[itemWeekOfMonth - 1] += item.count;
         }
       });
+  
       return monthData;
     }
   };
-
   useEffect(() => {
     const newSeries = isWeekly
       ? [
