@@ -1,21 +1,14 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-// material-ui
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-
-// icons
 import EditOutlined from '@ant-design/icons/EditOutlined';
 import ProfileOutlined from '@ant-design/icons/ProfileOutlined';
 import LogoutOutlined from '@ant-design/icons/LogoutOutlined';
 import UserOutlined from '@ant-design/icons/UserOutlined';
-import WalletOutlined from '@ant-design/icons/WalletOutlined';
-
-// ==============================|| HEADER PROFILE - PROFILE TAB ||============================== //
 
 export default function ProfileTab() {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -23,10 +16,17 @@ export default function ProfileTab() {
 
   const handleListItemClick = (event, index, path) => {
     setSelectedIndex(index);
-    navigate(path); // Navigate to the specified path
+    navigate(path);
   };
 
   const handleLogoutAcc = () => {
+    // Clear all relevant user data from localStorage
+    localStorage.removeItem('token');
+    localStorage.removeItem('userData'); // Remove profile data
+    localStorage.removeItem('firstName');
+    localStorage.removeItem('lastName');
+    
+    // Navigate to login or home page after logout
     navigate('/', { replace: true });
   };
 

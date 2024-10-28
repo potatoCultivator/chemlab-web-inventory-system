@@ -28,6 +28,7 @@ export default function Profile() {
 
     if (storedData) {
       setData(JSON.parse(storedData)); // Set data from local storage
+      console.log('stored data',data);
     } else {
       const fetchData = async () => {
         try {

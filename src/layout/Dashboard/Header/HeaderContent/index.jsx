@@ -25,7 +25,8 @@ export default function HeaderContent() {
       {downLG && <Box sx={{ width: '100%', ml: 1 }} />}
       
       {!downLG && <Profile />}
-      {downLG && <MobileSection />}
+      {downLG && <Profile />}
+      {/* {downLG && <MobileSection />} */}
     </>
   );
 }
