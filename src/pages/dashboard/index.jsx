@@ -11,6 +11,8 @@ import ToolAnalytics from 'components/cards/statistics/ToolAnalytics';
 import SummaryTable from './SummaryTable';
 import BorrowersReport from './BorrowersReport';
 
+import UserProfile from 'pages/admin-profile/UserProfile';
+
 // Firebase
 import { 
         fetchAdminApprovedBorrowersCount, 
@@ -79,55 +81,55 @@ export default function DashboardDefault() {
   console.log("record count:" + recentBorrowed.length);
   console.log(recentBorrowed);
 
-  const steps = [
-    {
-      target: '.dashboard-title',
-      content: 'This is the dashboard title. It provides an overview of the system.',
-      placement: 'bottom',
-      disableBeacon: true,
-    },
-    {
-      target: '.total-borrowed',
-      content: 'This displays the total number of borrowed tools/equipment in the system.',
-      placement: 'top'
-    },
-    {
-      target: '.total-returned',
-      content: 'Here you can see how many tools or equipment have been returned.',
-      placement: 'top'
-    },
-    {
-      target: '.total-good-condition',
-      content: 'This shows the total number of tools or equipment in good condition.',
-      placement: 'top'
-    },
-    {
-      target: '.total-bad-condition',
-      content: 'This displays the total number of tools or equipment in bad condition.',
-      placement: 'top'
-    },
-    {
-      target: '.recent-borrowed',
-      content: 'This section displays the recently borrowed tools/equipment.',
-      placement: 'top'
-    },
-    {
-      target: '.summary-table',
-      content: 'This table summarizes the borrowed tools/equipment.',
-      placement: 'top'
-    },
-    {
-      target: '.borrowers-report',
-      content: 'This section provides a detailed report of all borrowers.',
-      placement: 'top'
-    }
-    ,
-    {
-      target: '.sample',
-      content: 'Sample',
-      placement: 'bottom'
-    }
-  ];
+  // const steps = [
+  //   {
+  //     target: '.dashboard-title',
+  //     content: 'This is the dashboard title. It provides an overview of the system.',
+  //     placement: 'bottom',
+  //     disableBeacon: true,
+  //   },
+  //   {
+  //     target: '.total-borrowed',
+  //     content: 'This displays the total number of borrowed tools/equipment in the system.',
+  //     placement: 'top'
+  //   },
+  //   {
+  //     target: '.total-returned',
+  //     content: 'Here you can see how many tools or equipment have been returned.',
+  //     placement: 'top'
+  //   },
+  //   {
+  //     target: '.total-good-condition',
+  //     content: 'This shows the total number of tools or equipment in good condition.',
+  //     placement: 'top'
+  //   },
+  //   {
+  //     target: '.total-bad-condition',
+  //     content: 'This displays the total number of tools or equipment in bad condition.',
+  //     placement: 'top'
+  //   },
+  //   {
+  //     target: '.recent-borrowed',
+  //     content: 'This section displays the recently borrowed tools/equipment.',
+  //     placement: 'top'
+  //   },
+  //   {
+  //     target: '.summary-table',
+  //     content: 'This table summarizes the borrowed tools/equipment.',
+  //     placement: 'top'
+  //   },
+  //   {
+  //     target: '.borrowers-report',
+  //     content: 'This section provides a detailed report of all borrowers.',
+  //     placement: 'top'
+  //   }
+  //   ,
+  //   {
+  //     target: '.sample',
+  //     content: 'Sample',
+  //     placement: 'bottom'
+  //   }
+  // ];
 
   // useEffect(() => {
   //   document.title = "ChemLab IMS";
@@ -147,7 +149,7 @@ export default function DashboardDefault() {
     <>
       {/* Joyride Tour */}
       <Joyride
-        steps={steps}
+        // steps={steps}
         run={run}
         continuous
         showProgress
@@ -221,6 +223,8 @@ export default function DashboardDefault() {
           <BorrowersReport className="borrowers-report" />
         </Grid>
       </Grid>
+
+      <UserProfile />
     </>
   );
 }
