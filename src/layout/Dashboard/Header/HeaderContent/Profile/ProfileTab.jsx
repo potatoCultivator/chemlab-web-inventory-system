@@ -11,7 +11,7 @@ import LogoutOutlined from '@ant-design/icons/LogoutOutlined';
 import UserOutlined from '@ant-design/icons/UserOutlined';
 
 export default function ProfileTab() {
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(null);
   const navigate = useNavigate();
 
   const handleListItemClick = (event, index, path) => {

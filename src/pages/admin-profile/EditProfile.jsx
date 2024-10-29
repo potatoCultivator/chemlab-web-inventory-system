@@ -26,11 +26,13 @@ const initialUserData = {
   address: 'Chemistry Lab, Science Building, 123 University St, City, Country',
   avatarUrl: 'https://via.placeholder.com/150',
   skills: ['Analytical Chemistry', 'Lab Management', 'Spectroscopy', 'Chromatography', 'Data Analysis'],
+  certifications: ['OSHA Certified', 'Certified Laboratory Manager', 'Good Laboratory Practice (GLP)'],
 };
 
 const EditProfile = () => {
   const [userData, setUserData] = useState(initialUserData);
   const [newSkill, setNewSkill] = useState('');
+  const [newCertification, setNewCertification] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -57,6 +59,23 @@ const EditProfile = () => {
     setUserData((prevData) => ({
       ...prevData,
       skills: prevData.skills.filter((skill) => skill !== skillToRemove),
+    }));
+  };
+
+  const handleAddCertification = () => {
+    if (newCertification.trim()) {
+      setUserData((prevData) => ({
+        ...prevData,
+        certifications: [...prevData.certifications, newCertification],
+      }));
+      setNewCertification('');
+    }
+  };
+
+  const handleRemoveCertification = (certificationToRemove) => {
+    setUserData((prevData) => ({
+      ...prevData,
+      certifications: prevData.certifications.filter((certification) => certification !== certificationToRemove),
     }));
   };
 
@@ -196,18 +215,6 @@ const EditProfile = () => {
 
             <Divider sx={{ my: 3 }} />
 
-            {/* Profile Picture Upload Section
-            <Typography variant="h5" gutterBottom>Profile Picture</Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Avatar src={userData.avatarUrl} sx={{ width: isMobile ? 60 : 80, height: isMobile ? 60 : 80 }} />
-              <Button variant="contained" component="label">
-                Upload Picture
-                <input type="file" hidden accept="image/*" onChange={handleProfilePicChange} />
-              </Button>
-            </Box> */}
-
-            <Divider sx={{ my: 3 }} />
-
             {/* Skills Section */}
             <Typography variant="h5" gutterBottom>Skills</Typography>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
@@ -230,6 +237,32 @@ const EditProfile = () => {
                 variant="outlined"
               />
               <Button variant="contained" color="primary" onClick={handleAddSkill}>Add</Button>
+            </Box>
+
+            <Divider sx={{ my: 3 }} />
+
+            {/* Certifications Section */}
+            <Typography variant="h5" gutterBottom>Certifications</Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+              {userData.certifications.map((certification, index) => (
+                <Chip
+                  key={index}
+                  label={certification}
+                  color="success" // Changed color to 'success'
+                  variant="outlined"
+                  onDelete={() => handleRemoveCertification(certification)}
+                />
+              ))}
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <TextField
+                fullWidth
+                label="Add Certification"
+                value={newCertification}
+                onChange={(e) => setNewCertification(e.target.value)}
+                variant="outlined"
+              />
+              <Button variant="contained" color="success" onClick={handleAddCertification}>Add</Button> {/* Changed color to 'success' */}
             </Box>
 
             <Divider sx={{ my: 3 }} />
