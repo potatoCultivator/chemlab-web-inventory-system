@@ -12,8 +12,10 @@ import {
   Box,
   Chip,
   IconButton,
+  useMediaQuery,
 } from '@mui/material';
-import EditOutlinedIcon from '@ant-design/icons';
+import { useTheme } from '@mui/material/styles';
+import EditOutlinedIcon from '@ant-design/icons/EditOutlined';
 
 // Sample user data (this can come from props, API, or state)
 const initialUserData = {
@@ -32,6 +34,9 @@ const EditProfile = () => {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -80,12 +85,54 @@ const EditProfile = () => {
   };
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', backgroundColor: '#f5f5f5', padding: 4 }}>
-      <Card sx={{ maxWidth: 800, width: '100%', padding: 3 }}>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        padding: 2,
+        ...(isMobile && {
+          flexDirection: 'column',
+          alignItems: 'stretch',
+          justifyContent: 'flex-start',
+          padding: 0,
+        }),
+      }}
+    >
+      <Card sx={{ maxWidth: 900, width: '100%', padding: isMobile ? 0 : 3 }}>
         <CardHeader
-          avatar={<Avatar src={userData.avatarUrl} sx={{ width: 80, height: 80 }} />}
-          action={<IconButton><EditOutlinedIcon /></IconButton>}
-          title={<Typography variant="h4">Edit Profile</Typography>}
+          avatar={
+            <Box sx={{ position: 'relative', display: 'inline-block' }}>
+              <Avatar src={userData.avatarUrl} sx={{ width: isMobile ? 60 : 80, height: isMobile ? 60 : 80 }} />
+              <IconButton
+                sx={{
+                  position: 'absolute',
+                  bottom: 0,
+                  right: 0,
+                  backgroundColor: 'white',
+                  borderRadius: '50%',
+                  padding: 0.5,
+                  '&:hover': {
+                    backgroundColor: 'white',
+                  },
+                }}
+                aria-label="edit avatar"
+              >
+                <label htmlFor="avatar-upload" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
+                  <EditOutlinedIcon fontSize="small" />
+                  <input
+                    id="avatar-upload"
+                    type="file"
+                    hidden
+                    accept="image/*"
+                    onChange={handleProfilePicChange}
+                  />
+                </label>
+              </IconButton>
+            </Box>
+          }
+          title={<Typography variant={isMobile ? 'h5' : 'h4'}>Edit Profile</Typography>}
           subheader="Update your profile details and skills"
         />
         <Divider sx={{ my: 2 }} />
@@ -149,15 +196,15 @@ const EditProfile = () => {
 
             <Divider sx={{ my: 3 }} />
 
-            {/* Profile Picture Upload Section */}
+            {/* Profile Picture Upload Section
             <Typography variant="h5" gutterBottom>Profile Picture</Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Avatar src={userData.avatarUrl} sx={{ width: 80, height: 80 }} />
+              <Avatar src={userData.avatarUrl} sx={{ width: isMobile ? 60 : 80, height: isMobile ? 60 : 80 }} />
               <Button variant="contained" component="label">
                 Upload Picture
                 <input type="file" hidden accept="image/*" onChange={handleProfilePicChange} />
               </Button>
-            </Box>
+            </Box> */}
 
             <Divider sx={{ my: 3 }} />
 

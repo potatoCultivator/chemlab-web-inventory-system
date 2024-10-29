@@ -10,8 +10,10 @@ import {
   Box,
   Chip,
   Grid,
+  useMediaQuery,
 } from '@mui/material';
-import EditOutlinedIcon from '@ant-design/icons';
+import { useTheme } from '@mui/material/styles';
+import EditOutlinedIcon from '@ant-design/icons/EditOutlined';
 
 // Sample user data for a chemistry lab admin or staff member
 const userData = {
@@ -35,6 +37,9 @@ const userData = {
 };
 
 const UserProfile = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   return (
     <Box
       sx={{
@@ -42,19 +47,24 @@ const UserProfile = () => {
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: '100vh',
-        backgroundColor: '#f5f5f5',
-        padding: 4,
+        padding: 2,
+        ...(isMobile && {
+          flexDirection: 'column',
+          alignItems: 'stretch',
+          justifyContent: 'flex-start',
+          padding: 0,
+        }),
       }}
     >
-      <Card sx={{ maxWidth: 900, width: '100%', padding: 3 }}>
+      <Card sx={{ maxWidth: 900, width: '100%', padding: isMobile ? 0 : 3 }}>
         <CardHeader
-          avatar={<Avatar src={userData.avatarUrl} sx={{ width: 80, height: 80 }} />}
+          avatar={<Avatar src={userData.avatarUrl} sx={{ width: isMobile ? 60 : 80, height: isMobile ? 60 : 80 }} />}
           action={
             <IconButton aria-label="edit profile">
               <EditOutlinedIcon />
             </IconButton>
           }
-          title={<Typography variant="h4">{userData.name}</Typography>}
+          title={<Typography variant={isMobile ? 'h5' : 'h4'}>{userData.name}</Typography>}
           subheader={<Typography color="textSecondary">{userData.bio}</Typography>}
         />
         <Divider sx={{ my: 2 }} />
@@ -79,7 +89,7 @@ const UserProfile = () => {
           <Typography variant="h5" gutterBottom>
             Skills
           </Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
             {userData.skills.map((skill, index) => (
               <Chip key={index} label={skill} color="primary" variant="outlined" />
             ))}
@@ -93,11 +103,9 @@ const UserProfile = () => {
           <Typography variant="h5" gutterBottom>
             Certifications
           </Typography>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
             {userData.certifications.map((certification, index) => (
-              <Typography key={index} variant="body1" color="textSecondary">
-                • {certification}
-              </Typography>
+              <Chip key={index} label={certification} color="secondary" variant="outlined" />
             ))}
           </Box>
         </CardContent>
@@ -109,23 +117,14 @@ const UserProfile = () => {
           <Typography variant="h5" gutterBottom>
             Projects
           </Typography>
-          <Grid container spacing={2}>
-            {userData.projects.map((project, index) => (
-              <Grid item xs={12} md={4} key={index}>
-                <Card variant="outlined" sx={{ padding: 2, height: '100%' }}>
-                  <Typography variant="h6">{project.title}</Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {project.description}
-                  </Typography>
-                  <Typography variant="body2" sx={{ mt: 1, color: 'primary.main' }}>
-                    <a href={project.link} target="_blank" rel="noopener noreferrer">
-                      View Project
-                    </a>
-                  </Typography>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+          {userData.projects.map((project, index) => (
+            <Box key={index} sx={{ mb: 2 }}>
+              <Typography variant="h6">{project.title}</Typography>
+              <Typography variant="body2" color="textSecondary">
+                {project.description}
+              </Typography>
+            </Box>
+          ))}
         </CardContent>
 
         <Divider sx={{ my: 2 }} />
@@ -135,23 +134,14 @@ const UserProfile = () => {
           <Typography variant="h5" gutterBottom>
             Publications
           </Typography>
-          <Box>
-            {userData.publications.map((publication, index) => (
-              <Box key={index} sx={{ mb: 1 }}>
-                <Typography variant="body1">
-                  <strong>{publication.title}</strong> ({publication.year})
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Published in {publication.journal}
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'primary.main' }}>
-                  <a href={publication.link} target="_blank" rel="noopener noreferrer">
-                    View Publication
-                  </a>
-                </Typography>
-              </Box>
-            ))}
-          </Box>
+          {userData.publications.map((publication, index) => (
+            <Box key={index} sx={{ mb: 2 }}>
+              <Typography variant="h6">{publication.title}</Typography>
+              <Typography variant="body2" color="textSecondary">
+                {publication.journal}, {publication.year}
+              </Typography>
+            </Box>
+          ))}
         </CardContent>
       </Card>
     </Box>
