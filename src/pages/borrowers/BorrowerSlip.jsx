@@ -120,14 +120,16 @@ const BorrowerSlip = ({ borrower, status }) => {
         const { id, good_quantity, damaged_quantity = 0 } = equipment;
         const quantities = await fetchToolQuantities(id);
 
-        if (quantities.good_quantity < good_quantity) {
-          setIsEmpty(true);
-          console.error(`Error: Equipment ID ${id} has insufficient quantity`);
-          return;
-        }
+        count += good_quantity + damaged_quantity;
 
         let newQuantities;
         if(updatedData.isApproved === "returned") {
+          if (quantities.good_quantity < good_quantity) {
+            setIsEmpty(true);
+            console.error(`Error: Equipment ID ${id} has insufficient quantity`);
+            return;
+          }
+
             newQuantities = {
             current_quantity: quantities.current_quantity + good_quantity,
             good_quantity: quantities.good_quantity + good_quantity,
@@ -188,21 +190,35 @@ const BorrowerSlip = ({ borrower, status }) => {
     }
   };
 
-  const renderDialogActions = () => (
-    <DialogActions>
-      {status === "pending return" ? (
-        <>
-          <Button onClick={() => toggleDialog("reject", true)} variant="text" sx={{ color: 'red', '&:hover': { color: 'darkred' } }}>Reject</Button>
-          <Button onClick={handleApprove} variant="text" sx={{ color: 'green', '&:hover': { color: 'darkgreen' } }} disabled={isApproving}>Return Equipments</Button>
-        </>
-      ) : (
-        <>
-          <Button onClick={() => toggleDialog("main", false)} variant="text" sx={{ color: 'red', '&:hover': { color: 'darkred' } }}>Cancel</Button>
-          <Button onClick={handleApprove} variant="text" sx={{ color: 'green', '&:hover': { color: 'darkgreen' } }} disabled={isApproving}>Approve</Button>
-        </>
-      )}
-    </DialogActions>
-  );
+  const renderDialogActions = () => {
+    // Return null if status is "admin approved" to hide buttons
+    if (status === "admin approved") return null;
+  
+    return (
+      <DialogActions>
+        {status === "pending return" ? (
+          <>
+            <Button onClick={() => toggleDialog("reject", true)} variant="text" sx={{ color: 'red', '&:hover': { color: 'darkred' } }}>
+              Reject
+            </Button>
+            <Button onClick={handleApprove} variant="text" sx={{ color: 'green', '&:hover': { color: 'darkgreen' } }} disabled={isApproving}>
+              Return Equipments
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button onClick={() => toggleDialog("main", false)} variant="text" sx={{ color: 'red', '&:hover': { color: 'darkred' } }}>
+              Cancel
+            </Button>
+            <Button onClick={handleApprove} variant="text" sx={{ color: 'green', '&:hover': { color: 'darkgreen' } }} disabled={isApproving}>
+              Approve
+            </Button>
+          </>
+        )}
+      </DialogActions>
+    );
+  };
+  
 
   return (
     <>

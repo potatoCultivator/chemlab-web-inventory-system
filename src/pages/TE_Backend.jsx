@@ -376,16 +376,16 @@ async function fetchChartData(callback, status) {
   try {
     const db = firestore;
     const chartdataCollection = collection(db, 'chartdata');
-
     const statQuery = query(chartdataCollection, where('status', '==', status));
-    // Set up a real-time listener
+
     const unsubscribe = onSnapshot(statQuery, (querySnapshot) => {
       const rows = querySnapshot.docs.map(doc => ({
-        id: doc.id, // Include the document ID
-        ...doc.data() // Spread the document data
+        id: doc.id,
+        ...doc.data()
       }));
-      // Execute the callback with the updated data
-      callback(rows);
+
+      console.log(`Fetched data for status '${status}':`, rows); // Log fetched data
+      callback(rows); // Pass data to the callback
     });
 
     return unsubscribe;
@@ -393,6 +393,7 @@ async function fetchChartData(callback, status) {
     console.error('Error fetching chart data:', error);
   }
 }
+
 
 /**
  * Registers a new user with Firebase Authentication and saves user data in Firestore.

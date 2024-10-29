@@ -138,6 +138,8 @@ export default function BorrowersChart({ isWeekly }) {
           { name: 'Returned Items', data: processData(returnedData, false) }
         ];
 
+        console.log('new series', newSeries)
+
     setSeries(() => {
       if (borrowedItem && returnedItem) return newSeries;
       if (borrowedItem) return [newSeries[0]];
