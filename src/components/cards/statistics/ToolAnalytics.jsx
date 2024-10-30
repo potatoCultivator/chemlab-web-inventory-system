@@ -28,8 +28,11 @@ export default function ToolAnalytics({ color = 'primary', title, count, percent
         <Grid container alignItems="center"
         spacing={2}>
           <Grid item>
-            <Typography variant="h2" color="inherit">
-              {count}
+            {/* <Typography variant="h6" color="inherit">
+              {new Date().toLocaleString('default', { month: 'long' })}
+            </Typography> */}
+            <Typography variant="h4" color="inherit">
+              Total:
             </Typography>
           </Grid>
           {percentage && (
@@ -39,31 +42,32 @@ export default function ToolAnalytics({ color = 'primary', title, count, percent
                   variant="combined"
                   color={color}
                   // icon={isLoss ? <FallOutlined style={iconSX} /> : <RiseOutlined style={iconSX} />}
-                  label={`${percentage}`}
+                  // label={new Date().toLocaleString('default', { month: 'long' })}
+                  label={count}
                   // sx={{ ml: -1.25 }}
-                  size="small"
+                  size="large"
                 />
-                <Chip
+                {/* <Chip
                   variant="combined"
                   color={color}
                   // icon={isLoss ? <FallOutlined style={iconSX} /> : <RiseOutlined style={iconSX} />}
                   label={`${percentage}`}
                   sx={{ ml: 1.25, pl: 1 }}
                   size="small"
-                />
+                /> */}
               </Stack>
             </Grid>
           )}
         </Grid>
       </Stack>
-      <Box sx={{ pt: 2.25 }}>
+      {/* <Box sx={{ pt: 2.25 }}>
         <Typography variant="caption" color="text.secondary">
           borrowers this month of{' '}
           <Typography variant="caption" sx={{ color: `${color || 'primary'}.main` }}>
             {currentMonth}
           </Typography>
         </Typography>
-      </Box>
+      </Box> */}
     </MainCard>
   );
 }

@@ -189,8 +189,11 @@ const BorrowerSlip = ({ borrower, status }) => {
                 <TableRow>
                   <TableCell>Name</TableCell>
                   <TableCell>Capacity</TableCell>
-                  <TableCell>Good Qty</TableCell>
-                  <TableCell>Damaged Qty</TableCell>
+                  {status === 'pending return' && <TableCell>Good Qty</TableCell>}
+
+                  <TableCell>Qty</TableCell>
+                  
+                  {status === 'pending return' && <TableCell>Damaged Qty</TableCell>}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -199,7 +202,7 @@ const BorrowerSlip = ({ borrower, status }) => {
                     <TableCell>{equipment.name}</TableCell>
                     <TableCell align='center'>{`${equipment.capacity} ${equipment.unit}`}</TableCell>
                     <TableCell align='center'>{equipment.good_quantity}</TableCell>
-                    <TableCell align='center'>{equipment.damaged_quantity}</TableCell>
+                    {status === 'pending return' && <TableCell align='center'>{equipment.damaged_quantity}</TableCell>}
                     {status === 'pending return' && (
                       <TableCell align="right">
                         <EditStatus onSave={handleUpdate} initialEquipment={equipment} />
