@@ -10,6 +10,8 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
+import MainCard from 'components/MainCard';
+
 // third-party
 import ReactApexChart from 'react-apexcharts';
 import { fetchChartData } from 'pages/TE_Backend';
@@ -62,32 +64,6 @@ export default function BorrowersChart({ isWeekly }) {
       if (typeof unsubscribeReturned === 'function') unsubscribeReturned();
     };
   }, []);
-
-  // // Process data for weekly/monthly charts
-  // const processData = (data, isWeekly) => {
-  //   const now = new Date();
-  //   if (isWeekly) {
-  //     const weekData = Array(7).fill(0);
-  //     data.forEach(item => {
-  //       const itemDate = item.date.toDate ? item.date.toDate() : new Date(item.date);
-  //       const itemDayOfWeek = getDay(itemDate);
-  //       if (getYear(itemDate) === getYear(now) && getMonth(itemDate) + 1 === getMonth(now) + 1) {
-  //         weekData[itemDayOfWeek] += item.count;
-  //       }
-  //     });
-  //     return weekData;
-  //   } else {
-  //     const monthData = Array(5).fill(0); // Assuming max 5 weeks in a month
-  //     data.forEach(item => {
-  //       const itemDate = item.date.toDate ? item.date.toDate() : new Date(item.date);
-  //       const itemWeekOfMonth = getWeekOfMonth(itemDate);
-  //       if (getYear(itemDate) === getYear(now) && getMonth(itemDate) + 1 === getMonth(now) + 1) {
-  //         monthData[itemWeekOfMonth - 1] += item.count;
-  //       }
-  //     });
-  //     return monthData;
-  //   }
-  // };
 
   const processData = (data, isWeekly) => {
     const now = new Date();
@@ -164,26 +140,29 @@ export default function BorrowersChart({ isWeekly }) {
   };
 
   return (
-    <Box sx={{ bgcolor: 'transparent' }}>
-      <Stack direction="row" alignItems="center" justifyContent="space-between">
-        <Stack spacing={1.5}>
-          <Typography variant="h6" color="secondary">Total Borrowers:</Typography>
-          <Typography variant="h4">156</Typography>
+    <MainCard sx={{ mt: 1 }} content={false}>
+      <Box sx={{ p: 2.5, pb: 0 }}>
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Stack spacing={1.5}>
+            <Typography variant="h6" color="secondary">
+              Total Borrowers:
+            </Typography>
+            <Typography variant="h4">156</Typography>
+          </Stack>
+          <FormControl component="fieldset">
+            <FormGroup row>
+              <FormControlLabel
+                control={<Checkbox color="warning" checked={borrowedItem} onChange={handleLegendChange} name="borrowedItem" />}
+                label="Borrowed Items"
+              />
+              <FormControlLabel control={<Checkbox checked={returnedItem} onChange={handleLegendChange} name="returnedItem" />} label="Returned Items" />
+            </FormGroup>
+          </FormControl>
         </Stack>
-        <FormControl component="fieldset">
-          <FormGroup row>
-            <FormControlLabel control={<Checkbox color="warning" checked={borrowedItem} onChange={handleLegendChange} name="borrowedItem" />} label="Borrowed Items" />
-            <FormControlLabel control={<Checkbox checked={returnedItem} onChange={handleLegendChange} name="returnedItem" />} label="Returned Items" />
-          </FormGroup>
-        </FormControl>
-      </Stack>
-      <Box id="chart" sx={{ bgcolor: 'transparent' }}>
-        {loading ? (
-          <Typography variant="h6" color="secondary">Loading data...</Typography>
-        ) : (
+        <Box id="chart" sx={{ bgcolor: 'transparent' }}>
           <ReactApexChart options={options} series={series} type="bar" height={360} />
-        )}
+        </Box>
       </Box>
-    </Box>
+    </MainCard>
   );
 }

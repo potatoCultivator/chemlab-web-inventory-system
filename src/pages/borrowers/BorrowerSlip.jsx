@@ -42,70 +42,7 @@ const BorrowerSlip = ({ borrower, status }) => {
       default: break;
     }
   };
-
-  // const handleApprove = async () => {
-  //   setIsApproving(true);
-  //   toggleDialog("main", false);
-  //   toggleDialog("loading", true);
-  //   setIsEmpty(false);
-
-  //   try {
-  //     const updatedData = { isApproved: status === "pending return" ? "returned" : "admin approved" };
-  //     let count = 0;
-
-  //     if (Array.isArray(borrower.equipmentDetails)) {
-  //       for (const equipment of borrower.equipmentDetails) {
-  //         const { id, good_quantity, damaged_quantity = 0 } = equipment;
-  //         const quantities = await fetchToolQuantities(id);
-
-  //         if (quantities.good_quantity < good_quantity) {
-  //           setIsEmpty(true);
-  //           console.error(`Error: Equipment ID ${id} has insufficient quantity`);
-  //           return;
-  //         }
-
-  //         let newQuantities;
-  //         if(updatedData.isApproved === "returned") {
-  //             newQuantities = {
-  //             current_quantity: quantities.current_quantity + good_quantity,
-  //             good_quantity: quantities.good_quantity + good_quantity,
-  //             damage_quantity: quantities.damage_quantity + damaged_quantity,
-  //           };
-  //         } else {
-  //               newQuantities = {
-  //               current_quantity: quantities.current_quantity - good_quantity,
-  //               good_quantity: quantities.good_quantity - good_quantity,
-  //               damage_quantity: quantities.damage_quantity + damaged_quantity,
-  //           }
-  //         }
-  //         console.log('New Quantities:', newQuantities);
-  //         await updateToolQuantity(id, newQuantities.current_quantity, newQuantities.good_quantity, newQuantities.damage_quantity);
-  //       }
-
-  //       const now = new Date();
-  //       const data = {
-  //         status: updatedData.isApproved === "returned" ? "returned" : "borrowed",
-  //         count,
-  //         date: now,
-  //         day: getDate(now),
-  //         month: getMonth(now) + 1,
-  //         year: getYear(now),
-  //         weekOfMonth: getWeekOfMonth(now),
-  //       };
-  //       await chartData(data);
-  //       await updateBorrower(borrower.id, updatedData);
-  //       console.log(`Borrower with ID ${borrower.id} has been ${updatedData.isApproved}`);
-  //     } else {
-  //       console.error('Error: equipmentDetails is not an array or is undefined');
-  //     }
-  //   } catch (error) {
-  //     console.error('Error approving borrower:', error);
-  //   } finally {
-  //     setIsApproving(false);
-  //     setIsLoading(false);
-  //   }
-  // };
-
+  
   const handleApprove = async () => {
     setIsApproving(true);
     toggleDialog("main", false);
