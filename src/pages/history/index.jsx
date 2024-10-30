@@ -1,5 +1,6 @@
 // material-ui
 import Typography from '@mui/material/Typography';
+import Grid from '@mui/system/Unstable_Grid';
 
 // project import
 import MainCard from 'components/MainCard';
@@ -10,15 +11,15 @@ import HistoryTable from './HistoryTable';
 export default function History() {
   return (
     <>
-      {/* <MainCard title="Sample Card">
-        <Typography variant="body2">
-          Lorem ipsum dolor sit amen, consenter nipissing eli, sed do elusion tempos incident ut laborers et doolie magna alissa. Ut enif ad
-          minim venice, quin nostrum exercitation illampu laborings nisi ut liquid ex ea commons construal. Duos aube grue dolor in
-          reprehended in voltage veil esse colum doolie eu fujian bulla parian. Exceptive sin ocean cuspidate non president, sunk in culpa qui
-          officiate descent molls anim id est labours.
-        </Typography>
-      </MainCard> */}
-      <HistoryTable />
+    <Grid container rowSpacing={4.5} columnSpacing={2.75}>
+        {/* row 1 */}
+        <Grid item xs={12} sx={{ mb: -2.25 }}>
+          <Typography variant="h5" className="dashboard-title">History</Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <HistoryTable />
+        </Grid>
+      </Grid>
     </>
   );
 }

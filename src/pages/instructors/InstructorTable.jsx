@@ -35,6 +35,7 @@ function stableSort(array, comparator) {
 const headCells = [
   { id: 'name', numeric: false, disablePadding: false, label: 'Name' },
   { id: 'position', numeric: false, disablePadding: false, label: 'Position' },
+  { id: 'subject', numeric: false, disablePadding: false, label: 'Subject' },
   { id: 'department', numeric: false, disablePadding: false, label: 'Department' },
   { id: 'email', numeric: false, disablePadding: false, label: 'Email' },
   { id: 'delete', numeric: false, disablePadding: false, label: 'Delete' }
@@ -125,6 +126,7 @@ export default function InstructorTable() {
                 <TableRow key={row.tracking_no}>
                   <TableCell>{row.name}</TableCell>
                   <TableCell>{row.position}</TableCell>
+                  <TableCell>{row.subject}</TableCell>
                   <TableCell align="center">{row.department}</TableCell>
                   <TableCell align="center">{row.email}</TableCell>
                   <TableCell align="right">

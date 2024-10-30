@@ -65,27 +65,29 @@ export default function InstructorRegistration() {
           firstname: '',
           lastname: '',
           email: '',
-          position: '',
           subject:'',
+          position: '',
           department: '',
           password: '',
         }}
         validationSchema={Yup.object().shape({
           firstname: Yup.string().max(255).required('First Name is required'),
           lastname: Yup.string().max(255).required('Last Name is required'),
+          subject: Yup.string().max(255).required('Subject is required'),
           position: Yup.string().max(255).required('Position is required'),
           department: Yup.string().max(255).required('Department is required'),
           email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-          password: Yup.string().max(255).required('Password is required')
+          // password: Yup.string().max(255).required('Password is required')
         })}
         onSubmit={async (values, { setSubmitting, setErrors, resetForm }) => {
           try {
             const instructorData = {
               name: values.firstname + ' ' + values.lastname,
               email: values.email,
+              subject: values.subject,
               position: values.position,
               department: values.department,
-              password: values.password
+              password: generatePassword()
             };
             await uploadInstructor(instructorData);
             console.log('Instructor successfully uploaded');
@@ -154,6 +156,30 @@ export default function InstructorRegistration() {
                 )}
               </Grid>
               
+              {/* Subject */}
+              <Grid item xs={12}>
+                <Stack spacing={1}>
+                  <InputLabel htmlFor="subject-signup">Subject*</InputLabel>
+                  <OutlinedInput
+                    fullWidth
+                    error={Boolean(touched.subject && errors.subject)}
+                    id="position-signup"
+                    type="subject"
+                    value={values.subject}
+                    name="subject"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    placeholder="Chemistry"
+                    inputProps={{}}
+                  />
+                </Stack>
+                {touched.subject && errors.subject && (
+                  <FormHelperText error id="helper-text-subject-signup">
+                    {errors.subject}
+                  </FormHelperText>
+                )}
+              </Grid>
+
               {/* Position */}
               <Grid item xs={12}>
                 <Stack spacing={1}>
@@ -227,7 +253,7 @@ export default function InstructorRegistration() {
               </Grid>
 
               {/* Password */}
-              <Grid item xs={7} md={6}>
+              {/* <Grid item xs={7} md={6}>
                 <Stack spacing={1}>
                   <InputLabel htmlFor="password-signup">Password*</InputLabel>
                   <OutlinedInput
@@ -249,9 +275,9 @@ export default function InstructorRegistration() {
                     {errors.password}
                   </FormHelperText>
                 )}
-              </Grid>
+              </Grid> */}
 
-              <Grid item xs={5} md={6}>
+              {/* <Grid item xs={5} md={6}>
                 <Stack spacing={1}>
                 <InputLabel htmlFor="password-signup">Generate Password</InputLabel>
                 <Button
@@ -262,7 +288,7 @@ export default function InstructorRegistration() {
                   Generate
                 </Button>
                 </Stack>
-              </Grid>
+              </Grid> */}
               
               {/* Create Account Button */}
               <Grid item xs={12}>
