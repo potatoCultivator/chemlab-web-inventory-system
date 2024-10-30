@@ -187,6 +187,49 @@ async function uploadInstructor(instructorData) {
   }
 }
 
+// /**
+//  * Uploads a new instructor to Firestore and sends a welcome email with a password.
+//  * @param {Object} instructorData - Object containing instructor's information.
+//  * @param {string} instructorData.name 
+//  * @param {string} instructorData.email - Instructor's email.
+//  * @param {string} instructorData.subject - Subject taught by the instructor.
+//  * @param {string} instructorData.position - Position held by the instructor.
+//  * @param {string} instructorData.department - Department the instructor belongs to.
+//  * @param {string} instructorData.password - Instructor's temporary password (not stored in Firestore).
+//  * @returns {Promise<Object>} - Resolves with a success message if the upload is successful.
+//  */
+// async function uploadInstructor({ email, password, name, subject, position, department }) {
+//   const db = firestore;
+
+//   try {
+//     // Begin a batch write
+//     const batch = writeBatch(db);
+//     const instructorsCollection = collection(db, 'instructor');
+//     const newInstructorDoc = doc(instructorsCollection);
+
+//     // Add instructor data to batch (excluding password)
+//     batch.set(newInstructorDoc, { email, name, subject, position, department });
+
+//     // Commit the batch to Firestore
+//     await batch.commit();
+
+//     // Prepare email content with password (not saved in Firestore)
+//     const emailText = `Your account has been created. Your login details:\n\nEmail: ${email}\nPassword: ${password}`;
+//     const toName = name;
+//     const fromName = 'Your Organization Name'; // Replace with your organization’s name
+
+//     // Send a welcome email with the password
+//     await sendEmail(email, toName, fromName, emailText);
+//     console.log('Email sent successfully');
+
+//     return { success: true, message: 'Instructor uploaded and email sent successfully' };
+//   } catch (error) {
+//     console.error("Error uploading instructor:", error);
+//     throw new Error('Failed to upload instructor and send email.');
+//   }
+// }
+
+
 async function fetchAdminApprovedBorrowersCount() {
   const db = firestore;
   const borrowerCollection = collection(db, 'borrower');

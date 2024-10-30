@@ -25,6 +25,8 @@ export default function ProfileTab() {
     localStorage.removeItem('userData'); // Remove profile data
     localStorage.removeItem('firstName');
     localStorage.removeItem('lastName');
+    localStorage.removeItem('email');
+    localStorage.removeItem('password');
     
     // Navigate to login or home page after logout
     navigate('/', { replace: true });

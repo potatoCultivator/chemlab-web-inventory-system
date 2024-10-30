@@ -155,6 +155,30 @@ export default function InstructorRegistration() {
                   </FormHelperText>
                 )}
               </Grid>
+
+              {/* Email Address */}
+              <Grid item xs={12}>
+                <Stack spacing={1}>
+                  <InputLabel htmlFor="email-signup">Email Address*</InputLabel>
+                  <OutlinedInput
+                    fullWidth
+                    error={Boolean(touched.email && errors.email)}
+                    id="email-login"
+                    type="email"
+                    value={values.email}
+                    name="email"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    placeholder="bogart@yehey.com"
+                    inputProps={{}}
+                  />
+                </Stack>
+                {touched.email && errors.email && (
+                  <FormHelperText error id="helper-text-email-signup">
+                    {errors.email}
+                  </FormHelperText>
+                )}
+              </Grid>
               
               {/* Subject */}
               <Grid item xs={12}>
@@ -227,68 +251,6 @@ export default function InstructorRegistration() {
                   </FormHelperText>
                 )}
               </Grid>
-              
-              {/* Email Address */}
-              <Grid item xs={12}>
-                <Stack spacing={1}>
-                  <InputLabel htmlFor="email-signup">Email Address*</InputLabel>
-                  <OutlinedInput
-                    fullWidth
-                    error={Boolean(touched.email && errors.email)}
-                    id="email-login"
-                    type="email"
-                    value={values.email}
-                    name="email"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    placeholder="bogart@yehey.com"
-                    inputProps={{}}
-                  />
-                </Stack>
-                {touched.email && errors.email && (
-                  <FormHelperText error id="helper-text-email-signup">
-                    {errors.email}
-                  </FormHelperText>
-                )}
-              </Grid>
-
-              {/* Password */}
-              {/* <Grid item xs={7} md={6}>
-                <Stack spacing={1}>
-                  <InputLabel htmlFor="password-signup">Password*</InputLabel>
-                  <OutlinedInput
-                    fullWidth
-                    error={Boolean(touched.password && errors.password)}
-                    id="password-signup"
-                    type="password"
-                    value={values.password}
-                    name="password"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    placeholder="******"
-                    inputProps={{}}
-                    disabled 
-                  />
-                </Stack>
-                {touched.password && errors.password && (
-                  <FormHelperText error id="helper-text-password-signup">
-                    {errors.password}
-                  </FormHelperText>
-                )}
-              </Grid> */}
-
-              {/* <Grid item xs={5} md={6}>
-                <Stack spacing={1}>
-                <InputLabel htmlFor="password-signup">Generate Password</InputLabel>
-                <Button
-                  variant="outlined"
-                  onClick={() => setFieldValue('password', generatePassword())}
-                  sx={{ mt: 2 }}
-                >
-                  Generate
-                </Button>
-                </Stack>
-              </Grid> */}
               
               {/* Create Account Button */}
               <Grid item xs={12}>

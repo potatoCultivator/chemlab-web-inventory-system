@@ -1,10 +1,7 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-// import axios from 'axios';
-
-// Material-UI components
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import Divider from '@mui/material/Divider';
@@ -18,19 +15,12 @@ import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-
-// Third-party
 import * as Yup from 'yup';
 import { Formik } from 'formik';
-
-// Project import
 import AnimateButton from 'components/@extended/AnimateButton';
-
-// Assets
 import EyeOutlined from '@ant-design/icons/EyeOutlined';
 import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
-import FirebaseSocial from './FirebaseSocial';
-import { loginUser,fetchUserProfile } from 'src/pages/TE_Backend';
+import { loginUser, fetchUserProfile } from 'src/pages/TE_Backend';
 
 // ============================|| JWT - LOGIN ||============================ // 
 
@@ -38,7 +28,7 @@ export default function AuthLogin({ isDemo = false }) {
   const [checked, setChecked] = React.useState(false);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = React.useState(false);
-  
+
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -47,41 +37,56 @@ export default function AuthLogin({ isDemo = false }) {
     event.preventDefault();
   };
 
-  const handleLogin = async (values, { setErrors, setSubmitting }) => {
-    try {
-      const response = await loginUser(values);
-      if (response.success) {
-        const { user } = response;
-        const token = await user.getIdToken();
-        localStorage.setItem('token', token);
-  
-        // Fetch user profile using the UID
-        const userProfile = await fetchUserProfile(user.uid); // Fetch user profile
-        if (userProfile) {
-          localStorage.setItem('firstName', userProfile.firstName);
-          localStorage.setItem('lastName', userProfile.lastName);
-        }
-  
-        navigate('/dashboard/default', { replace: true });
-      } else {
-        setErrors({ submit: 'Login failed. Please check your credentials.' });
-      }
-    } catch (error) {
-      console.error('Login Error:', error); // Log error for debugging
-      if (error.message === 'auth/user-not-found)') {
-        setErrors({ submit: 'Account does not exist!' });
-      } else if (error.message === 'Firebase: Error (auth/wrong-password).') {
-        setErrors({ submit: 'Incorrect password. Please try again.' });
-      } else {
-        setErrors({ submit: 'Account does not exist!' });
-      }
-    } finally {
-      setSubmitting(false);
-    }
-  };
-  
-  
+ // Automatic login if user data is available in local storage
+ useEffect(() => {
+  const storedEmail = localStorage.getItem('email');
+  const storedPassword = localStorage.getItem('password');
+  console.log('storepassword:', storedPassword);
 
+  // Check if both email and password are stored
+  if (storedEmail && storedPassword) {
+    navigate('/dashboard/default', { replace: true });
+  }
+}, []); // Empty dependency array to run only once on mount
+
+const handleLogin = async (values, { setErrors, setSubmitting }) => {
+  try {
+    const response = await loginUser(values);
+    if (response.success) {
+      const { user } = response;
+      const token = await user.getIdToken();
+      localStorage.setItem('token', token);
+
+      // Fetch user profile using the UID
+      const userProfile = await fetchUserProfile(user.uid);
+      if (userProfile) {
+        localStorage.setItem('firstName', userProfile.firstName);
+        localStorage.setItem('lastName', userProfile.lastName);
+      }
+
+      // Save email and password to local storage if you want to keep user signed in
+      localStorage.setItem('email', values.email);
+      if (values.password) {
+        localStorage.setItem('password', values.password); // Ensure password is defined
+      }
+
+      navigate('/dashboard/default', { replace: true });
+    } else {
+      setErrors({ submit: 'Login failed. Please check your credentials.' });
+    }
+  } catch (error) {
+    console.error('Login Error:', error); // Log error for debugging
+    if (error.message === 'auth/user-not-found') {
+      setErrors({ submit: 'Account does not exist!' });
+    } else if (error.message === 'Firebase: Error (auth/wrong-password).') {
+      setErrors({ submit: 'Incorrect password. Please try again.' });
+    } else {
+      setErrors({ submit: 'Account does not exist!' });
+    }
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   return (
     <>
@@ -170,19 +175,12 @@ export default function AuthLogin({ isDemo = false }) {
                     }
                     label={<Typography variant="h6">Keep me signed in</Typography>}
                   />
-                  {/* <Link variant="h6" component={RouterLink} color="text.primary">
-                    Forgot Password?
-                  </Link> */}
                   {errors.submit && (
-                 <FormHelperText error>{errors.submit}</FormHelperText>
-              )}
+                    <FormHelperText error>{errors.submit}</FormHelperText>
+                  )}
                 </Stack>
               </Grid>
-              {/* {errors.submit && (
-                <Grid item xs={12}>
-                  <FormHelperText error>{errors.submit}</FormHelperText>
-                </Grid>
-              )} */}
+
               <Grid item xs={12}>
                 <AnimateButton>
                   <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
