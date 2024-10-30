@@ -66,6 +66,7 @@ export default function InstructorRegistration() {
           lastname: '',
           email: '',
           position: '',
+          subject:'',
           department: '',
           password: '',
         }}
