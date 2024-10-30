@@ -16,7 +16,15 @@ const HistoryTable = () => {
   const [borrowers, setBorrowers] = useState([]);
 
   useEffect(() => {
-    const unsubscribe = fetchBorrowers(setBorrowers);
+    const unsubscribe = fetchBorrowers((fetchedBorrowers) => {
+      // Sort borrowers by date in descending order
+      const sortedBorrowers = fetchedBorrowers.sort((a, b) => {
+        const dateA = a.date && a.date.toDate ? a.date.toDate().getTime() : 0;
+        const dateB = b.date && b.date.toDate ? b.date.toDate().getTime() : 0;
+        return dateB - dateA; // Sorts in descending order
+      });
+      setBorrowers(sortedBorrowers);
+    });
     return () => unsubscribe;
   }, []);
 
