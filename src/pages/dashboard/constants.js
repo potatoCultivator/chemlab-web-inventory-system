@@ -46,7 +46,7 @@ const headCells = [
     },
     {
       id: 'quantity',
-      align: 'right',
+      align: 'center',
       disablePadding: false,
       label: 'Quantity'
     },
