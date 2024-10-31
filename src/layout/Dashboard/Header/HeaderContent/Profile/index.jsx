@@ -16,19 +16,21 @@ import MainCard from 'components/MainCard';
 import Transitions from 'components/@extended/Transitions';
 import avatar1 from 'assets/images/users/avatar-1.png';
 import { fetchUserProfile } from 'pages/TE_Backend';
+import { useNavigate } from 'react-router-dom';
 
 export default function Profile() {
   const theme = useTheme();
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
   const [data, setData] = useState({ firstname: '', lastname: '' });
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedData = localStorage.getItem('userData');
 
     if (storedData) {
       setData(JSON.parse(storedData)); // Set data from local storage
-      console.log('stored data',data);
+      console.log('stored data', JSON.parse(storedData));
     } else {
       const fetchData = async () => {
         try {
@@ -40,14 +42,16 @@ export default function Profile() {
             localStorage.setItem('userData', JSON.stringify({ firstname, lastname })); // Save to local storage
           } else {
             console.error('Profile data is incomplete.');
+            navigate('/404'); // Navigate to 404 page
           }
         } catch (err) {
           console.error('Error fetching data:', err);
+          navigate('/404'); // Navigate to 404 page
         }
       };
       fetchData(); // Fetch data if not found in local storage
     }
-  }, []);
+  }, [navigate]);
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
