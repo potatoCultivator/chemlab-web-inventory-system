@@ -9,7 +9,7 @@ import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
-import { Snackbar, Alert } from '@mui/material';
+import { Snackbar } from '@mui/material';
 
 // third party
 import * as Yup from 'yup';
@@ -270,15 +270,7 @@ export default function InstructorRegistration() {
       </Formik>
 
       <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)}>
-        {success && !emailError ? (
-          <Alert onClose={() => setSnackbarOpen(false)} severity="success" sx={{ width: '100%' }}>
-            {snackbarMessage}
-          </Alert>
-        ) : (
-          <Alert onClose={() => setSnackbarOpen(false)} severity="error" sx={{ width: '100%' }}>
-            {snackbarMessage}
-          </Alert>
-        )}
+        {snackbarMessage}
       </Snackbar>
     </>
   );
