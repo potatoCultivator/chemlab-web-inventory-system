@@ -45,17 +45,20 @@ function generatePassword(length = 8) {
 export default function InstructorRegistration() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [success, setSuccess] = useState(false);
+  const [emailError, setEmailError] = useState(false);
   const form = useRef();
 
-  const sendEmail = (e) => {
-    e.preventDefault();
-
-    emailjs.sendForm('service_rs71h8n', 'template_mvq7bdh', form.current, 'HnRtI-nQOt92ux3oK')
-      .then((result) => {
-          console.log('Email sent successfully:', result.text);
-      }, (error) => {
-          console.error('Error sending email:', error.text);
-      });
+  const sendEmail = async () => {
+    try {
+      await emailjs.sendForm('service_rs71h8n', 'template_mvq7bdh', form.current, 'HnRtI-nQOt92ux3oK');
+      console.log('Email sent successfully');
+    } catch (error) {
+      console.error('Error sending email:', error.text);
+      setEmailError(true);
+      setSnackbarMessage('Instructor uploaded, but email not sent.');
+      setSnackbarOpen(true);
+    }
   };
 
   return (
@@ -91,6 +94,7 @@ export default function InstructorRegistration() {
             };
             await uploadInstructor(instructorData);
             console.log('Instructor successfully uploaded');
+            setSuccess(true);
             setSnackbarMessage('Instructor successfully uploaded!');
             setSnackbarOpen(true);
             resetForm();
@@ -266,9 +270,15 @@ export default function InstructorRegistration() {
       </Formik>
 
       <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)}>
-        <Alert onClose={() => setSnackbarOpen(false)} severity="success" sx={{ width: '100%' }}>
-          {snackbarMessage}
-        </Alert>
+        {success && !emailError ? (
+          <Alert onClose={() => setSnackbarOpen(false)} severity="success" sx={{ width: '100%' }}>
+            {snackbarMessage}
+          </Alert>
+        ) : (
+          <Alert onClose={() => setSnackbarOpen(false)} severity="error" sx={{ width: '100%' }}>
+            {snackbarMessage}
+          </Alert>
+        )}
       </Snackbar>
     </>
   );
