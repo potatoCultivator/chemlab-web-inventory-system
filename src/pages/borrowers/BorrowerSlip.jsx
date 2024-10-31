@@ -160,16 +160,37 @@ const BorrowerSlip = ({ borrower, status }) => {
   return (
     <>
       <Tooltip title="Click to view details" arrow TransitionComponent={Zoom} placement="right">
-        <ListItem button onClick={() => toggleDialog("main", true)} sx={{ transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.05)' } }}>
+        <ListItem
+          button
+          onClick={() => toggleDialog("main", true)}
+          sx={{ transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.05)' } }}
+        >
           <ListItemAvatar>
-            <Avatar sx={{ backgroundColor: '#00796b', color: '#ffffff' }}>{borrower.borrowername.charAt(0).toUpperCase()}</Avatar>
+            <Avatar sx={{ backgroundColor: '#00796b', color: '#ffffff' }}>
+              {borrower.borrowername.charAt(0).toUpperCase()}
+            </Avatar>
           </ListItemAvatar>
           <ListItemText
             primary={<Typography variant="h6">{borrower.borrowername}</Typography>}
-            secondary={<Typography variant="body2" color="textSecondary">Course: {borrower.course} | Date: {borrower.date.toDate().toLocaleString()}</Typography>}
+            secondary={
+              <Box display="flex" justifyContent="space-between" alignItems="center">
+                <Typography variant="body2" color="textSecondary">
+                  Course: {borrower.course} | Date: {borrower.date.toDate().toLocaleString()}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  sx={{ minWidth: '120px', textAlign: 'right', fontWeight: 'bold' }}
+                >
+                 {borrower.subject}
+                </Typography>
+              </Box>
+            }
           />
         </ListItem>
       </Tooltip>
+
+
       <Divider />
 
       <Dialog open={open} onClose={() => toggleDialog("main", false)} TransitionComponent={Slide} transitionDuration={{ enter: 400, exit: 300 }}>
@@ -180,6 +201,7 @@ const BorrowerSlip = ({ borrower, status }) => {
           <DialogContentText>
             <strong>Borrower Name:</strong> {borrower.borrowername}<br />
             <strong>Course:</strong> {borrower.course}<br />
+            <strong>Subject:</strong> {borrower.subject}<br />
             <strong>Instructor:</strong> {borrower.instructor}<br />
             <strong>Date:</strong> {borrower.date.toDate().toLocaleString()}<br />
           </DialogContentText>
