@@ -108,10 +108,10 @@ export default function InstructorTable() {
     setItemToDelete(null);
   };
 
-  const handleEditClick = (row) => {
-    // Implement the edit functionality here
-    console.log('Editing instructor:', row);
-  };
+  // const handleEditClick = (row) => {
+  //   // Implement the edit functionality here
+  //   console.log('Editing instructor:', row);
+  // };
 
   return (
     <Box>
@@ -159,6 +159,6 @@ export default function InstructorTable() {
   );
 }
 
-function createData(tracking_no, id, name, position, department, email) {
-  return { tracking_no, id, name, position, department, email };
-}
+// function createData(tracking_no, id, name, position, department, email) {
+//   return { tracking_no, id, name, position, department, email };
+// }

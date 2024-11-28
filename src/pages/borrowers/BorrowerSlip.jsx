@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import {
-  List, ListItem, ListItemText, ListItemAvatar, Avatar,
+  ListItem, ListItemText, ListItemAvatar, Avatar,
   Dialog, DialogTitle, DialogContent, DialogContentText,
   DialogActions, Button, Typography, Table, TableBody,
   TableCell, TableContainer, TableHead, TableRow, Divider,
-  CircularProgress, Grid, Tooltip, Zoom, Fade, Box, Slide,
+  CircularProgress, Tooltip, Zoom, Box, Slide,
 } from '@mui/material';
-import { format, getMonth, getYear, getWeekOfMonth, getDate } from 'date-fns';
-import { EditOutlined } from '@ant-design/icons';
+import { getMonth, getYear, getWeekOfMonth, getDate } from 'date-fns';
 
 import EditStatus from './EditStatus';
 import { updateBorrower, fetchToolQuantities, updateToolQuantity, chartData } from 'pages/TE_Backend';
@@ -16,38 +15,45 @@ const BorrowerSlip = ({ borrower, status }) => {
   const [open, setOpen] = useState(false);
   const [isApproving, setIsApproving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isEmpty, setIsEmpty] = useState(false);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [initialEquipment, setInitialEquipment] = useState(borrower.equipmentDetails);
 
   const handleUpdate = (updatedEquipment) => {
-    console.log('Updating Equipment:', updatedEquipment); // Debugging statement
     setInitialEquipment((prev) =>
       prev.map((equipment) => (equipment.id === updatedEquipment.id ? updatedEquipment : equipment))
     );
   };
 
-  // Log the updated state after it changes
   useEffect(() => {
-    console.log('Initial Equipment Updated:', initialEquipment); // Debugging statement
+    console.log('Initial Equipment Updated:', initialEquipment);
   }, [initialEquipment]);
 
   const toggleDialog = (dialogType, value) => {
     switch (dialogType) {
       case "main": setOpen(value); break;
       case "loading": setIsLoading(value); break;
-      case "edit": setEditDialogOpen(value); break;
       case "reject": setRejectDialogOpen(value); break;
       default: break;
     }
   };
-  
+
+  const validateEquipment = async () => {
+    for (const equipment of initialEquipment) {
+      const quantities = await fetchToolQuantities(equipment.id);
+      if (equipment.good_quantity > quantities.good_quantity) {
+        alert(`Cannot approve. Equipment ${equipment.name} has insufficient quantity.`);
+        return false;
+      }
+    }
+    return true;
+  };
+
   const handleApprove = async () => {
+    if (!(await validateEquipment())) return;
+
     setIsApproving(true);
     toggleDialog("main", false);
     toggleDialog("loading", true);
-    setIsEmpty(false);
 
     try {
       const updatedData = { isApproved: status === "pending return" ? "returned" : "admin approved" };
@@ -59,27 +65,18 @@ const BorrowerSlip = ({ borrower, status }) => {
 
         count += good_quantity + damaged_quantity;
 
-        let newQuantities;
-        if(updatedData.isApproved === "returned") {
-          if (quantities.good_quantity < good_quantity) {
-            setIsEmpty(true);
-            console.error(`Error: Equipment ID ${id} has insufficient quantity`);
-            return;
-          }
-
-            newQuantities = {
-            current_quantity: quantities.current_quantity + good_quantity,
-            good_quantity: quantities.good_quantity + good_quantity,
-            damage_quantity: quantities.damage_quantity + damaged_quantity,
-          };
-        } else {
-              newQuantities = {
+        const newQuantities = updatedData.isApproved === "returned"
+          ? {
+              current_quantity: quantities.current_quantity + good_quantity,
+              good_quantity: quantities.good_quantity + good_quantity,
+              damage_quantity: quantities.damage_quantity + damaged_quantity,
+            }
+          : {
               current_quantity: quantities.current_quantity - good_quantity,
               good_quantity: quantities.good_quantity - good_quantity,
               damage_quantity: quantities.damage_quantity + damaged_quantity,
-          }
-        }
-        console.log('New Quantities:', newQuantities);
+            };
+
         await updateToolQuantity(id, newQuantities.current_quantity, newQuantities.good_quantity, newQuantities.damage_quantity);
       }
 
@@ -95,7 +92,6 @@ const BorrowerSlip = ({ borrower, status }) => {
       };
       await chartData(data);
       await updateBorrower(borrower.id, updatedData);
-      console.log(`Borrower with ID ${borrower.id} has been ${updatedData.isApproved}`);
     } catch (error) {
       console.error('Error approving borrower:', error);
     } finally {
@@ -117,7 +113,6 @@ const BorrowerSlip = ({ borrower, status }) => {
       }));
 
       await updateBorrower(borrower.id, { isApproved: 'rejected', equipmentDetails: updatedEquipmentDetails });
-      console.log(`Borrower with ID ${borrower.id} has been rejected`);
       toggleDialog("reject", false);
       toggleDialog("main", false);
     } catch (error) {
@@ -128,9 +123,8 @@ const BorrowerSlip = ({ borrower, status }) => {
   };
 
   const renderDialogActions = () => {
-    // Return null if status is "admin approved" to hide buttons
     if (status === "admin approved") return null;
-  
+
     return (
       <DialogActions>
         {status === "pending return" ? (
@@ -155,7 +149,6 @@ const BorrowerSlip = ({ borrower, status }) => {
       </DialogActions>
     );
   };
-  
 
   return (
     <>
@@ -182,14 +175,13 @@ const BorrowerSlip = ({ borrower, status }) => {
                   color="textSecondary"
                   sx={{ minWidth: '120px', textAlign: 'right', fontWeight: 'bold' }}
                 >
-                 {borrower.subject}
+                  {borrower.subject}
                 </Typography>
               </Box>
             }
           />
         </ListItem>
       </Tooltip>
-
 
       <Divider />
 
@@ -212,9 +204,7 @@ const BorrowerSlip = ({ borrower, status }) => {
                   <TableCell>Name</TableCell>
                   <TableCell>Capacity</TableCell>
                   {status === 'pending return' && <TableCell>Good Qty</TableCell>}
-
                   <TableCell>Qty</TableCell>
-                  
                   {status === 'pending return' && <TableCell>Damaged Qty</TableCell>}
                 </TableRow>
               </TableHead>
