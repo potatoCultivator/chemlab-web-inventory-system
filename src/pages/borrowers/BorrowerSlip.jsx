@@ -48,23 +48,23 @@ const BorrowerSlip = ({ borrower, status }) => {
     return true;
   };
 
-  const handleApprove = async () => {
-    if (!(await validateEquipment())) return;
-
+   const handleApprove = async () => {
+    if (status !== "pending return" && !(await validateEquipment())) return;
+  
     setIsApproving(true);
     toggleDialog("main", false);
     toggleDialog("loading", true);
-
+  
     try {
       const updatedData = { isApproved: status === "pending return" ? "returned" : "admin approved" };
       let count = 0;
-
+  
       for (const equipment of initialEquipment) {
         const { id, good_quantity, damaged_quantity = 0 } = equipment;
         const quantities = await fetchToolQuantities(id);
-
+  
         count += good_quantity + damaged_quantity;
-
+  
         const newQuantities = updatedData.isApproved === "returned"
           ? {
               current_quantity: quantities.current_quantity + good_quantity,
@@ -76,10 +76,10 @@ const BorrowerSlip = ({ borrower, status }) => {
               good_quantity: quantities.good_quantity - good_quantity,
               damage_quantity: quantities.damage_quantity + damaged_quantity,
             };
-
+  
         await updateToolQuantity(id, newQuantities.current_quantity, newQuantities.good_quantity, newQuantities.damage_quantity);
       }
-
+  
       const now = new Date();
       const data = {
         status: updatedData.isApproved === "returned" ? "returned" : "borrowed",
@@ -99,7 +99,6 @@ const BorrowerSlip = ({ borrower, status }) => {
       setIsLoading(false);
     }
   };
-
   const handleReject = async () => {
     setIsLoading(true);
     try {
