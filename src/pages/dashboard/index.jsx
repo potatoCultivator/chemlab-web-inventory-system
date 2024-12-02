@@ -14,7 +14,7 @@ import {
         fetchAdminApprovedBorrowersCount, 
         addAdminApprovedBorrowersListener,
         fetchBorrowerEquipmentDetails,
-        fetchBorrowerEquipmentDetails_Returned,
+        // fetchBorrowerEquipmentDetails_Returned,
         fetchChartData } from '../TE_Backend';
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
@@ -23,7 +23,7 @@ export default function DashboardDefault() {
   const [run, setRun] = useState(true);
   const [borrowersCount, setBorrowersCount] = useState(0);
   const [ recentBorrowed, setRecentBorrowed ] = useState(0);
-  const [ returnedEquipment, setReturnedEquipment ] = useState([]);
+  // const [ returnedEquipment, setReturnedEquipment ] = useState([]);
 
   const [borrowedData, setBorrowedData] = useState([]);
   const [returnedData, setReturnedData] = useState([]);
@@ -92,18 +92,22 @@ export default function DashboardDefault() {
     getEquipmentDetails();
   }, []);
 
-  useEffect(() => {
-    const getEquipmentDetails = async () => {
-      try {
-        const details = await fetchBorrowerEquipmentDetails_Returned();
-        setReturnedEquipment(details);
-      } catch (error) {
-        console.error('Error fetching equipment details:', error);
-        // setError(error);
-      } 
-    }
-    getEquipmentDetails();
-  }, []);
+  // useEffect(() => {
+  //   const getEquipmentDetails = async () => {
+  //     try {
+  //       const details = await fetchBorrowerEquipmentDetails_Returned();
+  //       let cnt = 0;
+  //       details.forEach((item) => {
+  //         cnt = cnt + item.good_quantity;
+  //       });
+  //       setReturnedEquipment(cnt);
+  //     } catch (error) {
+  //       console.error('Error fetching equipment details:', error);
+  //       // setError(error);
+  //     } 
+  //   }
+  //   getEquipmentDetails();
+  // }, []);
 
   console.log("record count:" + recentBorrowed.length);
   console.log(recentBorrowed);
