@@ -83,13 +83,14 @@ const BorrowerSlip = ({ borrower, status }) => {
       const now = new Date();
       const data = {
         status: updatedData.isApproved === "returned" ? "returned" : "borrowed",
-        count,
+        count: isNaN(count) ? 0 : count,
         date: now,
-        day: getDate(now),
-        month: getMonth(now) + 1,
-        year: getYear(now),
-        weekOfMonth: getWeekOfMonth(now),
+        day: isNaN(getDate(now)) ? 0 : getDate(now),
+        month: isNaN(getMonth(now) + 1) ? 0 : getMonth(now) + 1,
+        year: isNaN(getYear(now)) ? 0 : getYear(now),
+        weekOfMonth: isNaN(getWeekOfMonth(now)) ? 0 : getWeekOfMonth(now),
       };
+  
       await chartData(data);
       await updateBorrower(borrower.id, updatedData);
     } catch (error) {
@@ -99,6 +100,7 @@ const BorrowerSlip = ({ borrower, status }) => {
       setIsLoading(false);
     }
   };
+
   const handleReject = async () => {
     setIsLoading(true);
     try {

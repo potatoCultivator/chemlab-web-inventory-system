@@ -272,10 +272,28 @@ async function fetchBorrowerEquipmentDetails_Returned() {
     const adminApprovedQuery = query(borrowerCollection, where('isApproved', '==', 'returned'));
     const querySnapshot = await getDocs(adminApprovedQuery);
 
-    const equipmentDetailsList = querySnapshot.docs.map(doc => doc.data().equipmentDetails || []);
-    return equipmentDetailsList.flat(); // Flatten the array of arrays
+    const equipmentDetailsList = querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      console.log('Borrower Data:', data); // Log the borrower data for debugging
+      return data.equipmentDetails || [];
+    });
+
+    const flattenedList = equipmentDetailsList.flat();
+    console.log('Flattened Equipment Details:', flattenedList); // Log the flattened list for debugging
+
+    // Calculate the total good quantity
+    const totalGoodQuantity = flattenedList.reduce((total, equipment) => {
+      return total + (equipment.good_quantity || 0);
+    }, 0);
+
+    console.log('Total Good Quantity:', totalGoodQuantity); // Log the total good quantity for debugging
+
+    return {
+      equipmentDetails: flattenedList,
+      totalGoodQuantity,
+    };
   } catch (error) {
-    console.error('Error fetching equipment details for admin approved borrowers:', error);
+    console.error('Error fetching equipment details for returned borrowers:', error);
     throw error;
   }
 }

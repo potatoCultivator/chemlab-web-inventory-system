@@ -74,8 +74,8 @@ export default function EditStatus({ onSave, initialEquipment }) {
                   type="number"
                   value={goodQuantity}
                   onChange={(e) => {
-                    const value = e.target.value;
-                    if (value >= 0) {
+                    const value = parseInt(e.target.value, 10);
+                    if (value >= 0 && value <= initialEquipment.good_quantity) {
                       setGoodQuantity(value);
                     }
                   }}
@@ -89,8 +89,8 @@ export default function EditStatus({ onSave, initialEquipment }) {
                   type="number"
                   value={damagedQuantity}
                   onChange={(e) => {
-                    const value = e.target.value;
-                    if (value >= 0) {
+                    const value = parseInt(e.target.value, 10);
+                    if (value >= 0 && value <= initialEquipment.good_quantity) {
                       setDamagedQuantity(value);
                     }
                   }}

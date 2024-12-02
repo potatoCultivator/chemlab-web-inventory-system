@@ -15,8 +15,7 @@ import MainCard from 'components/MainCard';
 // third-party
 import ReactApexChart from 'react-apexcharts';
 import { fetchChartData } from 'pages/TE_Backend';
-import { get } from 'lodash';
-import { startOfWeek, endOfWeek, isSameWeek, isSameMonth, getDay, getYear, getMonth, getWeekOfMonth } from 'date-fns';
+import { startOfWeek, endOfWeek, getDay, getYear, getMonth, getWeekOfMonth } from 'date-fns';
 
 // chart options
 const columnChartOptions = {
