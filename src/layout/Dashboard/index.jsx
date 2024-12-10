@@ -30,10 +30,7 @@ export default function DashboardLayout() {
 
   if (menuMasterLoading) return <Loader />;
 
-  // Find the current navigation item based on the location
-  const currentNavItem = navigation.children?.find(
-    (item) => item.url === location.pathname
-  );
+  const showButton = location.pathname === '/equipments';
 
   return (
     <Box sx={{ display: 'flex', width: '100%' }}>
@@ -43,7 +40,7 @@ export default function DashboardLayout() {
         <Toolbar />
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
           <Breadcrumbs navigation={navigation} title />
-          {currentNavItem?.showButton && (
+          {showButton && (
             <CustomButton type="add" variant="contained" color="primary">
               Add
             </CustomButton>

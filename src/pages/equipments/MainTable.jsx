@@ -10,16 +10,15 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
 import { UpOutlined, DownOutlined } from '@ant-design/icons';
 
-function createData(name, type, manufacturer, model, price) {
+function createData(name, type, model, currentQuantity, totalQuantity) {
   return {
     name,
     type,
-    manufacturer,
     model,
-    price,
+    currentQuantity,
+    totalQuantity,
     history: [
       {
         date: '2021-05-01',
@@ -33,6 +32,32 @@ function createData(name, type, manufacturer, model, price) {
       },
     ],
   };
+}
+
+function descendingComparator(a, b, orderBy) {
+  if (b[orderBy] < a[orderBy]) {
+    return -1;
+  }
+  if (b[orderBy] > a[orderBy]) {
+    return 1;
+  }
+  return 0;
+}
+
+function getComparator(order, orderBy) {
+  return order === 'desc'
+    ? (a, b) => descendingComparator(a, b, orderBy)
+    : (a, b) => -descendingComparator(a, b, orderBy);
+}
+
+function stableSort(array, comparator) {
+  const stabilizedThis = array.map((el, index) => [el, index]);
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) return order;
+    return a[1] - b[1];
+  });
+  return stabilizedThis.map((el) => el[0]);
 }
 
 function Row(props) {
@@ -55,9 +80,9 @@ function Row(props) {
           {row.name}
         </TableCell>
         <TableCell>{row.type}</TableCell>
-        <TableCell>{row.manufacturer}</TableCell>
         <TableCell>{row.model}</TableCell>
-        <TableCell align="right">{row.price}</TableCell>
+        <TableCell align="right">{row.currentQuantity}</TableCell>
+        <TableCell align="right">{row.totalQuantity}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -98,9 +123,9 @@ Row.propTypes = {
   row: PropTypes.shape({
     name: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
-    manufacturer: PropTypes.string.isRequired,
     model: PropTypes.string.isRequired,
-    price: PropTypes.number.isRequired,
+    currentQuantity: PropTypes.number.isRequired,
+    totalQuantity: PropTypes.number.isRequired,
     history: PropTypes.arrayOf(
       PropTypes.shape({
         date: PropTypes.string.isRequired,
@@ -112,34 +137,43 @@ Row.propTypes = {
 };
 
 const rows = [
-  createData('Beaker', 'Glassware', 'Pyrex', '1000ml', 10),
-  createData('Burette', 'Glassware', 'Kimble', '50ml', 15),
-  createData('Pipette', 'Glassware', 'Eppendorf', '10ml', 5),
-  createData('Centrifuge', 'Equipment', 'Eppendorf', '5424', 2000),
-  createData('Spectrophotometer', 'Equipment', 'Thermo Fisher', 'Genesys 10S', 5000),
-  createData('Flask', 'Glassware', 'Corning', '500ml', 8),
-  createData('Test Tube', 'Glassware', 'Kimble', '15ml', 2),
-  createData('Microscope', 'Equipment', 'Olympus', 'CX23', 1500),
-  createData('Balance', 'Equipment', 'Mettler Toledo', 'MS204S', 3000),
-  createData('pH Meter', 'Equipment', 'Hanna', 'HI98103', 50),
+  createData('Beaker', 'Glassware', '1000ml', 8, 10),
+  createData('Burette', 'Glassware', '50ml', 12, 15),
+  createData('Pipette', 'Glassware', '10ml', 4, 5),
+  createData('Centrifuge', 'Equipment', '5424', 1800, 2000),
+  createData('Spectrophotometer', 'Equipment', 'Genesys 10S', 4500, 5000),
+  createData('Flask', 'Glassware', '500ml', 7, 8),
+  createData('Test Tube', 'Glassware', '15ml', 1, 2),
+  createData('Microscope', 'Equipment', 'CX23', 1400, 1500),
+  createData('Balance', 'Equipment', 'MS204S', 2800, 3000),
+  createData('pH Meter', 'Equipment', 'HI98103', 45, 50),
 ];
 
 export default function MainTable() {
+  const [order, setOrder] = React.useState('asc');
+  const [orderBy, setOrderBy] = React.useState('name');
+
+  const handleRequestSort = (property) => {
+    const isAsc = orderBy === property && order === 'asc';
+    setOrder(isAsc ? 'desc' : 'asc');
+    setOrderBy(property);
+  };
+
   return (
-    <TableContainer component={Paper} sx={{ maxHeight: 540 }}>
+    <TableContainer sx={{ maxHeight: 540 }}>
       <Table aria-label="collapsible table">
         <TableHead>
           <TableRow>
             <TableCell />
-            <TableCell>Equipment Name</TableCell>
-            <TableCell>Type</TableCell>
-            <TableCell>Manufacturer</TableCell>
-            <TableCell>Model</TableCell>
-            <TableCell align="right">Price</TableCell>
+            <TableCell onClick={() => handleRequestSort('name')}>Equipment Name</TableCell>
+            <TableCell onClick={() => handleRequestSort('type')}>Type</TableCell>
+            <TableCell onClick={() => handleRequestSort('model')}>Model</TableCell>
+            <TableCell align="right" onClick={() => handleRequestSort('currentQuantity')}>Current Quantity</TableCell>
+            <TableCell align="right" onClick={() => handleRequestSort('totalQuantity')}>Total Quantity</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
+          {stableSort(rows, getComparator(order, orderBy)).map((row) => (
             <Row key={row.name} row={row} />
           ))}
         </TableBody>

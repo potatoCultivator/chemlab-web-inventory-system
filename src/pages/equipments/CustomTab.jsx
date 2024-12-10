@@ -1,32 +1,171 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
-import TabContext from '@mui/lab/TabContext';
-import TabList from '@mui/lab/TabList';
-import TabPanel from '@mui/lab/TabPanel';
-import { HomeOutlined, SettingOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import PropTypes from 'prop-types';
+import { Tabs, Tab, Box, Chip, Grid, TextField } from '@mui/material';
+import { alpha } from '@mui/system';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+
+// Project Imports
+import MainCard from 'components/MainCard';
+import MainTable from './MainTable';
+
+// Function
+function CustomTabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && children}
+    </div>
+  );
+}
+
+CustomTabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired,
+};
+
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
 
 export default function CustomTab() {
-  const [value, setValue] = React.useState('1');
+  const [value, setValue] = React.useState(0);
+  const [searchValue, setSearchValue] = React.useState('');
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  const handleSearchChange = (value) => {
+    setSearchValue(value);
+  };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
   return (
-    <Box sx={{ width: '100%', typography: 'body1' }}>
-      <TabContext value={value}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <TabList onChange={handleChange} aria-label="lab API tabs example">
-            <Tab icon={<HomeOutlined />} label="Item One" value="1" />
-            <Tab icon={<SettingOutlined />} label="Item Two" value="2" />
-            <Tab icon={<InfoCircleOutlined />} label="Item Three" value="3" />
-          </TabList>
-        </Box>
-        <TabPanel value="1">Item One</TabPanel>
-        <TabPanel value="2">Item Two</TabPanel>
-        <TabPanel value="3">Item Three</TabPanel>
-      </TabContext>
+    <Box sx={{ width: '100%' }}>
+      <Box sx={{ width: '100%' }}>
+        <MainCard>
+          <Box>
+            <Tabs value={value} onChange={handleChange} TabIndicatorProps={{ style: { backgroundColor: 'black' } }}>
+              <Tab
+                disableRipple
+                sx={{
+                  '&.Mui-selected': {
+                    backgroundColor: 'transparent',
+                    color: 'inherit',
+                  },
+                  '&:hover': {
+                    backgroundColor: 'transparent',
+                    color: 'inherit',
+                  },
+                }}
+                label={
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <span style={{ color: value === 0 ? 'black' : theme.palette.secondary.main }}>All</span>
+                    <Chip
+                      label={10} 
+                      size="small"
+                      style={{
+                        backgroundColor: value === 0 ? theme.palette.primary.main : alpha(theme.palette.primary.main, 0.2),
+                        color: value === 0 ? 'white' : theme.palette.primary.dark,
+                      }}
+                    />
+                  </Box>
+                }
+                {...a11yProps(0)}
+              />
+              <Tab
+                disableRipple
+                label={
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <span style={{ color: value === 1 ? 'black' : theme.palette.secondary.main }}>Returned</span>
+                    <Chip
+                      label={5} 
+                      size="small"
+                      style={{
+                        backgroundColor: value === 1 ? theme.palette.success.main : alpha(theme.palette.success.main, 0.2),
+                        color: value === 1 ? 'white' : theme.palette.success.dark,
+                      }}
+                    />
+                  </Box>
+                }
+                {...a11yProps(1)}
+              />
+              <Tab
+                disableRipple
+                label={
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <span style={{ color: value === 2 ? 'black' : theme.palette.secondary.main }}>Borrowed</span>
+                    <Chip
+                      label={7} 
+                      size="small"
+                      style={{
+                        backgroundColor: value === 2 ? theme.palette.error.main : alpha(theme.palette.error.main, 0.2),
+                        color: value === 2 ? 'white' : theme.palette.error.dark,
+                      }}
+                    />
+                  </Box>
+                }
+                {...a11yProps(2)}
+              />
+              {!isMobile && (
+                <Box sx={{ flexGrow: 0, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginLeft: 'auto' }}>
+                  <TextField
+                    size="small"
+                    placeholder="Search..."
+                    onChange={(e) => handleSearchChange(e.target.value)}
+                  />
+                </Box>
+              )}
+            </Tabs>
+          </Box>
+        </MainCard>
+
+        {isMobile && (
+          <MainCard>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12}>
+                <TextField
+                  size="small"
+                  placeholder="Search..."
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  fullWidth
+                />
+              </Grid>
+            </Grid>
+          </MainCard>
+        )}
+
+        <MainCard>
+          {searchValue ? (
+            <MainTable />
+          ) : (
+            <>
+              <CustomTabPanel value={value} index={0}>
+                <MainTable />
+              </CustomTabPanel>
+              <CustomTabPanel value={value} index={1}>
+                {/* Add content for the second tab here */}
+              </CustomTabPanel>
+              <CustomTabPanel value={value} index={2}>
+                {/* Add content for the third tab here */}
+              </CustomTabPanel>
+            </>
+          )}
+        </MainCard>
+      </Box>
     </Box>
   );
 }
