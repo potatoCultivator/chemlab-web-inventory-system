@@ -20,7 +20,7 @@ import {
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
 export default function DashboardDefault() {
-  const [run, setRun] = useState(true);
+  // const [run, setRun] = useState(true);
   const [borrowersCount, setBorrowersCount] = useState(0);
   const [ recentBorrowed, setRecentBorrowed ] = useState(0);
   // const [ returnedEquipment, setReturnedEquipment ] = useState([]);
@@ -115,7 +115,7 @@ export default function DashboardDefault() {
   useEffect(() => {
     document.title = "ChemLab IMS";
     // Delay the tour start to ensure all elements are rendered
-    setTimeout(() => setRun(true), 500); // 500ms delay
+    // setTimeout(() => setRun(true), 500); // 500ms delay
   }, []);
   
 

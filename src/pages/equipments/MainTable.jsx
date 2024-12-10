@@ -10,15 +10,24 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 import { UpOutlined, DownOutlined } from '@ant-design/icons';
+import CustomButton from 'components/@extended/CustomButton'; // Import the CustomButton component
+import EquipmentForm from 'components/@extended/EquipmentForm'; // Import the EquipmentForm component
 
-function createData(name, type, model, currentQuantity, totalQuantity) {
+function createData(name, type, model, stocks, total) {
   return {
     name,
     type,
     model,
-    currentQuantity,
-    totalQuantity,
+    stocks,
+    total,
     history: [
       {
         date: '2021-05-01',
@@ -81,8 +90,8 @@ function Row(props) {
         </TableCell>
         <TableCell>{row.type}</TableCell>
         <TableCell>{row.model}</TableCell>
-        <TableCell align="right">{row.currentQuantity}</TableCell>
-        <TableCell align="right">{row.totalQuantity}</TableCell>
+        <TableCell align="right">{row.stocks}</TableCell>
+        <TableCell align="right">{row.total}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -124,8 +133,8 @@ Row.propTypes = {
     name: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
     model: PropTypes.string.isRequired,
-    currentQuantity: PropTypes.number.isRequired,
-    totalQuantity: PropTypes.number.isRequired,
+    stocks: PropTypes.number.isRequired,
+    total: PropTypes.number.isRequired,
     history: PropTypes.arrayOf(
       PropTypes.shape({
         date: PropTypes.string.isRequired,
@@ -152,6 +161,9 @@ const rows = [
 export default function MainTable() {
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('name');
+  const [dialogOpen, setDialogOpen] = React.useState(false); // State to manage dialog visibility
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Check if the screen size is small or below
 
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -159,25 +171,58 @@ export default function MainTable() {
     setOrderBy(property);
   };
 
+  const handleDialogOpen = () => {
+    setDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+  };
+
   return (
-    <TableContainer sx={{ maxHeight: 540 }}>
-      <Table aria-label="collapsible table">
-        <TableHead>
-          <TableRow>
-            <TableCell />
-            <TableCell onClick={() => handleRequestSort('name')}>Equipment Name</TableCell>
-            <TableCell onClick={() => handleRequestSort('type')}>Type</TableCell>
-            <TableCell onClick={() => handleRequestSort('model')}>Model</TableCell>
-            <TableCell align="right" onClick={() => handleRequestSort('currentQuantity')}>Current Quantity</TableCell>
-            <TableCell align="right" onClick={() => handleRequestSort('totalQuantity')}>Total Quantity</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {stableSort(rows, getComparator(order, orderBy)).map((row) => (
-            <Row key={row.name} row={row} />
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Box>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Typography variant="h6">Main Table</Typography>
+        <CustomButton type="add" variant="contained" color="primary" onClick={handleDialogOpen}>
+          Add
+        </CustomButton>
+      </Box>
+      <TableContainer sx={{ maxHeight: 540 }}>
+        <Table aria-label="collapsible table">
+          <TableHead>
+            <TableRow>
+              <TableCell />
+              <TableCell onClick={() => handleRequestSort('name')}>Equipment Name</TableCell>
+              <TableCell onClick={() => handleRequestSort('type')}>Type</TableCell>
+              <TableCell onClick={() => handleRequestSort('model')}>Model</TableCell>
+              <TableCell align="right" onClick={() => handleRequestSort('stocks')}>Stocks</TableCell>
+              <TableCell align="right" onClick={() => handleRequestSort('total')}>Total</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {stableSort(rows, getComparator(order, orderBy)).map((row) => (
+              <Row key={row.name} row={row} />
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Dialog
+        open={dialogOpen}
+        onClose={handleDialogClose}
+        maxWidth={isMobile ? 'xs' : 'md'} // Change the maxWidth based on screen size
+        fullWidth
+        sx={{ '& .MuiDialog-paper': { width: isMobile ? '100%' : '30%', maxWidth: 'none' } }} // Custom width based on screen size
+      >
+        <DialogTitle>Add New Equipment</DialogTitle>
+        <DialogContent>
+          <EquipmentForm />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose} color="primary">
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 }

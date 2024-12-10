@@ -33,8 +33,7 @@ const dashboard = {
       type: 'item',
       url: '/equipments',
       icon: icons.ExperimentOutlined,
-      breadcrumbs: true,
-      showButton: true 
+      breadcrumbs: false,
     },
     {
       id: 'borrowers',
