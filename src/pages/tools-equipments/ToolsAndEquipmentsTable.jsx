@@ -160,51 +160,47 @@ export default function TE_Table({ refresh, catValue, searchValue }) {
         <p>Loading...</p>
       ) : (
         <TableContainer
-  sx={{
-    width: '100%',
-    overflowX: 'auto',
-    position: 'relative',
-    display: 'block',
-    maxWidth: '100%',
-    height: 400, // Set a fixed height for the scrollable area
-    overflowY: 'scroll', // Enable vertical scrolling
-    '& td, & th': { whiteSpace: 'nowrap' },
-    '& thead th': { position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 1 } // Sticky header
-  }}
->
-  <Table stickyHeader aria-labelledby="tableTitle">
-    <TE_TableHead order={order} orderBy={orderBy} />
-    <TableBody>
-      {stableSort(filteredRows, getComparator(order, orderBy)).map((row, index) => {
-        return (
-          <TableRow
-            hover
-            role="checkbox"
-            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            tabIndex={-1}
-            key={row.id}
-          >
-            <TableCell align="left">{row.name}</TableCell>
-            <TableCell align="center">{row.capacity} {row.unit}</TableCell>
-            <TableCell align="center">{row.good_quantity}/{row.quantity}</TableCell>
-            <TableCell align="center">{row.damage_quantity}/{row.quantity}</TableCell>
-            <TableCell align="center">{row.current_quantity}/{row.quantity}</TableCell>
-            <TableCell align="center">{row.category}</TableCell>
-            <TableCell align="right">
-              <IconButton color="primary" size="large" onClick={() => handleEditClick(row)}>
-                <EditOutlined />
-              </IconButton>
-              <IconButton color="error" size="large" onClick={() => handleDeleteClick(row)}>
-                <DeleteOutlined />
-              </IconButton>
-            </TableCell>
-          </TableRow>
-        );
-      })}
-    </TableBody>
-  </Table>
-</TableContainer>
-
+          sx={{
+            width: '100%',
+            overflowX: 'auto',
+            position: 'relative',
+            display: 'block',
+            maxWidth: '100%',
+            '& td, & th': { whiteSpace: 'nowrap' }
+          }}
+        >
+          <Table aria-labelledby="tableTitle">
+            <TE_TableHead order={order} orderBy={orderBy} />
+            <TableBody>
+              {stableSort(filteredRows, getComparator(order, orderBy)).map((row, index) => {
+                return (
+                  <TableRow
+                    hover
+                    role="checkbox"
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    tabIndex={-1}
+                    key={row.id}
+                  >
+                    <TableCell align='left'>{row.name}</TableCell>
+                    <TableCell align="center">{row.capacity} {row.unit}</TableCell>
+                    <TableCell align='center'>{row.good_quantity}/{row.quantity}</TableCell>
+                    <TableCell align='center'>{row.damage_quantity}/{row.quantity}</TableCell>
+                    <TableCell align='center'>{row.current_quantity}/{row.quantity}</TableCell>
+                    <TableCell align="center">{row.category}</TableCell>
+                    <TableCell align="right">
+                      <IconButton color="primary" size="large" onClick={() => handleEditClick(row)}>
+                        <EditOutlined />
+                      </IconButton>
+                      <IconButton color="error" size="large" onClick={() => handleDeleteClick(row)}>
+                        <DeleteOutlined />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
       )}
 
       <Dialog open={open} onClose={handleClose}>
