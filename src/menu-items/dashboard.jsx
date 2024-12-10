@@ -28,7 +28,7 @@ const dashboard = {
     },
     {
       id: 'tools-equipments',
-      title: 'Tools and Equipments',
+      title: 'Equipments',
       type: 'item',
       url: '/tools-equipments',
       icon: icons.ExperimentOutlined,
