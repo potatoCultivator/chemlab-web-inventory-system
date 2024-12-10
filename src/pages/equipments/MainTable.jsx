@@ -32,12 +32,12 @@ function createData(name, type, model, stocks, total) {
       {
         date: '2021-05-01',
         addedBy: 'John Doe',
-        quantity: 10,
+        addedStock: 10,
       },
       {
         date: '2021-06-15',
         addedBy: 'Jane Smith',
-        quantity: 5,
+        addedStock: 5,
       },
     ],
   };
@@ -105,7 +105,7 @@ function Row(props) {
                   <TableRow>
                     <TableCell>Date</TableCell>
                     <TableCell align='center'>Added By</TableCell>
-                    <TableCell align='right'>Quantity</TableCell>
+                    <TableCell align='right'>Added Stock</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -115,7 +115,7 @@ function Row(props) {
                         {historyRow.date}
                       </TableCell>
                       <TableCell align='center'>{historyRow.addedBy}</TableCell>
-                      <TableCell align='right'>{historyRow.quantity}</TableCell>
+                      <TableCell align='right'>{historyRow.addedStock}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -139,7 +139,7 @@ Row.propTypes = {
       PropTypes.shape({
         date: PropTypes.string.isRequired,
         addedBy: PropTypes.string.isRequired,
-        quantity: PropTypes.number.isRequired,
+        addedStock: PropTypes.number.isRequired,
       }),
     ).isRequired,
   }).isRequired,
