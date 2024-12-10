@@ -8,6 +8,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 // Project Imports
 import MainCard from 'components/MainCard';
 import MainTable from './MainTable';
+import CustomTable from './CustomTable';
 
 // Function
 function CustomTabPanel(props) {
@@ -90,7 +91,7 @@ export default function CustomTab() {
                 disableRipple
                 label={
                   <Box display="flex" alignItems="center" gap={1}>
-                    <span style={{ color: value === 1 ? 'black' : theme.palette.secondary.main }}>Returned</span>
+                    <span style={{ color: value === 1 ? 'black' : theme.palette.secondary.main }}>Replaced</span>
                     <Chip
                       label={5} 
                       size="small"
@@ -107,7 +108,7 @@ export default function CustomTab() {
                 disableRipple
                 label={
                   <Box display="flex" alignItems="center" gap={1}>
-                    <span style={{ color: value === 2 ? 'black' : theme.palette.secondary.main }}>Borrowed</span>
+                    <span style={{ color: value === 2 ? 'black' : theme.palette.secondary.main }}>Damaged</span>
                     <Chip
                       label={7} 
                       size="small"
@@ -157,10 +158,10 @@ export default function CustomTab() {
                 <MainTable />
               </CustomTabPanel>
               <CustomTabPanel value={value} index={1}>
-                {/* Add content for the second tab here */}
+                <CustomTable title={'Replaced Equipments'}/>
               </CustomTabPanel>
               <CustomTabPanel value={value} index={2}>
-                {/* Add content for the third tab here */}
+                <CustomTable title={'Damaged Equipments'}/>
               </CustomTabPanel>
             </>
           )}
