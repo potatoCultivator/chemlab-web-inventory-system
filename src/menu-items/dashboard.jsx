@@ -25,14 +25,16 @@ const dashboard = {
       url: '/dashboard/default',
       icon: icons.DashboardOutlined,
       breadcrumbs: false
+      
     },
     {
-      id: 'tools-equipments',
+      id: 'equipments',
       title: 'Equipments',
       type: 'item',
-      url: '/tools-equipments',
+      url: '/equipments',
       icon: icons.ExperimentOutlined,
-      breadcrumbs: false
+      breadcrumbs: true,
+      showButton: true 
     },
     {
       id: 'borrowers',
