@@ -169,7 +169,7 @@ export default function TE_Table({ refresh, catValue, searchValue }) {
             '& td, & th': { whiteSpace: 'nowrap' }
           }}
         >
-          <Table aria-labelledby="tableTitle">
+          <Table stickyHeader aria-labelledby="tableTitle">
             <TE_TableHead order={order} orderBy={orderBy} />
             <TableBody>
               {stableSort(filteredRows, getComparator(order, orderBy)).map((row, index) => {
