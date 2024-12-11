@@ -12,6 +12,7 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
+import Paper from '@mui/material/Paper';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
@@ -187,10 +188,26 @@ export default function MainTable() {
           Add
         </CustomButton>
       </Box>
-      <TableContainer sx={{ maxHeight: 540 }}>
+      <TableContainer
+            component={Paper}
+            style={{
+                // margin: "20px",
+                // borderRadius: "8px",
+                // boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                maxHeight: "700px", // Set a maximum height to allow scrolling
+                overflowY: "auto",  // Enables vertical scrolling for the body
+            }}
+            >
         <Table aria-label="collapsible table">
           <TableHead>
-            <TableRow>
+          <TableRow
+                    style={{
+                    backgroundColor: "#f5f5f5",
+                    position: "sticky", // Make the header sticky
+                    top: 0,             // Stick to the top of the container
+                    zIndex: 1,          // Ensure it's above the body
+                    }}
+                >
               <TableCell />
               <TableCell onClick={() => handleRequestSort('name')}>Equipment Name</TableCell>
               <TableCell onClick={() => handleRequestSort('type')}>Type</TableCell>
@@ -206,6 +223,7 @@ export default function MainTable() {
           </TableBody>
         </Table>
       </TableContainer>
+      
       <Dialog
         open={dialogOpen}
         onClose={handleDialogClose}
