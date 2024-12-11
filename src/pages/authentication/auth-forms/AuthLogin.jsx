@@ -1,14 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
-import Divider from '@mui/material/Divider';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid';
-import Link from '@mui/material/Link';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
@@ -24,7 +21,7 @@ import { loginUser, fetchUserProfile } from 'src/pages/TE_Backend';
 
 // ============================|| JWT - LOGIN ||============================ // 
 
-export default function AuthLogin({ isDemo = false }) {
+export default function AuthLogin() {
   const [checked, setChecked] = React.useState(false);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = React.useState(false);

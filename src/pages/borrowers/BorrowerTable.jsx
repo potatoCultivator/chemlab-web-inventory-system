@@ -61,10 +61,10 @@ const BorrowerTable = () => {
       <TableContainer
             component={Paper}
             style={{
-                margin: "20px",
-                borderRadius: "8px",
-                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                maxHeight: "700px", // Set a maximum height to allow scrolling
+                // margin: "20px",
+                // borderRadius: "8px",
+                // boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                maxHeight: "680px", // Set a maximum height to allow scrolling
                 overflowY: "auto",  // Enables vertical scrolling for the body
             }}
             >
