@@ -64,7 +64,7 @@ const BorrowerTable = () => {
                 // margin: "20px",
                 // borderRadius: "8px",
                 // boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                maxHeight: "680px", // Set a maximum height to allow scrolling
+                maxHeight: "774px", // Set a maximum height to allow scrolling
                 overflowY: "auto",  // Enables vertical scrolling for the body
             }}
             >

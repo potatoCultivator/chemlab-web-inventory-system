@@ -90,7 +90,7 @@ export default function CustomTab() {
                 disableRipple
                 label={
                   <Box display="flex" alignItems="center" gap={1}>
-                    <span style={{ color: value === 1 ? 'black' : theme.palette.secondary.main }}>Replaced</span>
+                    <span style={{ color: value === 1 ? 'black' : theme.palette.secondary.main }}>Borrowed</span>
                     <Chip
                       label={5} 
                       size="small"
@@ -107,7 +107,7 @@ export default function CustomTab() {
                 disableRipple
                 label={
                   <Box display="flex" alignItems="center" gap={1}>
-                    <span style={{ color: value === 2 ? 'black' : theme.palette.secondary.main }}>Damaged</span>
+                    <span style={{ color: value === 2 ? 'black' : theme.palette.secondary.main }}>Returned</span>
                     <Chip
                       label={7} 
                       size="small"

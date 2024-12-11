@@ -8,6 +8,10 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import * as Yup from 'yup';
 
+// Firestore
+import { addEquipment, uploadImageAndGetUrl } from 'pages/Query';
+// import { serverTimestamp } from 'firebase/firestore';
+
 const validationSchema = Yup.object({
   name: Yup.string().required('Name is required'),
   quantity: Yup.number().min(0, 'Quantity must be at least 0').required('Quantity is required'),
@@ -28,6 +32,34 @@ export default function EquipmentForm() {
     }
   };
 
+  const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+    console.log(values);
+    try {
+      // Upload image to Firebase Storage and get the URL
+      const imageUrl = await uploadImageAndGetUrl(values.image);
+
+      // Add equipment to Firestore
+      await addEquipment({
+        name: values.name,
+        quantity: values.quantity,
+        capacity: values.capacity,
+        unit: values.unit,
+        category: values.category,
+        image: imageUrl,
+        dateAdded: new Date(),
+      });
+
+      alert('Equipment added successfully!');
+      resetForm();
+      setPreviewImage(null);
+    } catch (error) {
+      console.error('Error adding equipment:', error);
+      alert('Failed to add equipment. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <Formik
       initialValues={{
@@ -39,10 +71,7 @@ export default function EquipmentForm() {
         image: null,
       }}
       validationSchema={validationSchema}
-      onSubmit={(values) => {
-        console.log(values);
-        alert('Form submitted!');
-      }}
+      onSubmit={handleSubmit}
     >
       {({ setFieldValue }) => (
         <Form>

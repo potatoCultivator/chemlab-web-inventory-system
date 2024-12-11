@@ -19,8 +19,11 @@ import Button from '@mui/material/Button';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { UpOutlined, DownOutlined } from '@ant-design/icons';
-import CustomButton from 'components/@extended/CustomButton'; // Import the CustomButton component
-import EquipmentForm from 'components/@extended/EquipmentForm'; // Import the EquipmentForm component
+// import CustomButton from 'components/@extended/CustomButton'; // Import the CustomButton component
+// import EquipmentForm from 'components/@extended/EquipmentForm'; // Import the EquipmentForm component
+// import CustomButton from './CustomButton'; // Import the CustomButton component
+import EquipmentForm from './EquipmentForm'; // Import the EquipmentForm component
+import CustomButton from './CustomButton copy';
 
 function createData(name, type, unit, stocks, total) {
   return {
