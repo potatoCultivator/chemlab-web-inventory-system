@@ -9,9 +9,9 @@ import Dashboard from 'layout/Dashboard';
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard/index')));
 // const ToolsAndEquipment = Loadable(lazy(() => import('pages/tools-equipments/index')));
 const Equipments = Loadable(lazy(() => import('pages/equipments/index')));
-// const Borrowers = Loadable(lazy(() => import('pages/borrowers/index')));
-// const Instructors = Loadable(lazy(() => import('pages/instructors/index')));
-// const History = Loadable(lazy(() => import('pages/history/index')));
+const Borrowers = Loadable(lazy(() => import('pages/borrowers/index')));
+const Instructors = Loadable(lazy(() => import('pages/instructors/index')));
+const History = Loadable(lazy(() => import('pages/history/index')));
 const ViewProfile = Loadable(lazy(() => import('pages/admin-profile/UserProfile')));
 const EditProfile = Loadable(lazy(() => import('pages/admin-profile/EditProfile')));
 
@@ -40,6 +40,18 @@ const MainRoutes = {
     {
       path: 'equipments',
       element: <Equipments />
+    },
+    {
+      path: 'borrowers',
+      element: <Borrowers />
+    },
+    {
+      path: 'instructors',
+      element: <Instructors />
+    },
+    {
+      path: 'history',
+      element: <History />
     },
     {
       path: 'admin-profile',
