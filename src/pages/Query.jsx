@@ -1,6 +1,6 @@
 // Firebase Firestore imports
 import { firestore } from '../firebase'; // Adjust the path as necessary
-import { collection, writeBatch, doc } from "firebase/firestore"; 
+import { collection, writeBatch, doc, query, where, getDocs } from "firebase/firestore"; 
 
 // Firebase Storage imports
 import { storage } from '../firebase'; // Adjust the path as necessary
@@ -51,7 +51,18 @@ async function uploadImageAndGetUrl(file) {
   return fileUrl;
 }
 
+// Function to check if equipment name already exists in Firestore
+async function checkEquipmentExists(name) {
+  const db = firestore;
+  const collectionRef = collection(db, 'equipments');
+  const q = query(collectionRef, where('name', '==', name));
+  const querySnapshot = await getDocs(q);
+
+  return !querySnapshot.empty;
+}
+
 export { 
   addEquipment,
-  uploadImageAndGetUrl
+  uploadImageAndGetUrl,
+  checkEquipmentExists
 };

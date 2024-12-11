@@ -6,11 +6,11 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
 import * as Yup from 'yup';
 
 // Firestore
-import { addEquipment, uploadImageAndGetUrl } from 'pages/Query';
-// import { serverTimestamp } from 'firebase/firestore';
+import { addEquipment, uploadImageAndGetUrl, checkEquipmentExists } from 'pages/Query'; // Adjust the path as necessary
 
 const validationSchema = Yup.object({
   name: Yup.string().required('Name is required'),
@@ -23,6 +23,8 @@ const validationSchema = Yup.object({
 
 export default function EquipmentForm() {
   const [previewImage, setPreviewImage] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [nameError, setNameError] = useState('');
 
   const handleImageChange = (event, setFieldValue) => {
     const file = event.target.files[0];
@@ -32,11 +34,31 @@ export default function EquipmentForm() {
     }
   };
 
+  const handleNameChange = async (event, setFieldValue) => {
+    const name = event.target.value;
+    setFieldValue('name', name);
+
+    // Check if the equipment name already exists in the database
+    const exists = await checkEquipmentExists(name);
+    if (exists) {
+      setNameError('Equipment with this name already exists.');
+    } else {
+      setNameError('');
+    }
+  };
+
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+    if (nameError) {
+      setSubmitting(false);
+      return;
+    }
+
+    setLoading(true);
     console.log(values);
     try {
       // Upload image to Firebase Storage and get the URL
       const imageUrl = await uploadImageAndGetUrl(values.image);
+      console.log('imageUrl: ', imageUrl);
 
       // Add equipment to Firestore
       await addEquipment({
@@ -57,6 +79,7 @@ export default function EquipmentForm() {
       alert('Failed to add equipment. Please try again.');
     } finally {
       setSubmitting(false);
+      setLoading(false);
     }
   };
 
@@ -88,6 +111,9 @@ export default function EquipmentForm() {
                   fullWidth
                   placeholder="Enter the name of the item"
                   sx={{ backgroundColor: 'transparent' }}
+                  onChange={(event) => handleNameChange(event, setFieldValue)}
+                  error={!!nameError}
+                  helperText={nameError}
                 />
               </Grid>
 
@@ -195,8 +221,8 @@ export default function EquipmentForm() {
 
             {/* Submit Button */}
             <Box mt={3} textAlign="center">
-              <Button type="submit" variant="contained" color="primary">
-                Submit
+              <Button type="submit" variant="contained" color="primary" disabled={loading}>
+                {loading ? <CircularProgress size={24} /> : 'Submit'}
               </Button>
             </Box>
           </Box>
