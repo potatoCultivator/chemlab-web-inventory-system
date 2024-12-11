@@ -85,7 +85,7 @@ function Row(props) {
                 <TableHead>
                   <TableRow>
                     <TableCell>Date</TableCell>
-                    <TableCell align='center'>Added By</TableCell>
+                    <TableCell align='center'>{title === 'Damaged Equipments' ? 'Caused by ' : 'Replaced by'}</TableCell>
                     <TableCell align='right'>{title === 'Damaged Equipments' ? 'Damaged' : 'Replaced'}</TableCell>
                   </TableRow>
                 </TableHead>
