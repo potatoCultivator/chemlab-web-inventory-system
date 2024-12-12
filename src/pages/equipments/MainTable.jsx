@@ -19,9 +19,6 @@ import Button from '@mui/material/Button';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { UpOutlined, DownOutlined } from '@ant-design/icons';
-// import CustomButton from 'components/@extended/CustomButton'; // Import the CustomButton component
-// import EquipmentForm from 'components/@extended/EquipmentForm'; // Import the EquipmentForm component
-// import CustomButton from './CustomButton'; // Import the CustomButton component
 import EquipmentForm from './EquipmentForm'; // Import the EquipmentForm component
 import CustomButton from './CustomButton copy';
 
@@ -194,9 +191,6 @@ export default function MainTable() {
       <TableContainer
             component={Paper}
             style={{
-                // margin: "20px",
-                // borderRadius: "8px",
-                // boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
                 maxHeight: "700px", // Set a maximum height to allow scrolling
                 overflowY: "auto",  // Enables vertical scrolling for the body
             }}
@@ -236,7 +230,7 @@ export default function MainTable() {
       >
         <DialogTitle>Add New Equipment</DialogTitle>
         <DialogContent>
-          <EquipmentForm />
+          <EquipmentForm onClose={handleDialogClose} />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleDialogClose} color="primary">

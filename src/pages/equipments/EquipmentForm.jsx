@@ -10,18 +10,18 @@ import CircularProgress from '@mui/material/CircularProgress';
 import * as Yup from 'yup';
 
 // Firestore
-import { addEquipment, uploadImageAndGetUrl, checkEquipmentExists } from 'pages/Query'; // Adjust the path as necessary
+import { addEquipment, uploadImageAndGetUrl, checkEquipmentExists, updateStock } from 'pages/Query'; // Adjust the path as necessary
 
 const validationSchema = Yup.object({
   name: Yup.string().required('Name is required'),
-  quantity: Yup.number().min(0, 'Quantity must be at least 0').required('Quantity is required'),
+  stocks: Yup.number().min(0, 'Stocks must be at least 0').required('Stocks are required'),
   capacity: Yup.number().min(0, 'Capacity must be at least 0').required('Capacity is required'),
   unit: Yup.string().required('Unit is required'),
   category: Yup.string().required('Category is required'),
   image: Yup.mixed().required('Image is required'),
 });
 
-export default function EquipmentForm() {
+export default function EquipmentForm({ onClose }) {
   const [previewImage, setPreviewImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [nameError, setNameError] = useState('');
@@ -30,53 +30,51 @@ export default function EquipmentForm() {
     const file = event.target.files[0];
     if (file) {
       setPreviewImage(URL.createObjectURL(file));
-      setFieldValue('image', file);
+      setFieldValue('image', file); // Always update the form field
     }
   };
 
   const handleNameChange = async (event, setFieldValue) => {
-    const name = event.target.value;
+    const name = event.target.value.trim();
     setFieldValue('name', name);
 
-    // Check if the equipment name already exists in the database
-    const exists = await checkEquipmentExists(name);
-    if (exists) {
-      setNameError('Equipment with this name already exists.');
+    if (name) {
+      const exists = await checkEquipmentExists(name);
+      setNameError(exists ? 'Equipment with this name already exists.' : '');
     } else {
       setNameError('');
     }
   };
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
-    if (nameError) {
-      setSubmitting(false);
-      return;
-    }
-
     setLoading(true);
-    console.log(values);
     try {
-      // Upload image to Firebase Storage and get the URL
-      const imageUrl = await uploadImageAndGetUrl(values.image);
-      console.log('imageUrl: ', imageUrl);
+      const existingEquipment = await checkEquipmentExists(values.name, values.unit);
+      if (existingEquipment) {
+        const newStock = existingEquipment.stocks + values.stocks;
+        await updateStock(existingEquipment.id, newStock);
+        alert('Equipment stock updated successfully!');
+      } else {
+        const imageUrl = await uploadImageAndGetUrl(values.image);
+        await addEquipment({
+          name: values.name,
+          stocks: values.stocks,
+          capacity: values.capacity,
+          unit: values.unit,
+          category: values.category,
+          image: imageUrl,
+          dateAdded: new Date(),
+        });
+        alert('Equipment added successfully!');
+      }
 
-      // Add equipment to Firestore
-      await addEquipment({
-        name: values.name,
-        quantity: values.quantity,
-        capacity: values.capacity,
-        unit: values.unit,
-        category: values.category,
-        image: imageUrl,
-        dateAdded: new Date(),
-      });
-
-      alert('Equipment added successfully!');
       resetForm();
       setPreviewImage(null);
+      setNameError('');
+      if (onClose) onClose(); // Call the onClose callback if provided
     } catch (error) {
-      console.error('Error adding equipment:', error);
-      alert('Failed to add equipment. Please try again.');
+      console.error('Error adding/updating equipment:', error);
+      alert('Failed to add/update equipment. Please try again.');
     } finally {
       setSubmitting(false);
       setLoading(false);
@@ -87,7 +85,7 @@ export default function EquipmentForm() {
     <Formik
       initialValues={{
         name: '',
-        quantity: '',
+        stocks: '',
         capacity: '',
         unit: '',
         category: '',
@@ -117,17 +115,17 @@ export default function EquipmentForm() {
                 />
               </Grid>
 
-              {/* Quantity Field */}
+              {/* Stocks Field */}
               <Grid item xs={2}>
-                <Typography>Quantity:</Typography>
+                <Typography>Stocks:</Typography>
               </Grid>
               <Grid item xs={10}>
                 <Field
                   component={TextField}
-                  name="quantity"
+                  name="stocks"
                   type="number"
                   fullWidth
-                  placeholder="Enter the quantity"
+                  placeholder="Enter the stocks"
                   sx={{ backgroundColor: 'transparent' }}
                 />
               </Grid>
@@ -153,12 +151,21 @@ export default function EquipmentForm() {
               </Grid>
               <Grid item xs={10}>
                 <Field
-                  component={TextField}
+                  component={Select}
                   name="unit"
                   fullWidth
-                  placeholder="Please select the unit of measurement"
+                  displayEmpty
+                  inputProps={{ 'aria-label': 'Select unit' }}
                   sx={{ backgroundColor: 'transparent' }}
-                />
+                >
+                  <MenuItem value="" disabled>
+                    Please select the unit of measurement
+                  </MenuItem>
+                  <MenuItem value="kg">kg</MenuItem>
+                  <MenuItem value="g">g</MenuItem>
+                  <MenuItem value="L">L</MenuItem>
+                  <MenuItem value="mL">mL</MenuItem>
+                </Field>
               </Grid>
 
               {/* Category Field */}
