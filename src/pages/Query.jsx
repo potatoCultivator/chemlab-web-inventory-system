@@ -1,6 +1,6 @@
 // Firebase Firestore imports
 import { firestore } from '../firebase'; // Adjust the path as necessary
-import { collection, writeBatch, doc, query, where, getDocs, updateDoc } from "firebase/firestore"; 
+import { collection, writeBatch, doc, query, where, getDocs, updateDoc, arrayUnion } from "firebase/firestore"; 
 
 // Firebase Storage imports
 import { storage } from '../firebase'; // Adjust the path as necessary
@@ -13,9 +13,11 @@ function validateToolData(data) {
     capacity: !isNaN(Number(data.capacity)) ? Number(data.capacity) : 0,
     unit: typeof data.unit === 'string' ? data.unit : 'kg',
     stocks: !isNaN(Number(data.stocks)) ? Number(data.stocks) : 0,
+    total: !isNaN(Number(data.stocks)) ? Number(data.stocks) : 0, // Ensure total is set to the same value as stocks
     category: typeof data.category === 'string' ? data.category : 'unknown',
     image: typeof data.image === 'string' ? data.image : '',
     dateAdded: data.dateAdded instanceof Date ? data.dateAdded : new Date(),
+    history: Array.isArray(data.history) ? data.history : [],
   };
 }
 
@@ -52,10 +54,10 @@ async function uploadImageAndGetUrl(file) {
 }
 
 // Function to check if equipment name and unit already exist in Firestore
-async function checkEquipmentExists(name, unit) {
+async function checkEquipmentExists(name, unit, capacity) {
   const db = firestore;
   const collectionRef = collection(db, 'equipments');
-  const q = query(collectionRef, where('name', '==', name), where('unit', '==', unit));
+  const q = query(collectionRef, where('name', '==', name), where('unit', '==', unit), where('capacity', '==', capacity));
   const querySnapshot = await getDocs(q);
 
   if (!querySnapshot.empty) {
@@ -66,15 +68,44 @@ async function checkEquipmentExists(name, unit) {
 }
 
 // Function to update the stock of existing equipment
-async function updateStock(id, newStock) {
+async function updateStock(id, newStock, newTotal, historyEntry) {
   const db = firestore;
   const docRef = doc(db, 'equipments', id);
-  await updateDoc(docRef, { stocks: newStock });
+  await updateDoc(docRef, { 
+    stocks: newStock,
+    total: newTotal,
+    history: arrayUnion(historyEntry) // Add new history entry to the existing history array
+  });
+}
+
+// Function to add a history entry to Firestore
+async function addHistoryEntry(equipmentId, historyEntry) {
+  const db = firestore;
+  const docRef = doc(db, 'equipments', equipmentId);
+  await updateDoc(docRef, {
+    history: arrayUnion(historyEntry)
+  });
+}
+
+// Function to fetch specific equipment by name, unit, and capacity
+async function getEquipment(name, unit, capacity) {
+  const db = firestore;
+  const collectionRef = collection(db, 'equipments');
+  const q = query(collectionRef, where('name', '==', name), where('unit', '==', unit), where('capacity', '==', capacity));
+  const querySnapshot = await getDocs(q);
+
+  if (!querySnapshot.empty) {
+    const doc = querySnapshot.docs[0];
+    return doc.id; // Return only the ID of the equipment
+  }
+  return null;
 }
 
 export { 
   addEquipment,
   uploadImageAndGetUrl,
   checkEquipmentExists,
-  updateStock
+  updateStock,
+  addHistoryEntry,
+  getEquipment
 };

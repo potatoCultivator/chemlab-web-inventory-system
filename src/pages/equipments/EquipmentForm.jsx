@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Formik, Form, Field } from 'formik';
 import { TextField, Select } from 'formik-mui';
 import MenuItem from '@mui/material/MenuItem';
@@ -8,6 +8,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import * as Yup from 'yup';
+import { useNavigate } from 'react-router-dom';
 
 // Firestore
 import { addEquipment, uploadImageAndGetUrl, checkEquipmentExists, updateStock } from 'pages/Query'; // Adjust the path as necessary
@@ -25,6 +26,36 @@ export default function EquipmentForm({ onClose }) {
   const [previewImage, setPreviewImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [nameError, setNameError] = useState('');
+  const [data, setData] = useState({ firstname: '', lastname: '' });
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedData = localStorage.getItem('userData');
+
+    if (storedData) {
+      setData(JSON.parse(storedData)); // Set data from local storage
+      console.log('stored data', JSON.parse(storedData));
+    } else {
+      const fetchData = async () => {
+        try {
+          const userData = await fetchUserProfile();
+          const { firstname, lastname } = userData;
+
+          if (firstname && lastname) {
+            setData({ firstname, lastname });
+            localStorage.setItem('userData', JSON.stringify({ firstname, lastname })); // Save to local storage
+          } else {
+            console.error('Profile data is incomplete.');
+            navigate('/404'); // Navigate to 404 page
+          }
+        } catch (err) {
+          console.error('Error fetching data:', err);
+          navigate('/404'); // Navigate to 404 page
+        }
+      };
+      fetchData(); // Fetch data if not found in local storage
+    }
+  }, [navigate]);
 
   const handleImageChange = (event, setFieldValue) => {
     const file = event.target.files[0];
@@ -39,7 +70,7 @@ export default function EquipmentForm({ onClose }) {
     setFieldValue('name', name);
 
     if (name) {
-      const exists = await checkEquipmentExists(name);
+      const exists = await checkEquipmentExists(name, values.unit, values.capacity);
       setNameError(exists ? 'Equipment with this name already exists.' : '');
     } else {
       setNameError('');
@@ -49,25 +80,35 @@ export default function EquipmentForm({ onClose }) {
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     setLoading(true);
     try {
-      const existingEquipment = await checkEquipmentExists(values.name, values.unit);
+      const historyEntry = {
+        date: new Date().toISOString().split('T')[0], // Current date in YYYY-MM-DD format
+        addedBy: `${data.firstname} ${data.lastname}`, // Use the admin's first name and last name
+        addedStock: values.stocks,
+      };
+  
+      const existingEquipment = await checkEquipmentExists(values.name, values.unit, values.capacity);
       if (existingEquipment) {
         const newStock = existingEquipment.stocks + values.stocks;
-        await updateStock(existingEquipment.id, newStock);
+        const newTotal = existingEquipment.total + values.stocks;
+        await updateStock(existingEquipment.id, newStock, newTotal, historyEntry);
         alert('Equipment stock updated successfully!');
       } else {
         const imageUrl = await uploadImageAndGetUrl(values.image);
-        await addEquipment({
+        const newEquipment = {
           name: values.name,
           stocks: values.stocks,
+          total: values.stocks,
           capacity: values.capacity,
           unit: values.unit,
           category: values.category,
           image: imageUrl,
           dateAdded: new Date(),
-        });
+          history: [historyEntry],
+        };
+        await addEquipment(newEquipment);
         alert('Equipment added successfully!');
       }
-
+  
       resetForm();
       setPreviewImage(null);
       setNameError('');
