@@ -19,6 +19,7 @@ import Button from '@mui/material/Button';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { UpOutlined, DownOutlined } from '@ant-design/icons';
+import Grid from '@mui/material/Grid';
 import EquipmentForm from './EquipmentForm'; // Import the EquipmentForm component
 import CustomButton from './CustomButton copy';
 
@@ -78,52 +79,69 @@ function Row(props) {
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1, padding: 0, maxWidth: '800px', marginLeft: 'auto', marginRight: 'auto' }}>
-              <Typography variant="h6" gutterBottom component="div" sx={{ fontSize: '1rem', fontWeight: 'bold' }}>
-                History
-              </Typography>
-                <TableContainer
-                  component={Paper}
+            <Box sx={{ margin: 1, maxWidth: '100%', marginLeft: 'auto', marginRight: 'auto', padding: '16px' }}>
+              <Grid container spacing={2}>
+              <Grid item xs={12} md={4}>
+                <Typography variant="h6" gutterBottom component="div" sx={{ fontSize: '1rem', fontWeight: 'bold' }}>
+                      Image
+                </Typography>
+                <img 
+                  src={row.image} 
+                  alt={row.name} 
                   style={{
-                    maxHeight: "700px", // Set a maximum height to allow scrolling
-                    overflowY: "auto",  // Enables vertical scrolling for the body
-                  }}
-                >
-                <Table size="small" aria-label="history">
-                  <TableHead>
-                    <TableRow
-                      style={{
-                        backgroundColor: "#f5f5f5",
-                        position: "sticky", // Make the header sticky
-                        top: 0,             // Stick to the top of the container
-                        zIndex: 1,          // Ensure it's above the body
-                      }}
-                    >
-                      <TableCell>Date</TableCell>
-                      <TableCell>Time</TableCell>
-                      <TableCell align='center'>Added By</TableCell>
-                      <TableCell align='right'>Added Stock</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {row.history.map((historyRow) => {
-                      const date = historyRow.date.toDate();
-                      return (
-                        <TableRow key={historyRow.date.toMillis()}>
-                          <TableCell component="th" scope="row">
-                            {date.toLocaleDateString()}
-                          </TableCell>
-                          <TableCell>
-                            {date.toLocaleTimeString()}
-                          </TableCell>
-                          <TableCell align='center'>{historyRow.addedBy}</TableCell>
-                          <TableCell align='right'>{historyRow.addedStock}</TableCell>
+                    width: '100%', 
+                    maxWidth: '450px', // Set a maximum width
+                    height: '450px',   // Match height to width for square
+                    objectFit: 'cover', 
+                    borderRadius: '8px',
+                    display: 'block', // Ensures proper alignment
+                    margin: '0 auto' // Centers the image horizontally
+                  }} 
+                />
+              </Grid>
+
+                <Grid item xs={12} md={8}>
+                  <Typography variant="h6" gutterBottom component="div" sx={{ fontSize: '1rem', fontWeight: 'bold' }}>
+                    History
+                  </Typography>
+                  <TableContainer component={Paper} sx={{ maxHeight: '450px', overflowY: 'auto' }}>
+                    <Table size="small" aria-label="history" sx={{ border: '1px solid #ddd' }}>
+                      <TableHead>
+                        <TableRow
+                          style={{
+                            backgroundColor: "#f5f5f5",
+                            position: "sticky", // Make the header sticky
+                            top: 0,             // Stick to the top of the container
+                            zIndex: 1,          // Ensure it's above the body
+                          }}
+                        >
+                          <TableCell>Date</TableCell>
+                          <TableCell>Time</TableCell>
+                          <TableCell align='center'>Added By</TableCell>
+                          <TableCell align='right'>Added Stock</TableCell>
                         </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-            </TableContainer>
+                      </TableHead>
+                      <TableBody>
+                        {row.history.map((historyRow) => {
+                          const date = historyRow.date.toDate();
+                          return (
+                            <TableRow key={historyRow.date.toMillis()}>
+                              <TableCell component="th" scope="row">
+                                {date.toLocaleDateString()}
+                              </TableCell>
+                              <TableCell>
+                                {date.toLocaleTimeString()}
+                              </TableCell>
+                              <TableCell align='center'>{historyRow.addedBy}</TableCell>
+                              <TableCell align='right'>{historyRow.addedStock}</TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Grid>
+              </Grid>
             </Box>
           </Collapse>
         </TableCell>
@@ -139,6 +157,7 @@ Row.propTypes = {
     unit: PropTypes.string.isRequired,
     stocks: PropTypes.number.isRequired,
     total: PropTypes.number.isRequired,
+    image: PropTypes.string.isRequired, // Added image prop type
     history: PropTypes.arrayOf(
       PropTypes.shape({
         date: PropTypes.object.isRequired, // Firestore Timestamp
