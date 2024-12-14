@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
+import { Timestamp } from 'firebase/firestore'; // Import Firestore Timestamp
 
 // Firestore
 import { addEquipment, uploadImageAndGetUrl, checkEquipmentExists, updateStock } from 'pages/Query'; // Adjust the path as necessary
@@ -81,11 +82,11 @@ export default function EquipmentForm({ onClose }) {
     setLoading(true);
     try {
       const historyEntry = {
-        date: new Date().toISOString().split('T')[0], // Current date in YYYY-MM-DD format
+        date: Timestamp.fromDate(new Date()), // Current date and time as Firestore Timestamp
         addedBy: `${data.firstname} ${data.lastname}`, // Use the admin's first name and last name
         addedStock: values.stocks,
       };
-  
+
       const existingEquipment = await checkEquipmentExists(values.name, values.unit, values.capacity);
       if (existingEquipment) {
         const newStock = existingEquipment.stocks + values.stocks;
@@ -102,13 +103,13 @@ export default function EquipmentForm({ onClose }) {
           unit: values.unit,
           category: values.category,
           image: imageUrl,
-          dateAdded: new Date(),
+          dateAdded: Timestamp.fromDate(new Date()), // Current date and time as Firestore Timestamp
           history: [historyEntry],
         };
         await addEquipment(newEquipment);
         alert('Equipment added successfully!');
       }
-  
+
       resetForm();
       setPreviewImage(null);
       setNameError('');
