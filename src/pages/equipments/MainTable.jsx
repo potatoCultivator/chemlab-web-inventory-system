@@ -22,27 +22,8 @@ import { UpOutlined, DownOutlined } from '@ant-design/icons';
 import EquipmentForm from './EquipmentForm'; // Import the EquipmentForm component
 import CustomButton from './CustomButton copy';
 
-function createData(name, type, unit, stocks, total) {
-  return {
-    name,
-    type,
-    unit,
-    stocks,
-    total,
-    history: [
-      {
-        date: '2021-05-01',
-        addedBy: 'John Doe',
-        addedStock: 10,
-      },
-      {
-        date: '2021-06-15',
-        addedBy: 'Jane Smith',
-        addedStock: 5,
-      },
-    ],
-  };
-}
+// Database
+import { getAllEquipment } from 'pages/Query';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -89,7 +70,7 @@ function Row(props) {
         <TableCell component="th" scope="row">
           {row.name}
         </TableCell>
-        <TableCell>{row.type}</TableCell>
+        <TableCell>{row.category}</TableCell>
         <TableCell>{row.unit}</TableCell>
         <TableCell align="right">{row.stocks}</TableCell>
         <TableCell align="right">{row.total}</TableCell>
@@ -101,26 +82,48 @@ function Row(props) {
               <Typography variant="h6" gutterBottom component="div" sx={{ fontSize: '1rem', fontWeight: 'bold' }}>
                 History
               </Typography>
-              <Table size="small" aria-label="history">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Date</TableCell>
-                    <TableCell align='center'>Added By</TableCell>
-                    <TableCell align='right'>Added Stock</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {row.history.map((historyRow) => (
-                    <TableRow key={historyRow.date}>
-                      <TableCell component="th" scope="row">
-                        {historyRow.date}
-                      </TableCell>
-                      <TableCell align='center'>{historyRow.addedBy}</TableCell>
-                      <TableCell align='right'>{historyRow.addedStock}</TableCell>
+                <TableContainer
+                  component={Paper}
+                  style={{
+                    maxHeight: "700px", // Set a maximum height to allow scrolling
+                    overflowY: "auto",  // Enables vertical scrolling for the body
+                  }}
+                >
+                <Table size="small" aria-label="history">
+                  <TableHead>
+                    <TableRow
+                      style={{
+                        backgroundColor: "#f5f5f5",
+                        position: "sticky", // Make the header sticky
+                        top: 0,             // Stick to the top of the container
+                        zIndex: 1,          // Ensure it's above the body
+                      }}
+                    >
+                      <TableCell>Date</TableCell>
+                      <TableCell>Time</TableCell>
+                      <TableCell align='center'>Added By</TableCell>
+                      <TableCell align='right'>Added Stock</TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHead>
+                  <TableBody>
+                    {row.history.map((historyRow) => {
+                      const date = historyRow.date.toDate();
+                      return (
+                        <TableRow key={historyRow.date.toMillis()}>
+                          <TableCell component="th" scope="row">
+                            {date.toLocaleDateString()}
+                          </TableCell>
+                          <TableCell>
+                            {date.toLocaleTimeString()}
+                          </TableCell>
+                          <TableCell align='center'>{historyRow.addedBy}</TableCell>
+                          <TableCell align='right'>{historyRow.addedStock}</TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+            </TableContainer>
             </Box>
           </Collapse>
         </TableCell>
@@ -132,13 +135,13 @@ function Row(props) {
 Row.propTypes = {
   row: PropTypes.shape({
     name: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
+    category: PropTypes.string.isRequired,
     unit: PropTypes.string.isRequired,
     stocks: PropTypes.number.isRequired,
     total: PropTypes.number.isRequired,
     history: PropTypes.arrayOf(
       PropTypes.shape({
-        date: PropTypes.string.isRequired,
+        date: PropTypes.object.isRequired, // Firestore Timestamp
         addedBy: PropTypes.string.isRequired,
         addedStock: PropTypes.number.isRequired,
       }),
@@ -146,25 +149,21 @@ Row.propTypes = {
   }).isRequired,
 };
 
-const rows = [
-  createData('Beaker', 'Glassware', '1000ml', 8, 10),
-  createData('Burette', 'Glassware', '50ml', 12, 15),
-  createData('Pipette', 'Glassware', '10ml', 4, 5),
-  createData('Centrifuge', 'Equipment', '5424', 1800, 2000),
-  createData('Spectrophotometer', 'Equipment', 'Genesys 10S', 4500, 5000),
-  createData('Flask', 'Glassware', '500ml', 7, 8),
-  createData('Test Tube', 'Glassware', '15ml', 1, 2),
-  createData('Microscope', 'Equipment', 'CX23', 1400, 1500),
-  createData('Balance', 'Equipment', 'MS204S', 2800, 3000),
-  createData('pH Meter', 'Equipment', 'HI98103', 45, 50),
-];
-
 export default function MainTable() {
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('name');
   const [dialogOpen, setDialogOpen] = React.useState(false); // State to manage dialog visibility
+  const [rows, setRows] = React.useState([]); // State to store fetched equipment data
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Check if the screen size is small or below
+
+  React.useEffect(() => {
+    async function fetchData() {
+      const equipment = await getAllEquipment();
+      setRows(equipment);
+    }
+    fetchData();
+  }, []);
 
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -189,25 +188,25 @@ export default function MainTable() {
         </CustomButton>
       </Box>
       <TableContainer
-            component={Paper}
-            style={{
-                maxHeight: "700px", // Set a maximum height to allow scrolling
-                overflowY: "auto",  // Enables vertical scrolling for the body
-            }}
-            >
+        component={Paper}
+        style={{
+          maxHeight: "700px", // Set a maximum height to allow scrolling
+          overflowY: "auto",  // Enables vertical scrolling for the body
+        }}
+      >
         <Table aria-label="collapsible table">
           <TableHead>
-          <TableRow
-                    style={{
-                    backgroundColor: "#f5f5f5",
-                    position: "sticky", // Make the header sticky
-                    top: 0,             // Stick to the top of the container
-                    zIndex: 1,          // Ensure it's above the body
-                    }}
-                >
+            <TableRow
+              style={{
+                backgroundColor: "#f5f5f5",
+                position: "sticky", // Make the header sticky
+                top: 0,             // Stick to the top of the container
+                zIndex: 1,          // Ensure it's above the body
+              }}
+            >
               <TableCell />
               <TableCell onClick={() => handleRequestSort('name')}>Equipment Name</TableCell>
-              <TableCell onClick={() => handleRequestSort('type')}>Type</TableCell>
+              <TableCell onClick={() => handleRequestSort('category')}>Category</TableCell>
               <TableCell onClick={() => handleRequestSort('unit')}>Unit</TableCell>
               <TableCell align="right" onClick={() => handleRequestSort('stocks')}>Stocks</TableCell>
               <TableCell align="right" onClick={() => handleRequestSort('total')}>Total</TableCell>
@@ -215,7 +214,7 @@ export default function MainTable() {
           </TableHead>
           <TableBody>
             {stableSort(rows, getComparator(order, orderBy)).map((row) => (
-              <Row key={row.name} row={row} />
+              <Row key={row.id} row={row} />
             ))}
           </TableBody>
         </Table>

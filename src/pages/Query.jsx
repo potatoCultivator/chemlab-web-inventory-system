@@ -101,11 +101,22 @@ async function getEquipment(name, unit, capacity) {
   return null;
 }
 
+// Function to fetch all equipment from Firestore
+async function getAllEquipment() {
+  const db = firestore;
+  const collectionRef = collection(db, 'equipments');
+  const querySnapshot = await getDocs(collectionRef);
+
+  const equipmentList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  return equipmentList;
+}
+
 export { 
   addEquipment,
   uploadImageAndGetUrl,
   checkEquipmentExists,
   updateStock,
   addHistoryEntry,
-  getEquipment
+  getEquipment,
+  getAllEquipment // Export the new function
 };
