@@ -3,11 +3,12 @@ import { lazy } from 'react';
 // project import
 import Loadable from 'components/Loadable';
 import Dashboard from 'layout/Dashboard';
-import { element } from 'prop-types';
+// import { element } from 'prop-types';
 
 // Lazy load components
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard/index')));
-const ToolsAndEquipment = Loadable(lazy(() => import('pages/tools-equipments/index')));
+// const ToolsAndEquipment = Loadable(lazy(() => import('pages/tools-equipments/index')));
+const Equipments = Loadable(lazy(() => import('pages/equipments/index')));
 const Borrowers = Loadable(lazy(() => import('pages/borrowers/index')));
 const Instructors = Loadable(lazy(() => import('pages/instructors/index')));
 const History = Loadable(lazy(() => import('pages/history/index')));
@@ -15,7 +16,7 @@ const ViewProfile = Loadable(lazy(() => import('pages/admin-profile/UserProfile'
 const EditProfile = Loadable(lazy(() => import('pages/admin-profile/EditProfile')));
 
 // render - sample page
-const SamplePage = Loadable(lazy(() => import('pages/extra-pages/sample-page')));
+// const SamplePage = Loadable(lazy(() => import('pages/extra-pages/sample-page')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -28,8 +29,17 @@ const MainRoutes = {
       element: <DashboardDefault />
     },
     {
-      path: 'tools-equipments',
-      element: <ToolsAndEquipment />
+      path: 'dashboard',
+      children: [
+        {
+          path: 'default',
+          element: <DashboardDefault />
+        }
+      ]
+    },
+    {
+      path: 'equipments',
+      element: <Equipments />
     },
     {
       path: 'borrowers',
@@ -42,15 +52,6 @@ const MainRoutes = {
     {
       path: 'history',
       element: <History />
-    },
-    {
-      path: 'dashboard',
-      children: [
-        {
-          path: 'default',
-          element: <DashboardDefault />
-        }
-      ]
     },
     {
       path: 'admin-profile',

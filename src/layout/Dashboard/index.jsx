@@ -28,13 +28,16 @@ export default function DashboardLayout() {
 
   if (menuMasterLoading) return <Loader />;
 
+
   return (
     <Box sx={{ display: 'flex', width: '100%' }}>
       <Header />
       <Drawer />
       <Box component="main" sx={{ width: 'calc(100% - 260px)', flexGrow: 1, p: { xs: 2, sm: 3 } }}>
         <Toolbar />
-        <Breadcrumbs navigation={navigation} title />
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Breadcrumbs navigation={navigation} title />
+        </Box>
         <Outlet />
       </Box>
     </Box>

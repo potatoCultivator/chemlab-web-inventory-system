@@ -2,19 +2,20 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 // project import
-// import CustomTab from './CustomTab';
+import CustomTab from './CustomTab';
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
-export default function History() {
+export default function Equipments() {
   return (
     <>
+    
       {/* row 1 */}
       <Grid item xs={12} sx={{ mb: -2.25 }}>
-        <Typography variant="h5" className="History-title">History</Typography>
+        <Typography variant="h5" className="equipments-title">Equipments</Typography>
       </Grid>
       <Box sx={{ mt: 4 }}> {/* Add margin-top to create space */}
-        {/* <CustomTab /> */}
+        <CustomTab />
       </Box>
     </>
   );
