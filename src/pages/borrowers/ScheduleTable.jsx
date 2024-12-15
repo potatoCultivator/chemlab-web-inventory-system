@@ -92,47 +92,65 @@ function Row(props) {
                   <Typography variant="h6" gutterBottom component="div" sx={{ fontSize: '1rem', fontWeight: 'bold' }}>
                     Invoice of Equipments Issued
                   </Typography>
-                  <Table size="small" aria-label="invoice">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Equipment</TableCell>
-                        <TableCell align='right'>Quantity</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {row.invoice.map((item) => (
-                        <TableRow key={item.equipment}>
-                          <TableCell component="th" scope="row">
-                            {item.equipment}
-                          </TableCell>
-                          <TableCell align='right'>{item.quantity}</TableCell>
+                  <TableContainer component={Paper} sx={{ maxHeight: '450px', overflowY: 'auto' }}>
+                    <Table size="small" aria-label="invoice" sx={{ border: '1px solid #ddd' }}>
+                      <TableHead>
+                        <TableRow
+                          style={{
+                            backgroundColor: "#f5f5f5",
+                            position: "sticky", // Make the header sticky
+                            top: 0,             // Stick to the top of the container
+                            zIndex: 1,          // Ensure it's above the body
+                          }}
+                        >
+                          <TableCell>Equipment</TableCell>
+                          <TableCell align='right'>Quantity</TableCell>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHead>
+                      <TableBody>
+                        {row.invoice.map((item) => (
+                          <TableRow key={item.equipment} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
+                            <TableCell component="th" scope="row">
+                              {item.equipment}
+                            </TableCell>
+                            <TableCell align='right'>{item.quantity}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <Typography variant="h6" gutterBottom component="div" sx={{ fontSize: '1rem', fontWeight: 'bold' }}>
                     Students Borrowing Equipments
                   </Typography>
-                  <Table size="small" aria-label="students">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Student</TableCell>
-                        <TableCell align='right'>Borrow Time</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {row.students.map((student) => (
-                        <TableRow key={student.name}>
-                          <TableCell component="th" scope="row">
-                            {student.name}
-                          </TableCell>
-                          <TableCell align='right'>{student.borrowTime}</TableCell>
+                  <TableContainer component={Paper} sx={{ maxHeight: '450px', overflowY: 'auto' }}>
+                    <Table size="small" aria-label="students" sx={{ border: '1px solid #ddd' }}>
+                      <TableHead>
+                        <TableRow
+                          style={{
+                            backgroundColor: "#f5f5f5",
+                            position: "sticky", // Make the header sticky
+                            top: 0,             // Stick to the top of the container
+                            zIndex: 1,          // Ensure it's above the body
+                          }}
+                        >
+                          <TableCell>Student</TableCell>
+                          <TableCell align='right'>Borrow Time</TableCell>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHead>
+                      <TableBody>
+                        {row.students.map((student) => (
+                          <TableRow key={student.name} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
+                            <TableCell component="th" scope="row">
+                              {student.name}
+                            </TableCell>
+                            <TableCell align='right'>{student.borrowTime}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
                 </Grid>
               </Grid>
             </Box>
