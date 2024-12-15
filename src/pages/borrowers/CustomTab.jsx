@@ -8,7 +8,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 // Project Imports
 import MainCard from 'components/MainCard';
 import BorrowerTable from './BorrowerTable';
-import SaleReportCard from 'pages/dashboard/SaleReportCard';
+// import SaleReportCard from 'pages/dashboard/SaleReportCard';
 import ScheduleTable from './ScheduleTable';
 
 // Function

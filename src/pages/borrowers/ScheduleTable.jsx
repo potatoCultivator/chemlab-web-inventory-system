@@ -12,26 +12,37 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import { UpOutlined, DownOutlined } from '@ant-design/icons';
 import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import { TableSortLabel } from '@mui/material';
 
-function createData(name, type, unit, stocks, total, history) {
+function createData(subject, schedule, instructor, invoice, students) {
   return {
-    name,
-    type,
-    unit,
-    stocks,
-    total,
-    history,
+    subject,
+    schedule,
+    instructor,
+    invoice,
+    students,
   };
 }
 
 function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
+  if (orderBy === 'schedule') {
+    if (b.schedule.start < a.schedule.start) {
+      return -1;
+    }
+    if (b.schedule.start > a.schedule.start) {
+      return 1;
+    }
+    return 0;
+  } else {
+    if (b[orderBy] < a[orderBy]) {
+      return -1;
+    }
+    if (b[orderBy] > a[orderBy]) {
+      return 1;
+    }
+    return 0;
   }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
 }
 
 function getComparator(order, orderBy) {
@@ -51,12 +62,12 @@ function stableSort(array, comparator) {
 }
 
 function Row(props) {
-  const { row, title } = props;
+  const { row } = props;
   const [open, setOpen] = React.useState(false);
 
   return (
     <React.Fragment>
-      <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+      <TableRow sx={{ '& > *': { borderBottom: 'unset' }, '&:hover': { backgroundColor: '#f5f5f5' } }}>
         <TableCell>
           <IconButton
             aria-label="expand row"
@@ -67,40 +78,63 @@ function Row(props) {
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
-          {row.name}
+          {row.subject}
         </TableCell>
-        <TableCell>{row.type}</TableCell>
-        <TableCell>{row.unit}</TableCell>
-        <TableCell align="right">{row.stocks}</TableCell>
-        <TableCell align="right">{row.total}</TableCell>
+        <TableCell>{row.schedule.start} - {row.schedule.end}</TableCell>
+        <TableCell>{row.instructor}</TableCell>
       </TableRow>
       <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={4}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1, padding: 0, maxWidth: '800px', marginLeft: 'auto', marginRight: 'auto' }}>
-              <Typography variant="h6" gutterBottom component="div" sx={{ fontSize: '1rem', fontWeight: 'bold' }}>
-                History
-              </Typography>
-              <Table size="small" aria-label="history">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Date</TableCell>
-                    <TableCell align='center'>{title === 'Damaged Equipments' ? 'Caused by ' : 'Replaced by'}</TableCell>
-                    <TableCell align='right'>{title === 'Damaged Equipments' ? 'Damaged' : 'Replaced'}</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {row.history.map((historyRow) => (
-                    <TableRow key={historyRow.date}>
-                      <TableCell component="th" scope="row">
-                        {historyRow.date}
-                      </TableCell>
-                      <TableCell align='center'>{historyRow.addedBy}</TableCell>
-                      <TableCell align='right'>{historyRow.addedStock}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <Typography variant="h6" gutterBottom component="div" sx={{ fontSize: '1rem', fontWeight: 'bold' }}>
+                    Invoice of Equipments Issued
+                  </Typography>
+                  <Table size="small" aria-label="invoice">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Equipment</TableCell>
+                        <TableCell align='right'>Quantity</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {row.invoice.map((item) => (
+                        <TableRow key={item.equipment}>
+                          <TableCell component="th" scope="row">
+                            {item.equipment}
+                          </TableCell>
+                          <TableCell align='right'>{item.quantity}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Typography variant="h6" gutterBottom component="div" sx={{ fontSize: '1rem', fontWeight: 'bold' }}>
+                    Students Borrowing Equipments
+                  </Typography>
+                  <Table size="small" aria-label="students">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Student</TableCell>
+                        <TableCell align='right'>Borrow Time</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {row.students.map((student) => (
+                        <TableRow key={student.name}>
+                          <TableCell component="th" scope="row">
+                            {student.name}
+                          </TableCell>
+                          <TableCell align='right'>{student.borrowTime}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </Grid>
+              </Grid>
             </Box>
           </Collapse>
         </TableCell>
@@ -111,68 +145,68 @@ function Row(props) {
 
 Row.propTypes = {
   row: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-    unit: PropTypes.string.isRequired,
-    stocks: PropTypes.number.isRequired,
-    total: PropTypes.number.isRequired,
-    history: PropTypes.arrayOf(
+    subject: PropTypes.string.isRequired,
+    schedule: PropTypes.shape({
+      start: PropTypes.string.isRequired,
+      end: PropTypes.string.isRequired,
+    }).isRequired,
+    instructor: PropTypes.string.isRequired,
+    invoice: PropTypes.arrayOf(
       PropTypes.shape({
-        date: PropTypes.string.isRequired,
-        addedBy: PropTypes.string.isRequired,
-        addedStock: PropTypes.number.isRequired,
+        equipment: PropTypes.string.isRequired,
+        quantity: PropTypes.number.isRequired,
+      }),
+    ).isRequired,
+    students: PropTypes.arrayOf(
+      PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        borrowTime: PropTypes.string.isRequired,
       }),
     ).isRequired,
   }).isRequired,
-  title: PropTypes.string.isRequired,
 };
 
 const rows = [
-  createData('Beaker', 'Glassware', '1000ml', 8, 10, [
-    { date: '2021-05-01', addedBy: 'John Doe', addedStock: 10 },
-    { date: '2021-06-15', addedBy: 'Jane Smith', addedStock: 5 },
+  createData('Mathematics', { start: '10:00 AM', end: '11:00 AM' }, 'Dr. John Doe', [
+    { equipment: 'Calculator', quantity: 10 },
+    { equipment: 'Notebook', quantity: 20 },
+  ], [
+    { name: 'Alice', borrowTime: '10:05 AM' },
+    { name: 'Bob', borrowTime: '10:10 AM' },
   ]),
-  createData('Burette', 'Glassware', '50ml', 12, 15, [
-    { date: '2021-05-01', addedBy: 'John Doe', addedStock: 10 },
-    { date: '2021-06-15', addedBy: 'Jane Smith', addedStock: 5 },
+  createData('Physics', { start: '11:00 AM', end: '12:00 PM' }, 'Dr. Jane Smith', [
+    { equipment: 'Lab Coat', quantity: 15 },
+    { equipment: 'Goggles', quantity: 15 },
+  ], [
+    { name: 'Charlie', borrowTime: '11:05 AM' },
+    { name: 'David', borrowTime: '11:10 AM' },
   ]),
-  createData('Pipette', 'Glassware', '10ml', 4, 5, [
-    { date: '2021-05-01', addedBy: 'John Doe', addedStock: 10 },
-    { date: '2021-06-15', addedBy: 'Jane Smith', addedStock: 5 },
+  createData('Chemistry', { start: '12:00 PM', end: '01:00 PM' }, 'Dr. Emily Johnson', [
+    { equipment: 'Beaker', quantity: 20 },
+    { equipment: 'Test Tube', quantity: 30 },
+  ], [
+    { name: 'Eve', borrowTime: '12:05 PM' },
+    { name: 'Frank', borrowTime: '12:10 PM' },
   ]),
-  createData('Centrifuge', 'Equipment', '5424', 1800, 2000, [
-    { date: '2021-05-01', addedBy: 'John Doe', addedStock: 10 },
-    { date: '2021-06-15', addedBy: 'Jane Smith', addedStock: 5 },
+  createData('Biology', { start: '01:00 PM', end: '02:00 PM' }, 'Dr. Michael Brown', [
+    { equipment: 'Microscope', quantity: 10 },
+    { equipment: 'Slides', quantity: 50 },
+  ], [
+    { name: 'Grace', borrowTime: '01:05 PM' },
+    { name: 'Heidi', borrowTime: '01:10 PM' },
   ]),
-  createData('Spectrophotometer', 'Equipment', 'Genesys 10S', 4500, 5000, [
-    { date: '2021-05-01', addedBy: 'John Doe', addedStock: 10 },
-    { date: '2021-06-15', addedBy: 'Jane Smith', addedStock: 5 },
-  ]),
-  createData('Flask', 'Glassware', '500ml', 7, 8, [
-    { date: '2021-05-01', addedBy: 'John Doe', addedStock: 10 },
-    { date: '2021-06-15', addedBy: 'Jane Smith', addedStock: 5 },
-  ]),
-  createData('Test Tube', 'Glassware', '15ml', 1, 2, [
-    { date: '2021-05-01', addedBy: 'John Doe', addedStock: 10 },
-    { date: '2021-06-15', addedBy: 'Jane Smith', addedStock: 5 },
-  ]),
-  createData('Microscope', 'Equipment', 'CX23', 1400, 1500, [
-    { date: '2021-05-01', addedBy: 'John Doe', addedStock: 10 },
-    { date: '2021-06-15', addedBy: 'Jane Smith', addedStock: 5 },
-  ]),
-  createData('Balance', 'Equipment', 'MS204S', 2800, 3000, [
-    { date: '2021-05-01', addedBy: 'John Doe', addedStock: 10 },
-    { date: '2021-06-15', addedBy: 'Jane Smith', addedStock: 5 },
-  ]),
-  createData('pH Meter', 'Equipment', 'HI98103', 45, 50, [
-    { date: '2021-05-01', addedBy: 'John Doe', addedStock: 10 },
-    { date: '2021-06-15', addedBy: 'Jane Smith', addedStock: 5 },
+  createData('History', { start: '02:00 PM', end: '03:00 PM' }, 'Dr. Sarah Davis', [
+    { equipment: 'Textbook', quantity: 25 },
+    { equipment: 'Map', quantity: 10 },
+  ], [
+    { name: 'Ivan', borrowTime: '02:05 PM' },
+    { name: 'Judy', borrowTime: '02:10 PM' },
   ]),
 ];
 
 export default function ScheduleTable({ title }) {
   const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('name');
+  const [orderBy, setOrderBy] = React.useState('subject');
 
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -186,36 +220,55 @@ export default function ScheduleTable({ title }) {
         <Typography variant="h6">{title}</Typography>
       </Box>
       <TableContainer
-            component={Paper}
-            style={{
-                // margin: "20px",
-                // borderRadius: "8px",
-                // boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                maxHeight: "700px", // Set a maximum height to allow scrolling
-                overflowY: "auto",  // Enables vertical scrolling for the body
-            }}
-            >
+        component={Paper}
+        style={{
+          maxHeight: "700px", // Set a maximum height to allow scrolling
+          overflowY: "auto",  // Enables vertical scrolling for the body
+        }}
+      >
         <Table aria-label="collapsible table">
           <TableHead>
-          <TableRow
-                    style={{
-                    backgroundColor: "#f5f5f5",
-                    position: "sticky", // Make the header sticky
-                    top: 0,             // Stick to the top of the container
-                    zIndex: 1,          // Ensure it's above the body
-                    }}
-                >
+            <TableRow
+              style={{
+                backgroundColor: "#f5f5f5",
+                position: "sticky", // Make the header sticky
+                top: 0,             // Stick to the top of the container
+                zIndex: 1,          // Ensure it's above the body
+              }}
+            >
               <TableCell />
-              <TableCell onClick={() => handleRequestSort('name')}>Equipment Name</TableCell>
-              <TableCell onClick={() => handleRequestSort('type')}>Type</TableCell>
-              <TableCell onClick={() => handleRequestSort('unit')}>Unit</TableCell>
-              <TableCell align="right" onClick={() => handleRequestSort('stocks')}>Stocks</TableCell>
-              <TableCell align="right" onClick={() => handleRequestSort('total')}>Total</TableCell>
+              <TableCell sortDirection={orderBy === 'subject' ? order : false}>
+                <TableSortLabel
+                  active={orderBy === 'subject'}
+                  direction={orderBy === 'subject' ? order : 'asc'}
+                  onClick={() => handleRequestSort('subject')}
+                >
+                  Subject
+                </TableSortLabel>
+              </TableCell>
+              <TableCell sortDirection={orderBy === 'schedule' ? order : false}>
+                <TableSortLabel
+                  active={orderBy === 'schedule'}
+                  direction={orderBy === 'schedule' ? order : 'asc'}
+                  onClick={() => handleRequestSort('schedule')}
+                >
+                  Schedule
+                </TableSortLabel>
+              </TableCell>
+              <TableCell sortDirection={orderBy === 'instructor' ? order : false}>
+                <TableSortLabel
+                  active={orderBy === 'instructor'}
+                  direction={orderBy === 'instructor' ? order : 'asc'}
+                  onClick={() => handleRequestSort('instructor')}
+                >
+                  Instructor
+                </TableSortLabel>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {stableSort(rows, getComparator(order, orderBy)).map((row) => (
-              <Row key={row.name} row={row} title={title} />
+              <Row key={row.subject} row={row} />
             ))}
           </TableBody>
         </Table>
