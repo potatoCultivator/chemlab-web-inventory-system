@@ -22,6 +22,7 @@ import { UpOutlined, DownOutlined } from '@ant-design/icons';
 import Grid from '@mui/material/Grid';
 import EquipmentForm from './EquipmentForm'; // Import the EquipmentForm component
 import CustomButton from './CustomButton copy';
+import { TableSortLabel } from '@mui/material';
 
 // Database
 import { getAllEquipment } from 'pages/Query';
@@ -58,7 +59,7 @@ function Row(props) {
 
   return (
     <React.Fragment>
-      <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+      <TableRow sx={{ '& > *': { borderBottom: 'unset' }, '&:hover': { backgroundColor: '#f5f5f5' } }}>
         <TableCell>
           <IconButton
             aria-label="expand row"
@@ -81,25 +82,24 @@ function Row(props) {
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1, maxWidth: '100%', marginLeft: 'auto', marginRight: 'auto', padding: '16px' }}>
               <Grid container spacing={2}>
-              <Grid item xs={12} md={4}>
-                <Typography variant="h6" gutterBottom component="div" sx={{ fontSize: '1rem', fontWeight: 'bold' }}>
-                      Image
-                </Typography>
-                <img 
-                  src={row.image} 
-                  alt={row.name} 
-                  style={{
-                    width: '100%', 
-                    maxWidth: '450px', // Set a maximum width
-                    height: '450px',   // Match height to width for square
-                    objectFit: 'cover', 
-                    borderRadius: '8px',
-                    display: 'block', // Ensures proper alignment
-                    margin: '0 auto' // Centers the image horizontally
-                  }} 
-                />
-              </Grid>
-
+                <Grid item xs={12} md={4}>
+                  <Typography variant="h6" gutterBottom component="div" sx={{ fontSize: '1rem', fontWeight: 'bold' }}>
+                    Image
+                  </Typography>
+                  <img 
+                    src={row.image} 
+                    alt={row.name} 
+                    style={{
+                      width: '100%', 
+                      maxWidth: '450px', // Set a maximum width
+                      height: '450px',   // Match height to width for square
+                      objectFit: 'cover', 
+                      borderRadius: '8px',
+                      display: 'block', // Ensures proper alignment
+                      margin: '0 auto' // Centers the image horizontally
+                    }} 
+                  />
+                </Grid>
                 <Grid item xs={12} md={8}>
                   <Typography variant="h6" gutterBottom component="div" sx={{ fontSize: '1rem', fontWeight: 'bold' }}>
                     History
@@ -224,11 +224,51 @@ export default function MainTable() {
               }}
             >
               <TableCell />
-              <TableCell onClick={() => handleRequestSort('name')}>Equipment Name</TableCell>
-              <TableCell onClick={() => handleRequestSort('category')}>Category</TableCell>
-              <TableCell onClick={() => handleRequestSort('unit')}>Unit</TableCell>
-              <TableCell align="right" onClick={() => handleRequestSort('stocks')}>Stocks</TableCell>
-              <TableCell align="right" onClick={() => handleRequestSort('total')}>Total</TableCell>
+              <TableCell sortDirection={orderBy === 'name' ? order : false}>
+                <TableSortLabel
+                  active={orderBy === 'name'}
+                  direction={orderBy === 'name' ? order : 'asc'}
+                  onClick={() => handleRequestSort('name')}
+                >
+                  Equipment Name
+                </TableSortLabel>
+              </TableCell>
+              <TableCell sortDirection={orderBy === 'category' ? order : false}>
+                <TableSortLabel
+                  active={orderBy === 'category'}
+                  direction={orderBy === 'category' ? order : 'asc'}
+                  onClick={() => handleRequestSort('category')}
+                >
+                  Category
+                </TableSortLabel>
+              </TableCell>
+              <TableCell sortDirection={orderBy === 'unit' ? order : false}>
+                <TableSortLabel
+                  active={orderBy === 'unit'}
+                  direction={orderBy === 'unit' ? order : 'asc'}
+                  onClick={() => handleRequestSort('unit')}
+                >
+                  Unit
+                </TableSortLabel>
+              </TableCell>
+              <TableCell align="right" sortDirection={orderBy === 'stocks' ? order : false}>
+                <TableSortLabel
+                  active={orderBy === 'stocks'}
+                  direction={orderBy === 'stocks' ? order : 'asc'}
+                  onClick={() => handleRequestSort('stocks')}
+                >
+                  Stocks
+                </TableSortLabel>
+              </TableCell>
+              <TableCell align="right" sortDirection={orderBy === 'total' ? order : false}>
+                <TableSortLabel
+                  active={orderBy === 'total'}
+                  direction={orderBy === 'total' ? order : 'asc'}
+                  onClick={() => handleRequestSort('total')}
+                >
+                  Total
+                </TableSortLabel>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
