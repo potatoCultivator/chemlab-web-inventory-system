@@ -125,12 +125,12 @@ function Row(props) {
                         {row.history.map((historyRow) => {
                           const date = historyRow.date.toDate();
                           return (
-                            <TableRow key={historyRow.date.toMillis()}>
+                            <TableRow key={historyRow.date.toMillis()} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
                               <TableCell component="th" scope="row">
-                                {date.toLocaleDateString()}
+                                {date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                               </TableCell>
                               <TableCell>
-                                {date.toLocaleTimeString()}
+                                {date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                               </TableCell>
                               <TableCell align='center'>{historyRow.addedBy}</TableCell>
                               <TableCell align='right'>{historyRow.addedStock}</TableCell>
