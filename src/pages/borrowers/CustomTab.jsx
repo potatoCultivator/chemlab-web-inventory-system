@@ -8,6 +8,8 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 // Project Imports
 import MainCard from 'components/MainCard';
 import BorrowerTable from './BorrowerTable';
+import SaleReportCard from 'pages/dashboard/SaleReportCard';
+import ScheduleTable from './ScheduleTable';
 
 // Function
 function CustomTabPanel(props) {
@@ -78,8 +80,8 @@ export default function CustomTab() {
                       label={10} 
                       size="small"
                       style={{
-                        backgroundColor: value === 0 ? theme.palette.primary.main : alpha(theme.palette.primary.main, 0.2),
-                        color: value === 0 ? 'white' : theme.palette.primary.dark,
+                        backgroundColor: value === 0 ? theme.palette.grey[500] : alpha(theme.palette.grey[500], 0.2),
+                        color: value === 0 ? 'white' : theme.palette.grey[700],
                       }}
                     />
                   </Box>
@@ -90,13 +92,13 @@ export default function CustomTab() {
                 disableRipple
                 label={
                   <Box display="flex" alignItems="center" gap={1}>
-                    <span style={{ color: value === 1 ? 'black' : theme.palette.secondary.main }}>Borrowed</span>
+                    <span style={{ color: value === 1 ? 'black' : theme.palette.secondary.main }}>Pending</span>
                     <Chip
-                      label={5} 
+                      label={3} 
                       size="small"
                       style={{
-                        backgroundColor: value === 1 ? theme.palette.success.main : alpha(theme.palette.success.main, 0.2),
-                        color: value === 1 ? 'white' : theme.palette.success.dark,
+                        backgroundColor: value === 1 ? theme.palette.warning.main : alpha(theme.palette.warning.main, 0.2),
+                        color: value === 1 ? 'white' : theme.palette.warning.dark,
                       }}
                     />
                   </Box>
@@ -107,18 +109,35 @@ export default function CustomTab() {
                 disableRipple
                 label={
                   <Box display="flex" alignItems="center" gap={1}>
-                    <span style={{ color: value === 2 ? 'black' : theme.palette.secondary.main }}>Returned</span>
+                    <span style={{ color: value === 2 ? 'black' : theme.palette.secondary.main }}>Borrowed</span>
                     <Chip
-                      label={7} 
+                      label={5} 
                       size="small"
                       style={{
-                        backgroundColor: value === 2 ? theme.palette.error.main : alpha(theme.palette.error.main, 0.2),
-                        color: value === 2 ? 'white' : theme.palette.error.dark,
+                        backgroundColor: value === 2 ? theme.palette.success.main : alpha(theme.palette.success.main, 0.2),
+                        color: value === 2 ? 'white' : theme.palette.success.dark,
                       }}
                     />
                   </Box>
                 }
                 {...a11yProps(2)}
+              />
+              <Tab
+                disableRipple
+                label={
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <span style={{ color: value === 3 ? 'black' : theme.palette.secondary.main }}>Returned</span>
+                    <Chip
+                      label={7} 
+                      size="small"
+                      style={{
+                        backgroundColor: value === 3 ? theme.palette.primary.main : alpha(theme.palette.primary.main, 0.2),
+                        color: value === 3 ? 'white' : theme.palette.primary.dark,
+                      }}
+                    />
+                  </Box>
+                }
+                {...a11yProps(3)}
               />
               {!isMobile && (
                 <Box sx={{ flexGrow: 0, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginLeft: 'auto' }}>
@@ -154,13 +173,16 @@ export default function CustomTab() {
           ) : (
             <>
               <CustomTabPanel value={value} index={0}>
-                <BorrowerTable />
+                <ScheduleTable />
               </CustomTabPanel>
               <CustomTabPanel value={value} index={1}>
-                <BorrowerTable title={'Replaced Equipments'}/>
+                <BorrowerTable title={'Pending Equipments'}/>
               </CustomTabPanel>
               <CustomTabPanel value={value} index={2}>
-                <BorrowerTable title={'Damaged Equipments'}/>
+                <BorrowerTable title={'Borrowed Equipments'}/>
+              </CustomTabPanel>
+              <CustomTabPanel value={value} index={3}>
+                <BorrowerTable title={'Returned Equipments'}/>
               </CustomTabPanel>
             </>
           )}
