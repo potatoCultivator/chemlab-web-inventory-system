@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { Box } from '@mui/material';
+import { Box, TextField, Typography } from '@mui/material';
 import Accountable from './Accountable'; // Assuming Accountable is your component
 
 class FulfillList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      // Sample data for borrowers, replace with actual data from your API or database
+      searchQuery: '',
       borrowers: [
         {
           borrowername: 'John Doe',
@@ -212,13 +212,38 @@ class FulfillList extends Component {
     };
   }
 
+  handleSearchChange = (event) => {
+    this.setState({ searchQuery: event.target.value });
+  };
+
   render() {
+    const { searchQuery, borrowers } = this.state;
+    const filteredBorrowers = borrowers.filter((borrower) =>
+      borrower.borrowername.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     return (
-      <Box sx={{ maxHeight: '340px', overflowY: 'auto' }}>
-        {this.state.borrowers.map((borrower) => (
-            <Accountable key={borrower.borrowername} borrower={borrower} />
-        ))}
-      </Box>
+      <>
+        <Box sx={{ position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 1, width: '100%', padding: 0, marginBottom: 2 }}>
+          <Typography variant="h6" sx={{ marginBottom: 1 }}>
+            Borrower List
+          </Typography>
+          <TextField
+            label="Search"
+            variant="outlined"
+            value={searchQuery}
+            onChange={this.handleSearchChange}
+            sx={{ width: '100%' }}
+          />
+        </Box>
+        <Box sx={{ height: 505, overflow: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 2 }}>
+          {filteredBorrowers.map((borrower) => (
+            <Box key={borrower.borrowername} sx={{ width: '100%' }}>
+              <Accountable borrower={borrower} />
+            </Box>
+          ))}
+        </Box>
+      </>
     );
   }
 }

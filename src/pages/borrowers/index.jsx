@@ -5,8 +5,9 @@ import Box from '@mui/material/Box';
 // project import
 import CustomTab from './CustomTab';
 import MainCard from 'components/MainCard';
-import AccountableList from './AccountableList';
+// import AccountableList from './AccountableList';
 import FulfillList from './FulfillList';
+import AccountableStudents from './AccountableStudentList';
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
@@ -27,13 +28,13 @@ export default function Borrowers() {
         <Grid item xs={12} md={4}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <MainCard title={'Fulfillment'}>
+              <MainCard>
                 <FulfillList />
               </MainCard>
             </Grid>
             <Grid item xs={12}>
               <MainCard title={'Accountable'}>
-                <AccountableList />
+                <AccountableStudents />
               </MainCard>
             </Grid>
           </Grid>
