@@ -1,10 +1,26 @@
 // Firebase Firestore imports
-import { firestore } from '../firebase'; // Adjust the path as necessary
-import { collection, writeBatch, doc, query, where, getDocs, updateDoc, arrayUnion } from "firebase/firestore"; 
+// import { firestore } from '../firebase'; // Adjust the path as necessary
+// import { collection, 
+//          writeBatch, 
+//          doc, 
+//          query, 
+//          where, 
+//          getDocs, 
+//          updateDoc, 
+//          arrayUnion, 
+//          onSnapshot,
+//          deleteDoc
+//          } from "firebase/firestore"; 
 
-// Firebase Storage imports
-import { storage } from '../firebase'; // Adjust the path as necessary
+// // Firebase Storage imports
+// import { storage } from '../firebase'; // Adjust the path as necessary
+// import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { firestore, storage, auth } from '../firebase'; // Adjust the path as necessary
+import { collection, query, where, writeBatch, doc, getDocs, updateDoc, deleteDoc, onSnapshot, getDoc, setDoc } from "firebase/firestore"; 
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { sendEmail } from './emailService'; // Import the email service
+import { getMonth, getYear, getWeekOfMonth, getDate } from 'date-fns';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword  } from 'firebase/auth';
 
 // Function to validate tool data
 function validateToolData(data) {
@@ -13,7 +29,7 @@ function validateToolData(data) {
     capacity: !isNaN(Number(data.capacity)) ? Number(data.capacity) : 0,
     unit: typeof data.unit === 'string' ? data.unit : 'kg',
     stocks: !isNaN(Number(data.stocks)) ? Number(data.stocks) : 0,
-    total: !isNaN(Number(data.stocks)) ? Number(data.stocks) : 0, // Ensure total is set to the same value as stocks
+    total: !isNaN(Number(data.stocks)) ? Number(data.stocks) : 0, 
     category: typeof data.category === 'string' ? data.category : 'unknown',
     image: typeof data.image === 'string' ? data.image : '',
     dateAdded: data.dateAdded instanceof Date ? data.dateAdded : new Date(),
@@ -111,6 +127,61 @@ async function getAllEquipment() {
   return equipmentList;
 }
 
+async function uploadInstructor(instructorData) {
+  const db = firestore;
+  const batch = writeBatch(db);
+
+  // Reference to the "instructors" collection
+  const instructorsCollection = collection(db, 'instructor');
+
+  // Create a new document reference
+  const newInstructorDoc = doc(instructorsCollection);
+
+  // Add the instructor data to the batch
+  batch.set(newInstructorDoc, instructorData);
+
+  // Commit the batch
+  await batch.commit();
+
+  // Send email to the instructor
+  const emailText = `Your account has been created. Your details are as follows:\n\nEmail: ${instructorData.email}\nPassword: ${instructorData.password}`;
+  const toName = `${instructorData.name}`;
+  const fromName = 'Your Organization Name'; // Replace with your organization name
+
+  try {
+    await sendEmail(instructorData.email, toName, fromName, emailText);
+    console.log('Email sent successfully');
+  } catch (error) {
+    console.error('Error sending email:', error);
+  }
+}
+
+const fetchInstructors = (callback, errorCallback) => {
+  const instructorsCollection = collection(firestore, 'instructor');
+  return onSnapshot(instructorsCollection, (snapshot) => {
+    const data = snapshot.docs.map((doc, index) => ({
+      tracking_no: index + 1,
+      id: doc.id,
+      ...doc.data()
+    }));
+    callback(data);
+  }, errorCallback);
+};
+
+async function deleteInstructorAcc(accountID) {
+  const db = firestore;
+  const accDocRef = doc(db, 'instructor', accountID); // Ensure the collection name is correct
+
+  try {
+    // Delete the document
+    await deleteDoc(accDocRef);
+    console.log(`Instructor with ID ${accountID} has been deleted`);
+  } catch (error) {
+    console.error('Error deleting instructor:', error);
+    throw new Error(`Failed to delete instructor with ID ${accountID}: ${error.message}`);
+  }
+}
+
 export { 
   addEquipment,
   uploadImageAndGetUrl,
@@ -118,5 +189,8 @@ export {
   updateStock,
   addHistoryEntry,
   getEquipment,
-  getAllEquipment // Export the new function
+  getAllEquipment,
+  uploadInstructor,
+  fetchInstructors,
+  deleteInstructorAcc
 };
