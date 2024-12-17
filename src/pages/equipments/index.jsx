@@ -1,8 +1,6 @@
 import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-
+// import Typography from '@mui/material/Typography';
+// import Box from '@mui/material/Box';
 // project import
 import CustomTab from './CustomTab';
 
@@ -10,15 +8,16 @@ import CustomTab from './CustomTab';
 
 export default function Equipments() {
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-    
+    <>
       {/* row 1 */}
-      <Grid item xs={12} sx={{ mb: -2.25 }}>
+      {/* <Grid item xs={12} sx={{ mb: -2.25 }}>
         <Typography variant="h5" className="equipments-title">Equipments</Typography>
+      </Grid> */}
+      <Grid container rowSpacing={4.5} columnSpacing={2.75}>
+        <Grid item xs={12}>
+          <CustomTab />
+        </Grid>
       </Grid>
-      <Box sx={{ mt: 4 }}> {/* Add margin-top to create space */}
-        <CustomTab />
-      </Box>
-    </Container>
+    </>
   );
 }

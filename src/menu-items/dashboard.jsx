@@ -24,7 +24,7 @@ const dashboard = {
       type: 'item',
       url: '/dashboard/default',
       icon: icons.DashboardOutlined,
-      breadcrumbs: false
+      breadcrumbs: true
       
     },
     {
@@ -33,7 +33,7 @@ const dashboard = {
       type: 'item',
       url: '/equipments',
       icon: icons.ExperimentOutlined,
-      breadcrumbs: false,
+      breadcrumbs: true,
     },
     {
       id: 'borrowers',
@@ -41,7 +41,7 @@ const dashboard = {
       type: 'item',
       url: '/borrowers',
       icon: icons.ReadOutlined,
-      breadcrumbs: false
+      breadcrumbs: true
     },
     {
       id: 'instructors',
@@ -49,7 +49,7 @@ const dashboard = {
       type: 'item',
       url: '/instructors',
       icon: icons.UserOutlined,
-      breadcrumbs: false
+      breadcrumbs: true
     },
     {
       id: 'history',
@@ -57,7 +57,7 @@ const dashboard = {
       type: 'item',
       url: '/history',
       icon: icons.HistoryOutlined,
-      breadcrumbs: false
+      breadcrumbs: true
     }
   ]
 };

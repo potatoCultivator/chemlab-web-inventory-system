@@ -5,6 +5,7 @@ import { Outlet } from 'react-router-dom';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Toolbar from '@mui/material/Toolbar';
 import Box from '@mui/material/Box';
+import Container from '@mui/material/Container'; // Import Container
 
 // project import
 import Drawer from './Drawer';
@@ -28,17 +29,18 @@ export default function DashboardLayout() {
 
   if (menuMasterLoading) return <Loader />;
 
-
   return (
     <Box sx={{ display: 'flex', width: '100%' }}>
       <Header />
       <Drawer />
       <Box component="main" sx={{ width: 'calc(100% - 260px)', flexGrow: 1, p: { xs: 2, sm: 3 } }}>
         <Toolbar />
+        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
           <Breadcrumbs navigation={navigation} title />
         </Box>
-        <Outlet />
+          <Outlet />
+        </Container>
       </Box>
     </Box>
   );
