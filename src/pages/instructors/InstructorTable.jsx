@@ -171,12 +171,18 @@ export default function InstructorTable() {
         </TableContainer>
       )}
 
-      <Dialog open={deleteDialogOpen} onClose={handleDeleteCancel}>
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleDeleteCancel}
+        maxWidth="xs" // Set the maximum width to extra small
+        fullWidth
+        sx={{ '& .MuiDialog-paper': { width: '400px', maxWidth: '400px' } }} // Set fixed width
+      >
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
-          <Typography>Are you sure you want to delete this instructor?</Typography>
-          <Typography variant="body2" color="textSecondary">
-            This action cannot be undone.
+          <Typography >Are you sure you want to delete this instructor?</Typography>
+          <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+            This action cannot be undone, and the instructor will no longer have access to the mobile app if the account is deleted.
           </Typography>
         </DialogContent>
         <DialogActions>
@@ -190,7 +196,7 @@ export default function InstructorTable() {
           </Box>
         </DialogActions>
       </Dialog>
-
+      
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}
