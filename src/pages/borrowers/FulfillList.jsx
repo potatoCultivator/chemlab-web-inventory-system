@@ -225,7 +225,7 @@ class FulfillList extends Component {
     return (
       <>
         <Box sx={{ position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 1, width: '100%', padding: 0, marginBottom: 2 }}>
-          <Typography variant="h6" sx={{ marginBottom: 1 }}>
+          <Typography variant="h5" sx={{ marginBottom: 1 }}>
             Borrower List
           </Typography>
           <TextField
@@ -236,7 +236,7 @@ class FulfillList extends Component {
             sx={{ width: '100%' }}
           />
         </Box>
-        <Box sx={{ height: 505, overflow: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 2 }}>
+        <Box sx={{ height: 242.5, overflow: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 2 }}>
           {filteredBorrowers.map((borrower) => (
             <Box key={borrower.borrowername} sx={{ width: '100%' }}>
               <Accountable borrower={borrower} />

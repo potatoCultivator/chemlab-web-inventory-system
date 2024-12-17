@@ -220,7 +220,260 @@ const rows = [
     { name: 'Ivan', borrowTime: '02:05 PM' },
     { name: 'Judy', borrowTime: '02:10 PM' },
   ]),
+  createData('Geography', { start: '03:00 PM', end: '04:00 PM' }, 'Dr. William Clark', [
+    { equipment: 'Globe', quantity: 5 },
+    { equipment: 'Atlas', quantity: 10 },
+  ], [
+    { name: 'Kevin', borrowTime: '03:05 PM' },
+    { name: 'Laura', borrowTime: '03:10 PM' },
+  ]),
+  createData('English', { start: '04:00 PM', end: '05:00 PM' }, 'Dr. Nancy White', [
+    { equipment: 'Dictionary', quantity: 15 },
+    { equipment: 'Thesaurus', quantity: 10 },
+  ], [
+    { name: 'Mallory', borrowTime: '04:05 PM' },
+    { name: 'Nathan', borrowTime: '04:10 PM' },
+  ]),
+  createData('Art', { start: '05:00 PM', end: '06:00 PM' }, 'Dr. Olivia Green', [
+    { equipment: 'Paintbrush', quantity: 20 },
+    { equipment: 'Canvas', quantity: 15 },
+  ], [
+    { name: 'Oscar', borrowTime: '05:05 PM' },
+    { name: 'Pam', borrowTime: '05:10 PM' },
+  ]),
+  createData('Music', { start: '06:00 PM', end: '07:00 PM' }, 'Dr. Paul Black', [
+    { equipment: 'Guitar', quantity: 10 },
+    { equipment: 'Piano', quantity: 5 },
+  ], [
+    { name: 'Quincy', borrowTime: '06:05 PM' },
+    { name: 'Rachel', borrowTime: '06:10 PM' },
+  ]),
+  createData('Physical Education', { start: '07:00 PM', end: '08:00 PM' }, 'Dr. Robert Brown', [
+    { equipment: 'Basketball', quantity: 15 },
+    { equipment: 'Soccer Ball', quantity: 20 },
+  ], [
+    { name: 'Steve', borrowTime: '07:05 PM' },
+    { name: 'Tina', borrowTime: '07:10 PM' },
+  ]),
+  createData('Computer Science', { start: '08:00 AM', end: '09:00 AM' }, 'Dr. Susan Blue', [
+    { equipment: 'Laptop', quantity: 10 },
+    { equipment: 'Mouse', quantity: 20 },
+  ], [
+    { name: 'Uma', borrowTime: '08:05 AM' },
+    { name: 'Victor', borrowTime: '08:10 AM' },
+  ]),
+  createData('Economics', { start: '09:00 AM', end: '10:00 AM' }, 'Dr. Thomas Gray', [
+    { equipment: 'Calculator', quantity: 15 },
+    { equipment: 'Notebook', quantity: 25 },
+  ], [
+    { name: 'Wendy', borrowTime: '09:05 AM' },
+    { name: 'Xander', borrowTime: '09:10 AM' },
+  ]),
+  createData('Philosophy', { start: '10:00 AM', end: '11:00 AM' }, 'Dr. Ursula Red', [
+    { equipment: 'Book', quantity: 20 },
+    { equipment: 'Notebook', quantity: 30 },
+  ], [
+    { name: 'Yara', borrowTime: '10:05 AM' },
+    { name: 'Zane', borrowTime: '10:10 AM' },
+  ]),
+  createData('Sociology', { start: '11:00 AM', end: '12:00 PM' }, 'Dr. Victor White', [
+    { equipment: 'Survey Form', quantity: 25 },
+    { equipment: 'Pen', quantity: 50 },
+  ], [
+    { name: 'Alice', borrowTime: '11:05 AM' },
+    { name: 'Bob', borrowTime: '11:10 AM' },
+  ]),
+  createData('Psychology', { start: '12:00 PM', end: '01:00 PM' }, 'Dr. Wendy Black', [
+    { equipment: 'Notebook', quantity: 20 },
+    { equipment: 'Pen', quantity: 30 },
+  ], [
+    { name: 'Charlie', borrowTime: '12:05 PM' },
+    { name: 'David', borrowTime: '12:10 PM' },
+  ]),
+  createData('Political Science', { start: '01:00 PM', end: '02:00 PM' }, 'Dr. Xavier Green', [
+    { equipment: 'Book', quantity: 15 },
+    { equipment: 'Notebook', quantity: 25 },
+  ], [
+    { name: 'Eve', borrowTime: '01:05 PM' },
+    { name: 'Frank', borrowTime: '01:10 PM' },
+  ]),
+  createData('Anthropology', { start: '02:00 PM', end: '03:00 PM' }, 'Dr. Yvonne Yellow', [
+    { equipment: 'Book', quantity: 20 },
+    { equipment: 'Notebook', quantity: 30 },
+  ], [
+    { name: 'Grace', borrowTime: '02:05 PM' },
+    { name: 'Heidi', borrowTime: '02:10 PM' },
+  ]),
+  createData('Linguistics', { start: '03:00 PM', end: '04:00 PM' }, 'Dr. Zachary Brown', [
+    { equipment: 'Dictionary', quantity: 10 },
+    { equipment: 'Thesaurus', quantity: 15 },
+  ], [
+    { name: 'Ivan', borrowTime: '03:05 PM' },
+    { name: 'Judy', borrowTime: '03:10 PM' },
+  ]),
+  createData('Literature', { start: '04:00 PM', end: '05:00 PM' }, 'Dr. Amy White', [
+    { equipment: 'Book', quantity: 25 },
+    { equipment: 'Notebook', quantity: 35 },
+  ], [
+    { name: 'Kevin', borrowTime: '04:05 PM' },
+    { name: 'Laura', borrowTime: '04:10 PM' },
+  ]),
+  createData('Astronomy', { start: '05:00 PM', end: '06:00 PM' }, 'Dr. Brian Black', [
+    { equipment: 'Telescope', quantity: 5 },
+    { equipment: 'Star Chart', quantity: 10 },
+  ], [
+    { name: 'Mallory', borrowTime: '05:05 PM' },
+    { name: 'Nathan', borrowTime: '05:10 PM' },
+  ]),
+  createData('Geology', { start: '06:00 PM', end: '07:00 PM' }, 'Dr. Carol Green', [
+    { equipment: 'Rock Sample', quantity: 20 },
+    { equipment: 'Notebook', quantity: 25 },
+  ], [
+    { name: 'Oscar', borrowTime: '06:05 PM' },
+    { name: 'Pam', borrowTime: '06:10 PM' },
+  ]),
+  createData('Environmental Science', { start: '07:00 PM', end: '08:00 PM' }, 'Dr. David Blue', [
+    { equipment: 'Test Kit', quantity: 10 },
+    { equipment: 'Notebook', quantity: 20 },
+  ], [
+    { name: 'Quincy', borrowTime: '07:05 PM' },
+    { name: 'Rachel', borrowTime: '07:10 PM' },
+  ]),
+  createData('Statistics', { start: '08:00 AM', end: '09:00 AM' }, 'Dr. Emily Red', [
+    { equipment: 'Calculator', quantity: 15 },
+    { equipment: 'Notebook', quantity: 25 },
+  ], [
+    { name: 'Steve', borrowTime: '08:05 AM' },
+    { name: 'Tina', borrowTime: '08:10 AM' },
+  ]),
+  createData('Engineering', { start: '09:00 AM', end: '10:00 AM' }, 'Dr. Frank Gray', [
+    { equipment: 'Toolkit', quantity: 10 },
+    { equipment: 'Notebook', quantity: 20 },
+  ], [
+    { name: 'Uma', borrowTime: '09:05 AM' },
+    { name: 'Victor', borrowTime: '09:10 AM' },
+  ]),
+  createData('Medicine', { start: '10:00 AM', end: '11:00 AM' }, 'Dr. Grace White', [
+    { equipment: 'Stethoscope', quantity: 10 },
+    { equipment: 'Notebook', quantity: 20 },
+  ], [
+    { name: 'Wendy', borrowTime: '10:05 AM' },
+    { name: 'Xander', borrowTime: '10:10 AM' },
+  ]),
+  createData('Nursing', { start: '11:00 AM', end: '12:00 PM' }, 'Dr. Henry Black', [
+    { equipment: 'Syringe', quantity: 20 },
+    { equipment: 'Notebook', quantity: 30 },
+  ], [
+    { name: 'Yara', borrowTime: '11:05 AM' },
+    { name: 'Zane', borrowTime: '11:10 AM' },
+  ]),
+  createData('Dentistry', { start: '12:00 PM', end: '01:00 PM' }, 'Dr. Irene Green', [
+    { equipment: 'Dental Kit', quantity: 10 },
+    { equipment: 'Notebook', quantity: 20 },
+  ], [
+    { name: 'Alice', borrowTime: '12:05 PM' },
+    { name: 'Bob', borrowTime: '12:10 PM' },
+  ]),
+  createData('Pharmacy', { start: '01:00 PM', end: '02:00 PM' }, 'Dr. Jack Blue', [
+    { equipment: 'Mortar and Pestle', quantity: 10 },
+    { equipment: 'Notebook', quantity: 20 },
+  ], [
+    { name: 'Charlie', borrowTime: '01:05 PM' },
+    { name: 'David', borrowTime: '01:10 PM' },
+  ]),
+  createData('Veterinary Medicine', { start: '02:00 PM', end: '03:00 PM' }, 'Dr. Karen Red', [
+    { equipment: 'Surgical Kit', quantity: 5 },
+    { equipment: 'Notebook', quantity: 10 },
+  ], [
+    { name: 'Eve', borrowTime: '02:05 PM' },
+    { name: 'Frank', borrowTime: '02:10 PM' },
+  ]),
+  createData('Law', { start: '03:00 PM', end: '04:00 PM' }, 'Dr. Larry White', [
+    { equipment: 'Law Book', quantity: 20 },
+    { equipment: 'Notebook', quantity: 30 },
+  ], [
+    { name: 'Grace', borrowTime: '03:05 PM' },
+    { name: 'Heidi', borrowTime: '03:10 PM' },
+  ]),
+  createData('Business Administration', { start: '04:00 PM', end: '05:00 PM' }, 'Dr. Michael Black', [
+    { equipment: 'Calculator', quantity: 15 },
+    { equipment: 'Notebook', quantity: 25 },
+  ], [
+    { name: 'Ivan', borrowTime: '04:05 PM' },
+    { name: 'Judy', borrowTime: '04:10 PM' },
+  ]),
+  createData('Marketing', { start: '05:00 PM', end: '06:00 PM' }, 'Dr. Nancy Green', [
+    { equipment: 'Flyer', quantity: 50 },
+    { equipment: 'Notebook', quantity: 20 },
+  ], [
+    { name: 'Kevin', borrowTime: '05:05 PM' },
+    { name: 'Laura', borrowTime: '05:10 PM' },
+  ]),
+  createData('Finance', { start: '06:00 PM', end: '07:00 PM' }, 'Dr. Olivia Blue', [
+    { equipment: 'Calculator', quantity: 20 },
+    { equipment: 'Notebook', quantity: 30 },
+  ], [
+    { name: 'Mallory', borrowTime: '06:05 PM' },
+    { name: 'Nathan', borrowTime: '06:10 PM' },
+  ]),
+  createData('Accounting', { start: '07:00 PM', end: '08:00 PM' }, 'Dr. Paul Red', [
+    { equipment: 'Ledger', quantity: 10 },
+    { equipment: 'Notebook', quantity: 20 },
+  ], [
+    { name: 'Oscar', borrowTime: '07:05 PM' },
+    { name: 'Pam', borrowTime: '07:10 PM' },
+  ]),
+  createData('Human Resources', { start: '08:00 AM', end: '09:00 AM' }, 'Dr. Quincy White', [
+    { equipment: 'Form', quantity: 25 },
+    { equipment: 'Notebook', quantity: 30 },
+  ], [
+    { name: 'Quincy', borrowTime: '08:05 AM' },
+    { name: 'Rachel', borrowTime: '08:10 AM' },
+  ]),
+  createData('Operations Management', { start: '09:00 AM', end: '10:00 AM' }, 'Dr. Robert Black', [
+    { equipment: 'Toolkit', quantity: 10 },
+    { equipment: 'Notebook', quantity: 20 },
+  ], [
+    { name: 'Steve', borrowTime: '09:05 AM' },
+    { name: 'Tina', borrowTime: '09:10 AM' },
+  ]),
+  createData('Supply Chain Management', { start: '10:00 AM', end: '11:00 AM' }, 'Dr. Susan Green', [
+    { equipment: 'Form', quantity: 20 },
+    { equipment: 'Notebook', quantity: 30 },
+  ], [
+    { name: 'Uma', borrowTime: '10:05 AM' },
+    { name: 'Victor', borrowTime: '10:10 AM' },
+  ]),
+  createData('Information Technology', { start: '11:00 AM', end: '12:00 PM' }, 'Dr. Thomas Blue', [
+    { equipment: 'Laptop', quantity: 10 },
+    { equipment: 'Mouse', quantity: 20 },
+  ], [
+    { name: 'Wendy', borrowTime: '11:05 AM' },
+    { name: 'Xander', borrowTime: '11:10 AM' },
+  ]),
+  createData('Cybersecurity', { start: '12:00 PM', end: '01:00 PM' }, 'Dr. Ursula Red', [
+    { equipment: 'Firewall', quantity: 5 },
+    { equipment: 'Notebook', quantity: 10 },
+  ], [
+    { name: 'Yara', borrowTime: '12:05 PM' },
+    { name: 'Zane', borrowTime: '12:10 PM' },
+  ]),
+  createData('Data Science', { start: '01:00 PM', end: '02:00 PM' }, 'Dr. Victor White', [
+    { equipment: 'Laptop', quantity: 10 },
+    { equipment: 'Notebook', quantity: 20 },
+  ], [
+    { name: 'Alice', borrowTime: '01:05 PM' },
+    { name: 'Bob', borrowTime: '01:10 PM' },
+  ]),
+  createData('Artificial Intelligence', { start: '02:00 PM', end: '03:00 PM' }, 'Dr. Wendy Black', [
+    { equipment: 'Robot', quantity: 5 },
+    { equipment: 'Notebook', quantity: 10 },
+  ], [
+    { name: 'Charlie', borrowTime: '02:05 PM' },
+    { name: 'David', borrowTime: '02:10 PM' },
+  ]),
 ];
+
 
 export default function ScheduleTable({ title }) {
   const [order, setOrder] = React.useState('asc');
