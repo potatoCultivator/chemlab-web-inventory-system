@@ -3,7 +3,7 @@
       ListItem, ListItemText, ListItemAvatar, Avatar,
       Dialog, DialogTitle, DialogContent, Divider,
       Button, Typography, Table, TableBody,
-      TableCell, TableContainer, TableHead, TableRow, Box, DialogActions,
+      TableCell, TableContainer, TableHead, TableRow, Box, DialogActions, Paper
     } from '@mui/material';
     
     const AccountableTemplate = ({ borrower = {} }) => {
@@ -25,10 +25,10 @@
               primary={<Typography variant="h6">{borrower.borrowername || 'Unknown Borrower'}</Typography>}
               secondary={
                 <Box display="flex" justifyContent="space-between" alignItems="center">
-                  <Typography variant="body2" color="textSecondary">
+                  {/* <Typography variant="body2" color="textSecondary">
                     Course: {borrower.course || 'N/A'} | Date: {formatDate(borrower.date)}
-                  </Typography>
-                  <Typography variant="body2" sx={{ minWidth: '120px', textAlign: 'right', fontWeight: 'bold' }}>
+                  </Typography> */}
+                  <Typography variant="body2" color="textSecondary">
                     {borrower.subject || 'N/A'}
                   </Typography>
                 </Box>
@@ -48,10 +48,23 @@
                 <Typography gutterBottom><strong>Course:</strong> {borrower.course || 'N/A'}</Typography>
                 <Typography gutterBottom><strong>Date:</strong> {formatDate(borrower.date)}</Typography>
                 <Typography><strong>Equipment:</strong></Typography>
-                <TableContainer>
+                <TableContainer
+                  component={Paper}
+                  style={{
+                    maxHeight: "615px", // Set a maximum height to allow scrolling
+                    overflowY: "auto",  // Enables vertical scrolling for the body
+                  }}
+                >
                   <Table size="small" sx={{ mt: 1 }}>
                     <TableHead>
-                      <TableRow>
+                      <TableRow
+                                    style={{
+                                      backgroundColor: "#f5f5f5",
+                                      position: "sticky", // Make the header sticky
+                                      top: 0,             // Stick to the top of the container
+                                      zIndex: 1,          // Ensure it's above the body
+                                    }}
+                                  >
                         <TableCell sx={{ fontWeight: "bold" }}>Item</TableCell>
                         <TableCell sx={{ fontWeight: "bold" }}>Quantity</TableCell>
                       </TableRow>

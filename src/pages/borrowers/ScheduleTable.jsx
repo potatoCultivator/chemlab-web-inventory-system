@@ -191,6 +191,18 @@ const rows = [
   ], [
     { name: 'Alice', borrowTime: '10:05 AM' },
     { name: 'Bob', borrowTime: '10:10 AM' },
+    { name: 'Alice', borrowTime: '10:05 AM' },
+    { name: 'Bob', borrowTime: '10:10 AM' },
+    { name: 'Alice', borrowTime: '10:05 AM' },
+    { name: 'Bob', borrowTime: '10:10 AM' },
+    { name: 'Alice', borrowTime: '10:05 AM' },
+    { name: 'Bob', borrowTime: '10:10 AM' },
+    { name: 'Alice', borrowTime: '10:05 AM' },
+    { name: 'Bob', borrowTime: '10:10 AM' },
+    { name: 'Alice', borrowTime: '10:05 AM' },
+    { name: 'Bob', borrowTime: '10:10 AM' },
+    { name: 'Alice', borrowTime: '10:05 AM' },
+    { name: 'Bob', borrowTime: '10:10 AM' },
   ]),
   createData('Physics', { start: '11:00 AM', end: '12:00 PM' }, 'Dr. Jane Smith', [
     { equipment: 'Lab Coat', quantity: 15 },
@@ -493,7 +505,7 @@ export default function ScheduleTable({ title }) {
       <TableContainer
         component={Paper}
         style={{
-          maxHeight: "700px", // Set a maximum height to allow scrolling
+          maxHeight: "615px", // Set a maximum height to allow scrolling
           overflowY: "auto",  // Enables vertical scrolling for the body
         }}
       >
