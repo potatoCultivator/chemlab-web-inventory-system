@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -14,6 +15,13 @@ import { UpOutlined, DownOutlined } from '@ant-design/icons';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import { TableSortLabel } from '@mui/material';
+// import Dialog, { DialogContent, DialogTitle, DialogActions } from '@mui/material';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogActions from '@mui/material/DialogActions';
+
+// project import
 import { getAllSchedule } from 'pages/Query';
 
 function createData(subject, schedule, instructor, equipments, students) {
@@ -65,6 +73,19 @@ function stableSort(array, comparator) {
 function Row(props) {
   const { row } = props;
   const [open, setOpen] = React.useState(false);
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [selectedStudent, setSelectedStudent] = React.useState(null);
+
+  const handleStudentClick = (student) => {
+    console.log(student);
+    setSelectedStudent(student);
+    setDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+    setSelectedStudent(null);
+  };
 
   return (
     <React.Fragment>
@@ -141,18 +162,10 @@ function Row(props) {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {/* {row.students.map((student) => (
-                          <TableRow key={student.name} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
-                            <TableCell component="th" scope="row">
-                              {student.name}
-                            </TableCell>
-                            <TableCell align='right'>{student.borrowTime}</TableCell>
-                          </TableRow>
-                          ))} */}
                           {row.students.map((student) => {
                             const date = student.borrowTime.toDate();
                             return (
-                              <TableRow key={student.name} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
+                              <TableRow key={student.name} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}  onClick={() => handleStudentClick(student)}>
                                 <TableCell component="th" scope="row">
                                   {student.name}
                                 </TableCell>
@@ -169,6 +182,50 @@ function Row(props) {
           </Collapse>
         </TableCell>
       </TableRow>
+      <Dialog open={dialogOpen} onClose={handleDialogClose} maxWidth="sm" fullWidth>
+        <DialogTitle>Student Details</DialogTitle>
+        <DialogContent dividers>
+          {selectedStudent && (
+            <Box>
+              <Typography variant="h6" gutterBottom>
+                {selectedStudent.name}
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <Typography variant="subtitle1" color="textSecondary">
+                    Borrow Time:
+                  </Typography>
+                  <Typography variant="body1">
+                    {selectedStudent.borrowTime.toDate().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="subtitle1" color="textSecondary">
+                    Status:
+                  </Typography>
+                  <Typography variant="body1">
+                    {selectedStudent.status}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant="subtitle1" color="textSecondary">
+                    Additional Information:
+                  </Typography>
+                  <Typography variant="body1">
+                    {/* Add any additional information here */}
+                    No additional information available.
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose} color="primary" variant="contained">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </React.Fragment>
   );
 }
