@@ -182,6 +182,35 @@ async function deleteInstructorAcc(accountID) {
   }
 }
 
+// Function to fetch all equipment from Firestore
+async function getAllSchedule() {
+  const db = firestore;
+  const collectionRef = collection(db, 'schedule');
+  const querySnapshot = await getDocs(collectionRef);
+
+  const schedList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  return schedList;
+}
+
+async function getBorrower(schedID) {
+  const db = firestore;
+  const collectionRef = collection(db, 'borrowers');
+  const q = query(collectionRef, where('schedID', '==', schedID));
+  const querySnapshot = await getDocs(q);
+
+  const schedList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  return schedList;
+}
+
+async function getAllBorrower() {
+  const db = firestore;
+  const collectionRef = collection(db, 'borrowers');
+  const querySnapshot = await getDocs(collectionRef);
+
+  const schedList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  return schedList;
+}
+
 export { 
   addEquipment,
   uploadImageAndGetUrl,
@@ -192,5 +221,8 @@ export {
   getAllEquipment,
   uploadInstructor,
   fetchInstructors,
-  deleteInstructorAcc
+  deleteInstructorAcc,
+  getAllSchedule,
+  getBorrower,
+  getAllBorrower,
 };

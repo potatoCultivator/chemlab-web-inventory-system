@@ -19,7 +19,9 @@
         <>
           <ListItem button onClick={() => setOpen(true)} sx={{ transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.05)' } }}>
             <ListItemAvatar>
-              <Avatar sx={{ backgroundColor: '#00796b', color: '#ffffff' }} />
+            <Avatar sx={{ backgroundColor: '#00796b', color: '#ffffff' }}>
+            {borrower.borrowername ? borrower.borrowername.charAt(0) : 'U'}
+          </Avatar>
             </ListItemAvatar>
             <ListItemText
               primary={<Typography variant="h6">{borrower.borrowername || 'Unknown Borrower'}</Typography>}
