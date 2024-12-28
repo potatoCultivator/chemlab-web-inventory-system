@@ -5,21 +5,25 @@ import Grid from '@mui/material/Grid';
 // project import
 import MainTable from './MainTable';
 import MainCard from 'components/MainCard';
+import TotalCards from './TotalCard';
+import PopularCard from './PopularCard';
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
 export default function Equipments() {
   return (
     <>
-      {/* row 1 */}
-      {/* <Grid item xs={12} sx={{ mb: -2.25 }}>
-        <Typography variant="h5" className="equipments-title">Equipments</Typography>
-      </Grid> */}
-      <Grid container rowSpacing={4.5} columnSpacing={2.75}>
+      <Grid container spacing={2}>
         <Grid item xs={12}>
+          <TotalCards />
+        </Grid>
+        <Grid item xs={12} sm={8}>
           <MainCard title="List of Equipments">
             <MainTable />
           </MainCard>
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <PopularCard />
         </Grid>
       </Grid>
     </>
