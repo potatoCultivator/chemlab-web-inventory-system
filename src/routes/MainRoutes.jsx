@@ -15,6 +15,7 @@ const History = Loadable(lazy(() => import('pages/history/index')));
 const ViewProfile = Loadable(lazy(() => import('pages/admin-profile/UserProfile')));
 const EditProfile = Loadable(lazy(() => import('pages/admin-profile/EditProfile')));
 const DamagedEquipments = Loadable(lazy(() => import('pages/damaged-equipments/index')));
+const ReplacedEquipments = Loadable(lazy(() => import('pages/replaced-equipments/index')));
 
 // render - sample page
 // const SamplePage = Loadable(lazy(() => import('pages/extra-pages/sample-page')));
@@ -65,6 +66,10 @@ const MainRoutes = {
     {
       path: 'damaged-equipments',
       element: <DamagedEquipments />
+    },
+    {
+      path: 'replaced-equipments',
+      element: <ReplacedEquipments />
     }
   ]
 };

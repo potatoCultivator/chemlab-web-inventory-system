@@ -1,15 +1,16 @@
 // assets
-import { DatabaseOutlined, WarningOutlined } from '@ant-design/icons';
+import { ExperimentOutlined, CloseCircleOutlined, SyncOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
-  DatabaseOutlined,
-  WarningOutlined
+  ExperimentOutlined,
+  CloseCircleOutlined,
+  SyncOutlined
 };
 
 // ==============================|| MENU ITEMS - EXTRA PAGES ||============================== //
 
-const pages = {
+const equipments = {
   id: 'equipments',
   title: 'Equipments',
   type: 'group',
@@ -19,7 +20,7 @@ const pages = {
       title: 'List of Equipments',
       type: 'item',
       url: '/equipments',
-      icon: icons.DatabaseOutlined,
+      icon: icons.ExperimentOutlined,
       breadcrumbs: true,
     },
     {
@@ -27,7 +28,7 @@ const pages = {
       title: 'Damaged Equipments',
       type: 'item',
       url: '/damaged-equipments',
-      icon: icons.WarningOutlined,
+      icon: icons.CloseCircleOutlined,
       breadcrumbs: true,
     },
     {
@@ -35,10 +36,10 @@ const pages = {
       title: 'Replaced Equipments',
       type: 'item',
       url: '/replaced-equipments',
-      icon: icons.WarningOutlined,
+      icon: icons.SyncOutlined,
       breadcrumbs: true,
     }
   ]
 };
 
-export default pages;
+export default equipments;

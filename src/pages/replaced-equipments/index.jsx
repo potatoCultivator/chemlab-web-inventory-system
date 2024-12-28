@@ -7,7 +7,7 @@ import CustomTable from './CustomTable';
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
-export default function DamagedEquipments() {
+export default function ReplacedEquipments() {
   return (
     <MainCard title="Sample Card">
         <CustomTable />
