@@ -8,6 +8,7 @@ import MainCard from 'components/MainCard';
 import ToolAnalytics from 'components/cards/statistics/ToolAnalytics';
 import SummaryTable from './SummaryTable';
 import BorrowersReport from './BorrowersReport';
+import SampleCard from './SampleCard';
 
 // Firebase
 import { 
@@ -92,23 +93,6 @@ export default function DashboardDefault() {
     getEquipmentDetails();
   }, []);
 
-  // useEffect(() => {
-  //   const getEquipmentDetails = async () => {
-  //     try {
-  //       const details = await fetchBorrowerEquipmentDetails_Returned();
-  //       let cnt = 0;
-  //       details.forEach((item) => {
-  //         cnt = cnt + item.good_quantity;
-  //       });
-  //       setReturnedEquipment(cnt);
-  //     } catch (error) {
-  //       console.error('Error fetching equipment details:', error);
-  //       // setError(error);
-  //     } 
-  //   }
-  //   getEquipmentDetails();
-  // }, []);
-
   console.log("record count:" + recentBorrowed.length);
   console.log(recentBorrowed);
 
@@ -123,12 +107,9 @@ export default function DashboardDefault() {
     <>
       <Grid container rowSpacing={4.5} columnSpacing={2.75}>
         {/* row 1 */}
-        <Grid item xs={12} sx={{ mb: -2.25 }}>
-          <Typography variant="h5" className="dashboard-title">Dashboard</Typography>
-        </Grid>
         
         {/* Statistics Cards */}
-        <Grid item xs={12} sm={6} md={4} lg={3} className="total-borrowed">
+        {/* <Grid item xs={12} sm={6} md={4} lg={3} className="total-borrowed">
           <ToolAnalytics 
             title="Borrowed Tools/Equipments" 
             count={processData(borrowedData)}
@@ -159,6 +140,20 @@ export default function DashboardDefault() {
             className="total-bad-condition"
             percentage={59.3} 
           />
+        </Grid> */}
+        <Grid item xs={12} sm={6} md={4} lg={3} className="total-bad-condition" >
+          <SampleCard />
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={4} lg={3} className="total-bad-condition" >
+          <SampleCard />
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={4} lg={3} className="total-bad-condition" >
+          <SampleCard />
+        </Grid>
+        <Grid item xs={12} sm={6} md={4} lg={3} className="total-bad-condition" >
+          <SampleCard />
         </Grid>
         
       <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />

@@ -226,7 +226,7 @@ class AccountableList extends Component {
       <>
         <Box sx={{ position: 'sticky', top: 0, backgroundColor: 'white', zIndex: 1, width: '100%', padding: 0, marginBottom: 2 }}>
           <Typography variant="h5" sx={{ marginBottom: 1 }}>
-            Borrower List
+            Accountable List
           </Typography>
           <TextField
             label="Search"

@@ -1,35 +1,35 @@
 // assets
-import { LoginOutlined, ProfileOutlined } from '@ant-design/icons';
+import { DatabaseOutlined, WarningOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
-  LoginOutlined,
-  ProfileOutlined
+  DatabaseOutlined,
+  WarningOutlined
 };
 
 // ==============================|| MENU ITEMS - EXTRA PAGES ||============================== //
 
 const pages = {
-  id: 'authentication',
-  title: 'Authentication',
+  id: 'equipments',
+  title: 'Equipments',
   type: 'group',
   children: [
     {
-      id: 'login1',
-      title: 'Login',
+      id: 'list',
+      title: 'List of Equipments',
       type: 'item',
-      url: '/',
-      icon: icons.LoginOutlined,
-      target: true
+      url: '/equipments',
+      icon: icons.DatabaseOutlined,
+      breadcrumbs: true,
     },
     {
-      id: 'register1',
-      title: 'Register',
+      id: 'damaged-equipments',
+      title: 'Damaged Equipments',
       type: 'item',
-      url: '/register',
-      icon: icons.ProfileOutlined,
-      target: true
-    }
+      url: '/damaged-equipments',
+      icon: icons.WarningOutlined,
+      breadcrumbs: true,
+    },
   ]
 };
 

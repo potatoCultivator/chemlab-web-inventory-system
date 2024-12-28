@@ -14,6 +14,7 @@ const Instructors = Loadable(lazy(() => import('pages/instructors/index')));
 const History = Loadable(lazy(() => import('pages/history/index')));
 const ViewProfile = Loadable(lazy(() => import('pages/admin-profile/UserProfile')));
 const EditProfile = Loadable(lazy(() => import('pages/admin-profile/EditProfile')));
+const DamagedEquipments = Loadable(lazy(() => import('pages/damaged-equipments/index')));
 
 // render - sample page
 // const SamplePage = Loadable(lazy(() => import('pages/extra-pages/sample-page')));
@@ -61,6 +62,10 @@ const MainRoutes = {
       path: 'edit-profile',
       element: <EditProfile />
     },
+    {
+      path: 'damaged-equipments',
+      element: <DamagedEquipments />
+    }
   ]
 };
 

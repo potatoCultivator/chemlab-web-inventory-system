@@ -22,7 +22,7 @@ import { UpOutlined, DownOutlined } from '@ant-design/icons';
 import Grid from '@mui/material/Grid';
 import EquipmentForm from './EquipmentForm'; // Import the EquipmentForm component
 import CustomButton from './CustomButton copy';
-import { TableSortLabel, TablePagination } from '@mui/material';
+import { TableSortLabel, TablePagination, TextField } from '@mui/material';
 
 // Database
 import { getAllEquipment } from 'pages/Query';
@@ -174,7 +174,8 @@ export default function MainTable() {
   const [dialogOpen, setDialogOpen] = React.useState(false); // State to manage dialog visibility
   const [rows, setRows] = React.useState([]); // State to store fetched equipment data
   const [page, setPage] = React.useState(0); // State to manage current page
-  const [rowsPerPage, setRowsPerPage] = React.useState(5); // State to manage rows per page
+  const [rowsPerPage, setRowsPerPage] = React.useState(10); // State to manage rows per page
+  const [searchQuery, setSearchQuery] = React.useState(''); // State to manage search query
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Check if the screen size is small or below
 
@@ -213,14 +214,36 @@ export default function MainTable() {
     setPage(0);
   };
 
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const filteredRows = rows.filter((row) =>
+    row.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    row.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    row.unit.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography variant="h6">Main Table</Typography>
-        <CustomButton type="add" variant="contained" color="primary" onClick={handleDialogOpen}>
-          Add
-        </CustomButton>
-      </Box>
+    <Box sx={{ padding: 2 }}>
+      <Grid container spacing={2} alignItems="center" mb={2}>
+        <Grid item xs={12} sm={8}>
+          <TextField
+            label="Search"
+            variant="outlined"
+            fullWidth
+            value={searchQuery}
+            onChange={handleSearchChange}
+            sx={{ mb: 2 }}
+          />
+        </Grid>
+        <Grid item xs={12} sm={4} display="flex" justifyContent="flex-end">
+          <CustomButton type="add" variant="contained" color="primary" onClick={handleDialogOpen}>
+            Add
+          </CustomButton>
+        </Grid>
+      </Grid>
+      
       <TableContainer
         component={Paper}
         style={{
@@ -287,7 +310,7 @@ export default function MainTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {stableSort(rows, getComparator(order, orderBy))
+            {stableSort(filteredRows, getComparator(order, orderBy))
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => (
                 <Row key={row.id} row={row} />
@@ -298,7 +321,7 @@ export default function MainTable() {
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={rows.length}
+        count={filteredRows.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
