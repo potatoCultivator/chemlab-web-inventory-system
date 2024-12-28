@@ -22,7 +22,7 @@ import { UpOutlined, DownOutlined } from '@ant-design/icons';
 import Grid from '@mui/material/Grid';
 import EquipmentForm from './EquipmentForm'; // Import the EquipmentForm component
 import CustomButton from './CustomButton copy';
-import { TableSortLabel } from '@mui/material';
+import { TableSortLabel, TablePagination } from '@mui/material';
 
 // Database
 import { getAllEquipment } from 'pages/Query';
@@ -173,15 +173,21 @@ export default function MainTable() {
   const [orderBy, setOrderBy] = React.useState('name');
   const [dialogOpen, setDialogOpen] = React.useState(false); // State to manage dialog visibility
   const [rows, setRows] = React.useState([]); // State to store fetched equipment data
+  const [page, setPage] = React.useState(0); // State to manage current page
+  const [rowsPerPage, setRowsPerPage] = React.useState(5); // State to manage rows per page
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Check if the screen size is small or below
 
   React.useEffect(() => {
-    async function fetchData() {
-      const equipment = await getAllEquipment();
-      setRows(equipment);
-    }
-    fetchData();
+    const unsubscribe = getAllEquipment(
+      (equipment) => {
+        setRows(equipment);
+      },
+      (error) => {
+        console.error("Error fetching equipment: ", error);
+      }
+    );
+    return () => unsubscribe();
   }, []);
 
   const handleRequestSort = (property) => {
@@ -196,6 +202,15 @@ export default function MainTable() {
 
   const handleDialogClose = () => {
     setDialogOpen(false);
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
   return (
@@ -272,13 +287,23 @@ export default function MainTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {stableSort(rows, getComparator(order, orderBy)).map((row) => (
-              <Row key={row.id} row={row} />
-            ))}
+            {stableSort(rows, getComparator(order, orderBy))
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((row) => (
+                <Row key={row.id} row={row} />
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
-      
+      <TablePagination
+        rowsPerPageOptions={[5, 10, 25]}
+        component="div"
+        count={rows.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
       <Dialog
         open={dialogOpen}
         onClose={handleDialogClose}

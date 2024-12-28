@@ -118,13 +118,13 @@ async function getEquipment(name, unit, capacity) {
 }
 
 // Function to fetch all equipment from Firestore
-async function getAllEquipment() {
+function getAllEquipment(callback, errorCallback) {
   const db = firestore;
   const collectionRef = collection(db, 'equipments');
-  const querySnapshot = await getDocs(collectionRef);
-
-  const equipmentList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-  return equipmentList;
+  return onSnapshot(collectionRef, (snapshot) => {
+    const equipmentList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    callback(equipmentList);
+  }, errorCallback);
 }
 
 async function uploadInstructor(instructorData) {
