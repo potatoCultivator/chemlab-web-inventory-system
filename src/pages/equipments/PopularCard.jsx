@@ -123,7 +123,7 @@ const ChemistryLabInventoryCard = ({ isLoading }) => {
                   </Grid>
                 </Grid>
                 <Divider sx={{ my: 1.5 }} />
-                <Grid container direction="column">
+                {/* <Grid container direction="column">
                   <Grid item>
                     <Grid container alignItems="center" justifyContent="space-between">
                       <Grid item>
@@ -162,7 +162,7 @@ const ChemistryLabInventoryCard = ({ isLoading }) => {
                       Decreased by 4 Pieces
                     </Typography>
                   </Grid>
-                </Grid>
+                </Grid> */}
                 <Divider sx={{ my: 1.5 }} />
                 <Grid container direction="column">
                   <Grid item>

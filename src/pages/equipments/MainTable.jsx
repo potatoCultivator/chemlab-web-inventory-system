@@ -263,10 +263,10 @@ export default function MainTable() {
             fullWidth
             value={searchQuery}
             onChange={handleSearchChange}
-            sx={{ mb: 2 }}
+            sx={{ mb: { xs: 0, sm: 0 } }} // Remove bottom margin on mobile
           />
         </Grid>
-        <Grid item xs={12} sm={4} display="flex" justifyContent="flex-end">
+        <Grid item xs={12} sm={4} display="flex" justifyContent={{ xs: 'center', sm: 'flex-end' }} mt={{ xs: 2, sm: 0 }}>
           <CustomButton type="add" variant="contained" color="primary" onClick={handleDialogOpen}>
             Add
           </CustomButton>
