@@ -16,7 +16,7 @@
 // import { storage } from '../firebase'; // Adjust the path as necessary
 // import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { firestore, storage, auth } from '../firebase'; // Adjust the path as necessary
-import { collection, query, where, writeBatch, doc, getDocs, updateDoc, deleteDoc, onSnapshot, getDoc, setDoc } from "firebase/firestore"; 
+import { collection, query, where, writeBatch, doc, getDocs, updateDoc, deleteDoc, onSnapshot, arrayUnion,getDoc, setDoc } from "firebase/firestore"; 
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { sendEmail } from './emailService'; // Import the email service
 import { getMonth, getYear, getWeekOfMonth, getDate } from 'date-fns';
@@ -74,15 +74,35 @@ async function uploadImageAndGetUrl(file) {
 async function checkEquipmentExists(name, unit, capacity) {
   const db = firestore;
   const collectionRef = collection(db, 'equipments');
-  const q = query(collectionRef, where('name', '==', name), where('unit', '==', unit), where('capacity', '==', capacity));
+
+  // Create the query based on the unit and capacity
+  let q;
+  if (unit === 'pcs') {
+    q = query(collectionRef, where('name', '==', name), where('unit', '==', unit));
+  } else {
+    q = query(collectionRef, where('name', '==', name), where('unit', '==', unit), where('capacity', '==', capacity));
+  }
+
   const querySnapshot = await getDocs(q);
 
   if (!querySnapshot.empty) {
+    // Check if 'deleted' is false
     const doc = querySnapshot.docs[0];
-    return { id: doc.id, ...doc.data() };
+    const data = doc.data();
+    
+    if (data.deleted === true) {
+      // If the document is marked as deleted, return null
+      return null;
+    }
+
+    // Return the document if it's not marked as deleted
+    return { id: doc.id, ...data };
   }
+
   return null;
 }
+
+
 
 // Function to update the stock of existing equipment
 async function updateStock(id, newStock, newTotal, historyEntry) {

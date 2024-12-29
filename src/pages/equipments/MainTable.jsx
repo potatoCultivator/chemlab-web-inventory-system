@@ -74,7 +74,7 @@ function Row(props) {
           {row.name}
         </TableCell>
         <TableCell>{row.category}</TableCell>
-        <TableCell>{row.unit}</TableCell>
+        <TableCell>{row.capacity}{row.unit}</TableCell>
         <TableCell align="right">{row.stocks}</TableCell>
         <TableCell align="right">{row.total}</TableCell>
         <TableCell align="right">

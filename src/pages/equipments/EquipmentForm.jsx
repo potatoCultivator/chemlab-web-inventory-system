@@ -11,40 +11,21 @@ import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 import { Timestamp } from 'firebase/firestore';
 
-// Firestore Functions
-import {
-  addEquipment,
-  uploadImageAndGetUrl,
-  checkEquipmentExists,
-  updateStock,
-} from 'pages/Query'; // Adjust the path as necessary
-
-// Reusable Constants
-const UNIT_OPTIONS = ['kg', 'g', 'L', 'mL', 'pcs'];
-const CATEGORY_OPTIONS = [
-  'glassware',
-  'plasticware',
-  'metalware',
-  'heating',
-  'measuring',
-  'container',
-  'separator',
-  'mixing',
-];
+// Firestore
+import { addEquipment, uploadImageAndGetUrl, checkEquipmentExists, updateStock } from 'pages/Query';
 
 const validationSchema = Yup.object({
   name: Yup.string().required('Name is required'),
-  stocks: Yup.number()
-    .min(0, 'Stocks must be at least 0')
-    .required('Stocks are required'),
-  capacity: Yup.number()
-    .min(0, 'Capacity must be at least 0')
-    .when('unit', {
-      is: (unit) => unit !== 'pcs',
-      then: Yup.number().required('Capacity is required for units other than pcs'),
-    }),
-  unit: Yup.string().oneOf(UNIT_OPTIONS).required('Unit is required'),
-  category: Yup.string().oneOf(CATEGORY_OPTIONS).required('Category is required'),
+  stocks: Yup.number().min(0, 'Stocks must be at least 0').required('Stocks are required'),
+  capacity: Yup.number().when('unit', {
+    is: (unit) => unit === 'pcs',
+    then: () => Yup.number().nullable(),
+    otherwise: () => Yup.number()
+      .min(0, 'Capacity must be at least 0')
+      .required('Capacity is required')
+  }),
+  unit: Yup.string().required('Unit is required'),
+  category: Yup.string().required('Category is required'),
   image: Yup.mixed().required('Image is required'),
 });
 
@@ -52,45 +33,45 @@ export default function EquipmentForm({ onClose }) {
   const [previewImage, setPreviewImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [nameError, setNameError] = useState('');
-  const [adminData, setAdminData] = useState({ firstname: '', lastname: '' });
+  const [data, setData] = useState({ firstname: '', lastname: '' });
   const navigate = useNavigate();
 
   useEffect(() => {
     const storedData = localStorage.getItem('userData');
 
     if (storedData) {
-      setAdminData(JSON.parse(storedData));
+      setData(JSON.parse(storedData));
     } else {
-      const fetchUserData = async () => {
+      const fetchData = async () => {
         try {
           const userData = await fetchUserProfile();
           const { firstname, lastname } = userData;
+
           if (firstname && lastname) {
-            setAdminData({ firstname, lastname });
+            setData({ firstname, lastname });
             localStorage.setItem('userData', JSON.stringify({ firstname, lastname }));
           } else {
-            throw new Error('Incomplete profile data');
+            console.error('Profile data is incomplete.');
+            navigate('/404');
           }
         } catch (err) {
-          console.error('Error fetching user data:', err);
+          console.error('Error fetching data:', err);
           navigate('/404');
         }
       };
-      fetchUserData();
+      fetchData();
     }
   }, [navigate]);
 
   const handleImageChange = (event, setFieldValue) => {
     const file = event.target.files[0];
-    if (file && file.type.startsWith('image/')) {
+    if (file) {
       setPreviewImage(URL.createObjectURL(file));
       setFieldValue('image', file);
-    } else {
-      alert('Please select a valid image file.');
     }
   };
 
-  const handleNameChange = async (event, setFieldValue) => {
+  const handleNameChange = async (event, setFieldValue, values) => {
     const name = event.target.value.trim();
     setFieldValue('name', name);
 
@@ -102,27 +83,44 @@ export default function EquipmentForm({ onClose }) {
     }
   };
 
+  const handleUnitChange = (event, setFieldValue) => {
+    const unit = event.target.value;
+    setFieldValue('unit', unit);
+    if (unit === 'pcs') {
+      setFieldValue('capacity', null);
+    }
+  };
+
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     setLoading(true);
     try {
       const historyEntry = {
         date: Timestamp.fromDate(new Date()),
-        addedBy: `${adminData.firstname} ${adminData.lastname}`,
+        addedBy: `${data.firstname} ${data.lastname}`,
         addedStock: values.stocks,
       };
-
+  
+      // Check if an existing item with the same name and unit exists
       const existingEquipment = await checkEquipmentExists(values.name, values.unit, values.capacity);
+  
       if (existingEquipment) {
+        // Update the existing item if found
         const newStock = existingEquipment.stocks + values.stocks;
         const newTotal = existingEquipment.total + values.stocks;
+  
+        // Update the stock in Firestore
         await updateStock(existingEquipment.id, newStock, newTotal, historyEntry);
         alert('Equipment stock updated successfully!');
       } else {
+        // If item doesn't exist, add a new one
         const imageUrl = await uploadImageAndGetUrl(values.image);
         const newEquipment = {
-          ...values,
+          name: values.name,
           stocks: values.stocks,
           total: values.stocks,
+          capacity: values.unit === 'pcs' ? null : values.capacity,
+          unit: values.unit,
+          category: values.category,
           image: imageUrl,
           dateAdded: Timestamp.fromDate(new Date()),
           history: [historyEntry],
@@ -130,7 +128,8 @@ export default function EquipmentForm({ onClose }) {
         await addEquipment(newEquipment);
         alert('Equipment added successfully!');
       }
-
+  
+      // Reset the form after submission
       resetForm();
       setPreviewImage(null);
       setNameError('');
@@ -143,6 +142,7 @@ export default function EquipmentForm({ onClose }) {
       setLoading(false);
     }
   };
+  
 
   return (
     <Formik
@@ -150,8 +150,8 @@ export default function EquipmentForm({ onClose }) {
         name: '',
         stocks: '',
         capacity: '',
-        unit: 'mL', // Set default unit to mL
-        category: 'glassware', // Set default category to glassware
+        unit: '',
+        category: '',
         image: null,
       }}
       validationSchema={validationSchema}
@@ -159,89 +159,125 @@ export default function EquipmentForm({ onClose }) {
     >
       {({ setFieldValue, values }) => (
         <Form>
-          <Box sx={{ p: 3, borderRadius: 2 }}>
-            <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <Typography variant="h6">Add Equipment</Typography>
+          <Box sx={{ width: '100%', backgroundColor: 'transparent', padding: 3, borderRadius: 2 }}>
+            <Grid container spacing={3} alignItems="center">
+              {/* Name Field */}
+              <Grid item xs={2}>
+                <Typography>Name:</Typography>
               </Grid>
-
-              <Grid item xs={12}>
+              <Grid item xs={10}>
                 <Field
                   component={TextField}
                   name="name"
-                  label="Name"
                   fullWidth
-                  onChange={(e) => handleNameChange(e, setFieldValue)}
+                  placeholder="Enter the name of the item"
+                  sx={{ backgroundColor: 'transparent' }}
+                  onChange={(event) => handleNameChange(event, setFieldValue, values)}
                   error={!!nameError}
                   helperText={nameError}
                 />
               </Grid>
 
-              <Grid item xs={6}>
+              {/* Stocks Field */}
+              <Grid item xs={2}>
+                <Typography>Stocks:</Typography>
+              </Grid>
+              <Grid item xs={10}>
                 <Field
                   component={TextField}
                   name="stocks"
-                  label="Stocks"
                   type="number"
                   fullWidth
+                  placeholder="Enter the stocks"
+                  sx={{ backgroundColor: 'transparent' }}
                 />
               </Grid>
 
-              <Grid item xs={6}>
+              {/* Unit Field */}
+              <Grid item xs={2}>
+                <Typography>Unit:</Typography>
+              </Grid>
+              <Grid item xs={10}>
                 <Field
                   component={Select}
                   name="unit"
-                  label="Unit"
                   fullWidth
+                  displayEmpty
+                  onChange={(event) => handleUnitChange(event, setFieldValue)}
+                  inputProps={{ 'aria-label': 'Select unit' }}
+                  sx={{ backgroundColor: 'transparent' }}
                 >
                   <MenuItem value="" disabled>
-                    Select Unit
+                    Please select the unit of measurement
                   </MenuItem>
-                  {UNIT_OPTIONS.map((unit) => (
-                    <MenuItem key={unit} value={unit}>
-                      {unit}
-                    </MenuItem>
-                  ))}
+                  <MenuItem value="kg">kg</MenuItem>
+                  <MenuItem value="g">g</MenuItem>
+                  <MenuItem value="L">L</MenuItem>
+                  <MenuItem value="mL">mL</MenuItem>
+                  <MenuItem value="pcs">pcs</MenuItem>
                 </Field>
               </Grid>
 
-              <Grid item xs={12}>
+              {/* Capacity Field */}
+              <Grid item xs={2}>
+                <Typography>Capacity:</Typography>
+              </Grid>
+              <Grid item xs={10}>
                 <Field
                   component={TextField}
                   name="capacity"
-                  label="Capacity"
                   type="number"
                   fullWidth
                   disabled={values.unit === 'pcs'}
+                  placeholder="Enter the capacity of the item"
+                  sx={{ backgroundColor: 'transparent' }}
                 />
               </Grid>
 
-              <Grid item xs={12}>
+              {/* Category Field */}
+              <Grid item xs={2}>
+                <Typography>Category:</Typography>
+              </Grid>
+              <Grid item xs={10}>
                 <Field
                   component={Select}
                   name="category"
-                  label="Category"
                   fullWidth
+                  displayEmpty
+                  inputProps={{ 'aria-label': 'Select category' }}
+                  sx={{ backgroundColor: 'transparent' }}
                 >
                   <MenuItem value="" disabled>
-                    Select Category
+                    Please select the category
                   </MenuItem>
-                  {CATEGORY_OPTIONS.map((category) => (
-                    <MenuItem key={category} value={category}>
-                      {category}
-                    </MenuItem>
-                  ))}
+                  <MenuItem value="glassware">Glassware</MenuItem>
+                  <MenuItem value="plasticware">Plasticware</MenuItem>
+                  <MenuItem value="metalware">Metalware</MenuItem>
+                  <MenuItem value="heating">Heating</MenuItem>
+                  <MenuItem value="measuring">Measuring</MenuItem>
+                  <MenuItem value="container">Container</MenuItem>
+                  <MenuItem value="separator">Separation Equipment</MenuItem>
+                  <MenuItem value="mixing">Mixing & Stirring</MenuItem>
                 </Field>
               </Grid>
 
-              <Grid item xs={12}>
-                <Button variant="contained" component="label" fullWidth>
+              {/* Image Upload */}
+              <Grid item xs={2}>
+                <Typography>Image:</Typography>
+              </Grid>
+              <Grid item xs={10}>
+                <Button
+                  variant="contained"
+                  component="label"
+                  fullWidth
+                  sx={{ textAlign: 'left' }}
+                >
                   Upload Image
                   <input
                     hidden
-                    type="file"
                     accept="image/*"
-                    onChange={(e) => handleImageChange(e, setFieldValue)}
+                    type="file"
+                    onChange={(event) => handleImageChange(event, setFieldValue)}
                   />
                 </Button>
                 {previewImage && (
@@ -249,24 +285,19 @@ export default function EquipmentForm({ onClose }) {
                     <img
                       src={previewImage}
                       alt="Preview"
-                      style={{ maxWidth: '100%', borderRadius: 4 }}
+                      style={{ maxWidth: '100%', height: 'auto', borderRadius: 4 }}
                     />
                   </Box>
                 )}
               </Grid>
-
-              <Grid item xs={12}>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  disabled={loading}
-                  fullWidth
-                >
-                  {loading ? <CircularProgress size={24} /> : 'Submit'}
-                </Button>
-              </Grid>
             </Grid>
+
+            {/* Submit Button */}
+            <Box mt={3} textAlign="center">
+              <Button type="submit" variant="contained" color="primary" disabled={loading}>
+                {loading ? <CircularProgress size={24} /> : 'Submit'}
+              </Button>
+            </Box>
           </Box>
         </Form>
       )}
