@@ -255,19 +255,26 @@ async function updateLastHistoryEntry(id, updatedEntry) {
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       const data = docSnap.data();
-      const currentHistory = data.history || []; // Ensure history exists
+      // Ensure all necessary values are initialized
+      const currentStock = Number(data?.stocks) || 0; // Default to 0 if data.stocks is invalid
+      const currentHistory = data?.history || [];    // Default to empty array if history is missing
+      const lastAddedStock = currentHistory.length > 0 
+          ? currentHistory[currentHistory.length - 1].addedStock || 0 
+          : 0;
+      const updatedStock = Number(currentStock) - Number(lastAddedStock) + Number(updatedEntry?.addedStock || 0);
+
 
       // Step 2: Check if the array is not empty
       if (currentHistory.length > 0) {
         const lastIndex = currentHistory.length - 1; // Get the last index
-        currentHistory[lastIndex] = updatedEntry; // Update the last element
+        currentHistory[lastIndex] = { ...updatedEntry, date: new Date() }; // Update the last element with new date
       } else {
         throw new Error("History array is empty");
       }
       const newTotal = currentHistory.map((entry) => Number(entry.addedStock)).reduce((a, b) => a + b, 0);
       // Step 3: Write the updated array back to Firestore
       await updateDoc(docRef, { 
-        // stocks: Number(stock),
+        stocks: Number(updatedStock),
         total: Number(newTotal),
         history: currentHistory 
       });
