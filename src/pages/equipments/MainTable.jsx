@@ -72,11 +72,11 @@ function Row(props) {
   const handleSaveClick = async () => {
     setEditing(false);
     const lastHistoryEntry = editedHistory[editedHistory.length - 1];
-    if (lastHistoryEntry.addedStock > row.stocks) {
-      setErrorMessage('Cannot save because the added stock value is greater than the current stock.');
-      setErrorDialogOpen(true);
-      return;
-    }
+    // if (lastHistoryEntry.addedStock < row.stocks) {
+    //   setErrorMessage('Cannot save because the added stock value is greater than the current stock.');
+    //   setErrorDialogOpen(true);
+    //   return;
+    // }
     try {
       console.log(lastHistoryEntry);
       await updateLastHistoryEntry(row.id, lastHistoryEntry);
