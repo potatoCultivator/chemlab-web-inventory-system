@@ -78,9 +78,9 @@ async function checkEquipmentExists(name, unit, capacity) {
   // Create the query based on the unit and capacity
   let q;
   if (unit === 'pcs') {
-    q = query(collectionRef, where('name', '==', name), where('unit', '==', unit));
+    q = query(collectionRef, where('name', '==', name.toLowerCase()), where('unit', '==', unit.toLowerCase()));
   } else {
-    q = query(collectionRef, where('name', '==', name), where('unit', '==', unit), where('capacity', '==', capacity));
+    q = query(collectionRef, where('name', '==', name.toLowerCase()), where('unit', '==', unit.toLowerCase()), where('capacity', '==', capacity));
   }
 
   const querySnapshot = await getDocs(q);
@@ -101,8 +101,6 @@ async function checkEquipmentExists(name, unit, capacity) {
 
   return null;
 }
-
-
 
 // Function to update the stock of existing equipment
 async function updateStock(id, newStock, newTotal, historyEntry) {
