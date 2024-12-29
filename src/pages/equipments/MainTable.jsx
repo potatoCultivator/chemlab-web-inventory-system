@@ -256,14 +256,14 @@ export default function MainTable() {
   return (
     <Box sx={{ padding: 2 }}>
       <Grid container spacing={2} alignItems="center" mb={2}>
-        <Grid item xs={8} sm={4} display="flex" justifyContent={{ xs: 'flex-end', sm: 'flex-end' }} mt={{ xs: 2, sm: 0 }}>
+        <Grid item xs={8} sm={8} display="flex" justifyContent={{ xs: 'flex-end', sm: 'flex-end' }} mt={{ xs: 2, sm: 0 }}>
           <TextField
             label="Search"
             variant="outlined"
             fullWidth
             value={searchQuery}
             onChange={handleSearchChange}
-            sx={{ mb: { xs: 0, sm: 2 } }} // Remove bottom margin on mobile
+            // sx={{ mb: { xs: 0, sm: 2 } }} // Remove bottom margin on mobile
           />
         </Grid>
         <Grid item xs={4} sm={4} display="flex" justifyContent={{ xs: 'flex-end', sm: 'flex-end' }} mt={{ xs: 2, sm: 0 }}>
