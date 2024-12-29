@@ -57,6 +57,33 @@ function stableSort(array, comparator) {
 function Row(props) {
   const { row, onDelete } = props;
   const [open, setOpen] = React.useState(false);
+  const [editing, setEditing] = React.useState(false);
+  const [editedHistory, setEditedHistory] = React.useState([...row.history]);
+
+  const handleEditClick = () => {
+    setEditing(true);
+  };
+
+  const handleSaveClick = () => {
+    setEditing(false);
+    // Save the edited history to the database or state
+  };
+
+  const handleCancelClick = () => {
+    setEditing(false);
+    setEditedHistory([...row.history]);
+  };
+
+  const handleHistoryChange = (index, value) => {
+    const updatedHistory = [...editedHistory];
+    updatedHistory[index].addedStock = value;
+    setEditedHistory(updatedHistory);
+  };
+
+  const handleDeleteHistory = (index) => {
+    const updatedHistory = editedHistory.filter((_, i) => i !== index);
+    setEditedHistory(updatedHistory);
+  };
 
   return (
     <React.Fragment>
@@ -125,11 +152,13 @@ function Row(props) {
                           <TableCell>Time</TableCell>
                           <TableCell align='center'>Added By</TableCell>
                           <TableCell align='right'>Added Stock</TableCell>
+                          {editing && <TableCell align='right'>Actions</TableCell>}
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {row.history.map((historyRow) => {
+                        {editedHistory.map((historyRow, index) => {
                           const date = historyRow.date.toDate();
+                          const isLastRow = index === editedHistory.length - 1;
                           return (
                             <TableRow key={historyRow.date.toMillis()} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
                               <TableCell component="th" scope="row">
@@ -138,14 +167,50 @@ function Row(props) {
                               <TableCell>
                                 {date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                               </TableCell>
-                              <TableCell align='center'>{historyRow.addedBy}</TableCell>
-                              <TableCell align='right'>{historyRow.addedStock}</TableCell>
+                              <TableCell align='center'>
+                                {historyRow.addedBy}
+                              </TableCell>
+                              <TableCell align='right'>
+                                {editing && isLastRow ? (
+                                  <TextField
+                                    type="number"
+                                    value={historyRow.addedStock}
+                                    onChange={(e) => handleHistoryChange(index, e.target.value)}
+                                    fullWidth
+                                  />
+                                ) : (
+                                  historyRow.addedStock
+                                )}
+                              </TableCell>
+                              {editing && isLastRow && (
+                                <TableCell align='right'>
+                                  <IconButton aria-label="delete" size="small" onClick={() => handleDeleteHistory(index)} sx={{ color: 'error.main' }}>
+                                    <DeleteOutlined />
+                                  </IconButton>
+                                </TableCell>
+                              )}
                             </TableRow>
                           );
                         })}
                       </TableBody>
                     </Table>
                   </TableContainer>
+                  {editing ? (
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                      <Button onClick={handleCancelClick} color="primary" sx={{ mr: 2 }}>
+                        Cancel
+                      </Button>
+                      <Button onClick={handleSaveClick} color="primary" variant="contained">
+                        Save
+                      </Button>
+                    </Box>
+                  ) : (
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                      <Button onClick={handleEditClick} color="primary" variant="contained">
+                        Edit
+                      </Button>
+                    </Box>
+                  )}
                 </Grid>
               </Grid>
             </Box>
