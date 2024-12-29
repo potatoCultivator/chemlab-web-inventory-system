@@ -24,9 +24,10 @@ import Grid from '@mui/material/Grid';
 import EquipmentForm from './EquipmentForm'; // Import the EquipmentForm component
 import CustomButton from './CustomButton copy';
 import { TableSortLabel, TablePagination, TextField } from '@mui/material';
+import Tooltip from '@mui/material/Tooltip'; // Import Tooltip
 
 // Database
-import { getAllEquipment, deleteEquipment, updateLastHistoryEntry } from 'pages/Query';
+import { getAllEquipment, deleteEquipment, updateLastHistoryEntry, deleteLastHistoryEntry } from 'pages/Query';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -59,19 +60,23 @@ function Row(props) {
   const [open, setOpen] = React.useState(false);
   const [editing, setEditing] = React.useState(false);
   const [editedHistory, setEditedHistory] = React.useState([...row.history]);
+  const [errorDialogOpen, setErrorDialogOpen] = React.useState(false); // State to manage error dialog visibility
+  const [errorMessage, setErrorMessage] = React.useState(''); // State to manage error message
+  const [confirmHistoryDialogOpen, setConfirmHistoryDialogOpen] = React.useState(false); // State to manage confirmation dialog visibility for history
+  const [historyIndexToDelete, setHistoryIndexToDelete] = React.useState(null); // State to store the index of the history to be deleted
 
   const handleEditClick = () => {
     setEditing(true);
   };
 
-  // const handleSaveClick = () => {
-  //   setEditing(false);
-  //   // Save the edited history to the database or state
-  // };
-
   const handleSaveClick = async () => {
     setEditing(false);
     const lastHistoryEntry = editedHistory[editedHistory.length - 1];
+    if (lastHistoryEntry.addedStock > row.stocks) {
+      setErrorMessage('Cannot save because the added stock value is greater than the current stock.');
+      setErrorDialogOpen(true);
+      return;
+    }
     try {
       console.log(lastHistoryEntry);
       await updateLastHistoryEntry(row.id, lastHistoryEntry);
@@ -80,7 +85,6 @@ function Row(props) {
       console.error("Error updating last history entry:", error);
     }
   };
-  
 
   const handleCancelClick = () => {
     setEditing(false);
@@ -94,22 +98,41 @@ function Row(props) {
     setEditedHistory(updatedHistory);
   };
 
-  const handleDeleteHistory = (index) => {
+  const handleDeleteHistory = async (index) => {
+    const lastHistoryEntry = editedHistory[index];
+    if (row.stocks < lastHistoryEntry.addedStock) {
+      setErrorMessage('Cannot delete because the added stock value is greater than the current stock.');
+      setErrorDialogOpen(true);
+      return;
+    }
+    setHistoryIndexToDelete(index);
+    setConfirmHistoryDialogOpen(true);
+  };
+
+  const confirmDeleteHistory = async () => {
+    const index = historyIndexToDelete;
+    const lastHistoryEntry = editedHistory[index];
     const updatedHistory = editedHistory.filter((_, i) => i !== index);
     setEditedHistory(updatedHistory);
+    await deleteLastHistoryEntry(row.id);
+    row.stocks -= lastHistoryEntry.addedStock;
+    row.total -= lastHistoryEntry.addedStock;
+    setConfirmHistoryDialogOpen(false);
   };
 
   return (
     <React.Fragment>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' }, '&:hover': { backgroundColor: '#f5f5f5' } }}>
         <TableCell>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => setOpen(!open)}
-          >
-            {open ? <UpOutlined /> : <DownOutlined />}
-          </IconButton>
+          <Tooltip title={open ? "Collapse" : "Expand"} arrow>
+            <IconButton
+              aria-label="expand row"
+              size="small"
+              onClick={() => setOpen(!open)}
+            >
+              {open ? <UpOutlined /> : <DownOutlined />}
+            </IconButton>
+          </Tooltip>
         </TableCell>
         <TableCell component="th" scope="row">
           {row.name}
@@ -119,9 +142,11 @@ function Row(props) {
         <TableCell align="right">{row.stocks}</TableCell>
         <TableCell align="right">{row.total}</TableCell>
         <TableCell align="right">
-          <IconButton aria-label="delete" size="small" onClick={() => onDelete(row.id)} sx={{ color: 'error.main' }}>
-            <DeleteOutlined />
-          </IconButton>
+          <Tooltip title="Delete" arrow>
+            <IconButton aria-label="delete" size="small" onClick={() => onDelete(row.id)} sx={{ color: 'error.main' }}>
+              <DeleteOutlined />
+            </IconButton>
+          </Tooltip>
         </TableCell>
       </TableRow>
       <TableRow>
@@ -198,9 +223,11 @@ function Row(props) {
                               </TableCell>
                               {editing && isLastRow && (
                                 <TableCell align='right'>
-                                  <IconButton aria-label="delete" size="small" onClick={() => handleDeleteHistory(index)} sx={{ color: 'error.main' }}>
-                                    <DeleteOutlined />
-                                  </IconButton>
+                                  <Tooltip title="Delete History" arrow>
+                                    <IconButton aria-label="delete" size="small" onClick={() => handleDeleteHistory(index)} sx={{ color: 'error.main' }}>
+                                      <DeleteOutlined />
+                                    </IconButton>
+                                  </Tooltip>
                                 </TableCell>
                               )}
                             </TableRow>
@@ -231,6 +258,37 @@ function Row(props) {
           </Collapse>
         </TableCell>
       </TableRow>
+      <Dialog
+        open={errorDialogOpen}
+        onClose={() => setErrorDialogOpen(false)}
+      >
+        <DialogTitle>Error</DialogTitle>
+        <DialogContent>
+          <Typography>{errorMessage}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setErrorDialogOpen(false)} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={confirmHistoryDialogOpen}
+        onClose={() => setConfirmHistoryDialogOpen(false)}
+      >
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to delete this history entry?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmHistoryDialogOpen(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={confirmDeleteHistory} sx={{ color: 'error.main' }}>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </React.Fragment>
   );
 }

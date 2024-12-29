@@ -287,6 +287,51 @@ async function updateLastHistoryEntry(id, updatedEntry) {
   }
 }
 
+async function deleteLastHistoryEntry(id) {
+  const db = firestore; // Firestore instance
+  const docRef = doc(db, 'equipments', id);
+
+  try {
+    // Step 1: Retrieve the current document
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      // Ensure all necessary values are initialized
+      const currentStock = Number(data?.stocks) || 0; // Default to 0 if data.stocks is invalid
+      const currentHistory = data?.history || [];    // Default to empty array if history is missing
+      const lastAddedStock = currentHistory.length > 0 
+          ? currentHistory[currentHistory.length - 1].addedStock || 0 
+          : 0;
+
+      // Check if the current stock is less than the last added stock
+      if (currentStock < lastAddedStock) {
+        throw new Error("Current stock is less than the last added stock. Cannot delete the last history entry.");
+      }
+
+      const updatedStock = Number(currentStock) - Number(lastAddedStock);
+
+      // Step 2: Check if the array is not empty
+      if (currentHistory.length > 0) {
+        currentHistory.pop(); // Remove the last element
+      } else {
+        throw new Error("History array is empty");
+      }
+      const newTotal = currentHistory.map((entry) => Number(entry.addedStock)).reduce((a, b) => a + b, 0);
+      // Step 3: Write the updated array back to Firestore
+      await updateDoc(docRef, { 
+        stocks: Number(updatedStock),
+        total: Number(newTotal),
+        history: currentHistory 
+      });
+      console.log("Last history entry deleted successfully!");
+    } else {
+      console.error("Document does not exist!");
+    }
+  } catch (error) {
+    console.error("Error deleting last history entry:", error);
+  }
+}
+
 
 export { 
   addEquipment,
@@ -304,5 +349,6 @@ export {
   getAllBorrower,
   deleteEquipment,
   editEquipment,
-  updateLastHistoryEntry
+  updateLastHistoryEntry,
+  deleteLastHistoryEntry
 };
