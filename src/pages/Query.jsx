@@ -246,6 +246,41 @@ async function editEquipment(id, equipment) {
   await updateDoc(docRef, equipment);
 }
 
+async function updateLastHistoryEntry(id, updatedEntry) {
+  const db = firestore; // Firestore instance
+  const docRef = doc(db, 'equipments', id);
+
+  try {
+    // Step 1: Retrieve the current document
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      const currentHistory = data.history || []; // Ensure history exists
+
+      // Step 2: Check if the array is not empty
+      if (currentHistory.length > 0) {
+        const lastIndex = currentHistory.length - 1; // Get the last index
+        currentHistory[lastIndex] = updatedEntry; // Update the last element
+      } else {
+        throw new Error("History array is empty");
+      }
+      const newTotal = currentHistory.map((entry) => Number(entry.addedStock)).reduce((a, b) => a + b, 0);
+      // Step 3: Write the updated array back to Firestore
+      await updateDoc(docRef, { 
+        // stocks: Number(stock),
+        total: Number(newTotal),
+        history: currentHistory 
+      });
+      console.log("Last history entry updated successfully!");
+    } else {
+      console.error("Document does not exist!");
+    }
+  } catch (error) {
+    console.error("Error updating last history entry:", error);
+  }
+}
+
+
 export { 
   addEquipment,
   uploadImageAndGetUrl,
@@ -261,5 +296,6 @@ export {
   getBorrower,
   getAllBorrower,
   deleteEquipment,
-  editEquipment
+  editEquipment,
+  updateLastHistoryEntry
 };

@@ -26,7 +26,7 @@ import CustomButton from './CustomButton copy';
 import { TableSortLabel, TablePagination, TextField } from '@mui/material';
 
 // Database
-import { getAllEquipment, deleteEquipment } from 'pages/Query';
+import { getAllEquipment, deleteEquipment, updateLastHistoryEntry } from 'pages/Query';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -64,10 +64,23 @@ function Row(props) {
     setEditing(true);
   };
 
-  const handleSaveClick = () => {
+  // const handleSaveClick = () => {
+  //   setEditing(false);
+  //   // Save the edited history to the database or state
+  // };
+
+  const handleSaveClick = async () => {
     setEditing(false);
-    // Save the edited history to the database or state
+    const lastHistoryEntry = editedHistory[editedHistory.length - 1];
+    try {
+      console.log(lastHistoryEntry);
+      await updateLastHistoryEntry(row.id, lastHistoryEntry);
+      console.log("Last history entry updated successfully!");
+    } catch (error) {
+      console.error("Error updating last history entry:", error);
+    }
   };
+  
 
   const handleCancelClick = () => {
     setEditing(false);
