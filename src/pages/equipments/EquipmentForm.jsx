@@ -329,16 +329,9 @@ export default function EquipmentForm({ onClose }) {
                 )}
               </Grid>
 
-              {/* Submit and Cancel Buttons */}
+              {/* Submit Button */}
               <Grid item xs={12}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Button
-                      variant="outlined"
-                      color="secondary"
-                      onClick={onClose}
-                    >
-                      Cancel
-                    </Button>
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                   <Button
                     type="submit"
                     variant="contained"
