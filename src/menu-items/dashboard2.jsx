@@ -27,8 +27,8 @@ const dashboard2 = {
       breadcrumbs: true
     },
     {
-      id: 'instructors',
-      title: 'Instructors',
+      id: 'teachers',
+      title: 'Teachers',
       type: 'item',
       url: '/instructors',
       icon: icons.UserOutlined,

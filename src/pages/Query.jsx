@@ -220,6 +220,12 @@ async function deleteEquipment(id) {
   await updateDoc(docRef, { deleted: true });
 }
 
+async function editEquipment(id, equipment) {
+  const db = firestore;
+  const docRef = doc(db, 'equipments', id);
+  await updateDoc(docRef, equipment);
+}
+
 export { 
   addEquipment,
   uploadImageAndGetUrl,
@@ -235,4 +241,5 @@ export {
   getBorrower,
   getAllBorrower,
   deleteEquipment,
+  editEquipment
 };
