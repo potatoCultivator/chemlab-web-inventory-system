@@ -19,14 +19,6 @@ const dashboard2 = {
   type: 'group',
   children: [
     {
-      id: 'borrowers',
-      title: 'Borrowers',
-      type: 'item',
-      url: '/borrowers',
-      icon: icons.ReadOutlined,
-      breadcrumbs: true
-    },
-    {
       id: 'teachers',
       title: 'Teachers',
       type: 'item',

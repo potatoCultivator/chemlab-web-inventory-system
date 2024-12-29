@@ -196,8 +196,11 @@ function Row(props) {
                     Borrow Time:
                   </Typography>
                   <Typography variant="body1">
-                    {selectedStudent.borrowTime.toDate().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
+                    {selectedStudent?.borrowTime
+                      ? selectedStudent.borrowTime.toDate().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
+                      : 'No borrow time available'}
                   </Typography>
+
                 </Grid>
                 <Grid item xs={6}>
                   <Typography variant="subtitle1" color="textSecondary">
