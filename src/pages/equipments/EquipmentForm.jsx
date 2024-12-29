@@ -7,12 +7,14 @@ import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
+import Autocomplete from '@mui/material/Autocomplete'; // Import Autocomplete
+import debounce from 'lodash/debounce'; // Import debounce
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 import { Timestamp } from 'firebase/firestore';
 
 // Firestore
-import { addEquipment, uploadImageAndGetUrl, checkEquipmentExists, updateStock } from 'pages/Query';
+import { addEquipment, uploadImageAndGetUrl, checkEquipmentExists, updateStock, getAllEquipment } from 'pages/Query';
 
 const validationSchema = Yup.object({
   name: Yup.string().required('Name is required'),
@@ -34,6 +36,7 @@ export default function EquipmentForm({ onClose }) {
   const [loading, setLoading] = useState(false);
   const [nameError, setNameError] = useState('');
   const [data, setData] = useState({ firstname: '', lastname: '' });
+  const [equipmentNames, setEquipmentNames] = useState([]); // State to store equipment names
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -63,23 +66,56 @@ export default function EquipmentForm({ onClose }) {
     }
   }, [navigate]);
 
-  const handleImageChange = (event, setFieldValue) => {
-    const file = event.target.files[0];
-    if (file) {
-      setPreviewImage(URL.createObjectURL(file));
-      setFieldValue('image', file);
+  const fetchEquipmentNames = async (query) => {
+    try {
+      const equipment = await getAllEquipment();
+      if (Array.isArray(equipment)) {
+        const names = equipment
+          .map(item => item.name)
+          .filter(name => name.toLowerCase().includes(query.toLowerCase()));
+        setEquipmentNames(names);
+      } else {
+        console.error('Fetched equipment is not an array');
+      }
+    } catch (error) {
+      console.error('Error fetching equipment names:', error);
     }
   };
+
+  const debouncedFetchEquipmentNames = debounce(fetchEquipmentNames, 300);
 
   const handleNameChange = async (event, setFieldValue, values) => {
     const name = event.target.value.trim().toLowerCase();
     setFieldValue('name', name);
 
     if (name) {
+      debouncedFetchEquipmentNames(name);
       const exists = await checkEquipmentExists(name, values.unit, values.capacity);
       setNameError(exists ? 'Equipment with this name already exists.' : '');
     } else {
       setNameError('');
+    }
+  };
+
+  const handleNameSelect = async (event, value, setFieldValue) => {
+    if (value) {
+      const existingEquipment = await checkEquipmentExists(value, '', '');
+      if (existingEquipment) {
+        setFieldValue('name', existingEquipment.name);
+        setFieldValue('stocks', existingEquipment.stocks);
+        setFieldValue('capacity', existingEquipment.capacity);
+        setFieldValue('unit', existingEquipment.unit);
+        setFieldValue('category', existingEquipment.category);
+        setPreviewImage(existingEquipment.image);
+      }
+    }
+  };
+
+  const handleImageChange = (event, setFieldValue) => {
+    const file = event.target.files[0];
+    if (file) {
+      setPreviewImage(URL.createObjectURL(file));
+      setFieldValue('image', file);
     }
   };
 
@@ -161,20 +197,28 @@ export default function EquipmentForm({ onClose }) {
         <Form>
           <Box sx={{ width: '100%', backgroundColor: 'transparent', padding: 3, borderRadius: 2 }}>
             <Grid container spacing={3} alignItems="center">
-              {/* Name Field */}
+              {/* Name Field with Autocomplete */}
               <Grid item xs={2}>
                 <Typography>Name:</Typography>
               </Grid>
               <Grid item xs={10}>
-                <Field
-                  component={TextField}
-                  name="name"
-                  fullWidth
-                  placeholder="Enter the name of the item"
-                  sx={{ backgroundColor: 'transparent' }}
-                  onChange={(event) => handleNameChange(event, setFieldValue, values)}
-                  error={!!nameError}
-                  helperText={nameError}
+                <Autocomplete
+                  freeSolo
+                  options={equipmentNames}
+                  onInputChange={(event, newInputValue) => handleNameChange({ target: { value: newInputValue } }, setFieldValue, values)}
+                  onChange={(event, value) => handleNameSelect(event, value, setFieldValue)}
+                  renderInput={(params) => (
+                    <Field
+                      {...params}
+                      component={TextField}
+                      name="name"
+                      fullWidth
+                      placeholder="Enter the name of the item"
+                      sx={{ backgroundColor: 'transparent' }}
+                      error={!!nameError}
+                      helperText={nameError}
+                    />
+                  )}
                 />
               </Grid>
 
