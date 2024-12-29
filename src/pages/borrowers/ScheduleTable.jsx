@@ -163,7 +163,7 @@ function Row(props) {
                       </TableHead>
                       <TableBody>
                           {row.students.map((student) => {
-                            const date = student.borrowTime.toDate();
+                            const date = student.borrowTime ? student.borrowTime.toDate() : new Date();
                             return (
                               <TableRow key={student.name} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}  onClick={() => handleStudentClick(student)}>
                                 <TableCell component="th" scope="row">

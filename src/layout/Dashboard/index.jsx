@@ -21,6 +21,7 @@ import { handlerDrawerOpen, useGetMenuMaster } from 'api/menu';
 export default function DashboardLayout() {
   const { menuMasterLoading } = useGetMenuMaster();
   const downXL = useMediaQuery((theme) => theme.breakpoints.down('xl'));
+  const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
   useEffect(() => {
     handlerDrawerOpen(!downXL);
@@ -35,12 +36,21 @@ export default function DashboardLayout() {
       <Drawer />
       <Box component="main" sx={{ width: 'calc(100% - 260px)', flexGrow: 1, p: { xs: 2, sm: 3 } }}>
         <Toolbar />
-        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-          <Breadcrumbs navigation={navigation} title />
-        </Box>
-          <Outlet />
-        </Container>
+        {isMobile ? (
+          <Box sx={{ mt: 4, mb: 4 }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+              <Breadcrumbs navigation={navigation} title />
+            </Box>
+            <Outlet />
+          </Box>
+        ) : (
+          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+              <Breadcrumbs navigation={navigation} title />
+            </Box>
+            <Outlet />
+          </Container>
+        )}
       </Box>
     </Box>
   );
