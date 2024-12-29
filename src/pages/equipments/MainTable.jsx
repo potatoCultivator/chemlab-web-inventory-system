@@ -76,7 +76,8 @@ function Row(props) {
 
   const handleHistoryChange = (index, value) => {
     const updatedHistory = [...editedHistory];
-    updatedHistory[index].addedStock = value;
+    const positiveValue = value >= 1 ? value : updatedHistory[index].addedStock; // Ensure the value is not negative
+    updatedHistory[index].addedStock = positiveValue;
     setEditedHistory(updatedHistory);
   };
 
