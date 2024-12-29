@@ -336,7 +336,13 @@ export default function MainTable() {
         console.error("Error fetching equipment: ", error);
       }
     );
-    return () => unsubscribe();
+
+    // Ensure unsubscribe is a function
+    return () => {
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
+    };
   }, []);
 
   const handleRequestSort = (property) => {

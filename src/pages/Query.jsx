@@ -137,12 +137,23 @@ async function getEquipment(name, unit, capacity) {
 }
 
 // Function to fetch all equipment from Firestore
-async function getAllEquipment() {
+async function fetchAllEquipments() {
   const db = firestore;
   const collectionRef = collection(db, 'equipments');
   const q = query(collectionRef, where('deleted', '==', false));
   const querySnapshot = await getDocs(q);
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+}
+
+// Function to fetch all equipment from Firestore
+async function getAllEquipment(callback, errorCallback) {
+  const db = firestore;
+  const collectionRef = collection(db, 'equipments');
+  const q = query(collectionRef, where('deleted', '==', false));
+  return onSnapshot(q, (snapshot) => {
+    const equipmentList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    callback(equipmentList);
+  }, errorCallback);
 }
 
 async function uploadInstructor(instructorData) {
@@ -336,6 +347,7 @@ export {
   updateStock,
   addHistoryEntry,
   getEquipment,
+  fetchAllEquipments,
   getAllEquipment,
   uploadInstructor,
   fetchInstructors,

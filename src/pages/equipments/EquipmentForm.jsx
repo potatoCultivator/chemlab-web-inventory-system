@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { Timestamp } from 'firebase/firestore';
 
 // Firestore
-import { addEquipment, uploadImageAndGetUrl, checkEquipmentExists, updateStock, getAllEquipment } from 'pages/Query';
+import { addEquipment, uploadImageAndGetUrl, checkEquipmentExists, updateStock, fetchAllEquipments } from 'pages/Query';
 
 const validationSchema = Yup.object({
   name: Yup.string().required('Name is required'),
@@ -68,7 +68,7 @@ export default function EquipmentForm({ onClose }) {
 
   const fetchEquipmentNames = async (query) => {
     try {
-      const equipment = await getAllEquipment();
+      const equipment = await fetchAllEquipments();
       if (Array.isArray(equipment)) {
         const names = equipment
           .map(item => item.name)
@@ -99,7 +99,7 @@ export default function EquipmentForm({ onClose }) {
 
   const handleNameSelect = async (event, value, setFieldValue) => {
     if (value) {
-      const existingEquipment = await checkEquipmentExists(value, '', '');
+      const existingEquipment = await checkEquipmentExists(value.toLowerCase(), '', '');
       if (existingEquipment) {
         setFieldValue('name', existingEquipment.name);
         setFieldValue('stocks', existingEquipment.stocks);
@@ -297,54 +297,64 @@ export default function EquipmentForm({ onClose }) {
                   <MenuItem value="glassware">Glassware</MenuItem>
                   <MenuItem value="plasticware">Plasticware</MenuItem>
                   <MenuItem value="metalware">Metalware</MenuItem>
-                  <MenuItem value="heating">Heating</MenuItem>
-                  <MenuItem value="measuring">Measuring</MenuItem>
-                  <MenuItem value="container">Container</MenuItem>
-                  <MenuItem value="separator">Separation Equipment</MenuItem>
-                  <MenuItem value="mixing">Mixing & Stirring</MenuItem>
+                  <MenuItem value="chemicals">Chemicals</MenuItem>
+                  <MenuItem value="others">Others</MenuItem>
                 </Field>
               </Grid>
 
-              {/* Image Upload */}
+              {/* Image Upload Field */}
               <Grid item xs={2}>
                 <Typography>Image:</Typography>
               </Grid>
               <Grid item xs={10}>
-                <Button
-                  variant="contained"
-                  component="label"
-                  fullWidth
-                  sx={{ textAlign: 'left' }}
-                >
-                  Upload Image
-                  <input
-                    hidden
-                    accept="image/*"
-                    type="file"
-                    onChange={(event) => handleImageChange(event, setFieldValue)}
-                  />
-                </Button>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(event) => handleImageChange(event, setFieldValue)}
+                  style={{ display: 'block', marginBottom: '1rem' }}
+                />
                 {previewImage && (
-                  <Box mt={2}>
-                    <img
-                      src={previewImage}
-                      alt="Preview"
-                      style={{ maxWidth: '100%', height: 'auto', borderRadius: 4 }}
-                    />
-                  </Box>
+                  <Box
+                    component="img"
+                    src={previewImage}
+                    alt="Preview"
+                    sx={{
+                      maxWidth: '100%',
+                      maxHeight: 200,
+                      border: '1px solid #ccc',
+                      borderRadius: 2,
+                      marginBottom: '1rem',
+                    }}
+                  />
                 )}
               </Grid>
-            </Grid>
 
-            {/* Submit Button */}
-            <Box mt={3} textAlign="center">
-              <Button type="submit" variant="contained" color="primary" disabled={loading}>
-                {loading ? <CircularProgress size={24} /> : 'Submit'}
-              </Button>
-            </Box>
+              {/* Submit and Cancel Buttons */}
+              <Grid item xs={12}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Button
+                      variant="outlined"
+                      color="secondary"
+                      onClick={onClose}
+                    >
+                      Cancel
+                    </Button>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    disabled={loading}
+                    startIcon={loading && <CircularProgress size={20} />}
+                  >
+                    {loading ? 'Submitting...' : 'Submit'}
+                  </Button>
+                </Box>
+              </Grid>
+            </Grid>
           </Box>
         </Form>
       )}
     </Formik>
   );
 }
+
