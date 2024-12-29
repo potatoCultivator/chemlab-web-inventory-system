@@ -21,6 +21,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { sendEmail } from './emailService'; // Import the email service
 import { getMonth, getYear, getWeekOfMonth, getDate } from 'date-fns';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword  } from 'firebase/auth';
+import { circIn } from 'framer-motion';
 
 // Function to validate tool data
 function validateToolData(data) {
@@ -51,8 +52,8 @@ async function addEquipment(equipment) {
   // Validate and sanitize tool data
   const validatedData = validateToolData(equipment);
 
-  // Add the tool data to the batch
-  batch.set(docRef, validatedData);
+  // Add the tool data to the batch with 'deleted' attribute set to false
+  batch.set(docRef, { ...validatedData, deleted: false });
 
   // Commit the batch
   await batch.commit();
@@ -121,7 +122,8 @@ async function getEquipment(name, unit, capacity) {
 function getAllEquipment(callback, errorCallback) {
   const db = firestore;
   const collectionRef = collection(db, 'equipments');
-  return onSnapshot(collectionRef, (snapshot) => {
+  const q = query(collectionRef, where('deleted', '==', false));
+  return onSnapshot(q, (snapshot) => {
     const equipmentList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     callback(equipmentList);
   }, errorCallback);
@@ -189,6 +191,7 @@ async function getAllSchedule() {
   const querySnapshot = await getDocs(collectionRef);
 
   const schedList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  console.log(schedList);
   return schedList;
 }
 
@@ -211,6 +214,12 @@ async function getAllBorrower() {
   return schedList;
 }
 
+async function deleteEquipment(id) {
+  const db = firestore;
+  const docRef = doc(db, 'equipments', id);
+  await updateDoc(docRef, { deleted: true });
+}
+
 export { 
   addEquipment,
   uploadImageAndGetUrl,
@@ -225,4 +234,5 @@ export {
   getAllSchedule,
   getBorrower,
   getAllBorrower,
+  deleteEquipment,
 };

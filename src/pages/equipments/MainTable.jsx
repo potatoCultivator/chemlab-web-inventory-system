@@ -16,16 +16,17 @@ import Paper from '@mui/material/Paper';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress'; // Import CircularProgress
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import { UpOutlined, DownOutlined } from '@ant-design/icons';
+import { UpOutlined, DownOutlined, DeleteOutlined } from '@ant-design/icons';
 import Grid from '@mui/material/Grid';
 import EquipmentForm from './EquipmentForm'; // Import the EquipmentForm component
 import CustomButton from './CustomButton copy';
 import { TableSortLabel, TablePagination, TextField } from '@mui/material';
 
 // Database
-import { getAllEquipment } from 'pages/Query';
+import { getAllEquipment, deleteEquipment } from 'pages/Query';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -54,7 +55,7 @@ function stableSort(array, comparator) {
 }
 
 function Row(props) {
-  const { row } = props;
+  const { row, onDelete } = props;
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -76,9 +77,14 @@ function Row(props) {
         <TableCell>{row.unit}</TableCell>
         <TableCell align="right">{row.stocks}</TableCell>
         <TableCell align="right">{row.total}</TableCell>
+        <TableCell align="right">
+          <IconButton aria-label="delete" size="small" onClick={() => onDelete(row.id)} sx={{ color: 'error.main' }}>
+            <DeleteOutlined />
+          </IconButton>
+        </TableCell>
       </TableRow>
       <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1, maxWidth: '100%', marginLeft: 'auto', marginRight: 'auto', padding: '16px' }}>
               <Grid container spacing={2}>
@@ -152,6 +158,7 @@ function Row(props) {
 
 Row.propTypes = {
   row: PropTypes.shape({
+    id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     category: PropTypes.string.isRequired,
     unit: PropTypes.string.isRequired,
@@ -166,6 +173,7 @@ Row.propTypes = {
       }),
     ).isRequired,
   }).isRequired,
+  onDelete: PropTypes.func.isRequired,
 };
 
 export default function MainTable() {
@@ -176,6 +184,9 @@ export default function MainTable() {
   const [page, setPage] = React.useState(0); // State to manage current page
   const [rowsPerPage, setRowsPerPage] = React.useState(10); // State to manage rows per page
   const [searchQuery, setSearchQuery] = React.useState(''); // State to manage search query
+  const [confirmDialogOpen, setConfirmDialogOpen] = React.useState(false); // State to manage confirmation dialog visibility
+  const [deleteId, setDeleteId] = React.useState(null); // State to store the id of the equipment to be deleted
+  const [loading, setLoading] = React.useState(false); // State to manage loading state
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Check if the screen size is small or below
 
@@ -216,6 +227,24 @@ export default function MainTable() {
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
+  };
+
+  const handleDelete = (id) => {
+    setDeleteId(id);
+    setConfirmDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    setLoading(true); // Set loading state to true
+    try {
+      await deleteEquipment(deleteId);
+      setRows((prevRows) => prevRows.filter((row) => row.id !== deleteId));
+      setConfirmDialogOpen(false);
+    } catch (error) {
+      console.error("Error deleting equipment: ", error);
+    } finally {
+      setLoading(false); // Reset loading state
+    }
   };
 
   const filteredRows = rows.filter((row) =>
@@ -307,13 +336,14 @@ export default function MainTable() {
                   Total
                 </TableSortLabel>
               </TableCell>
+              <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {stableSort(filteredRows, getComparator(order, orderBy))
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => (
-                <Row key={row.id} row={row} />
+                <Row key={row.id} row={row} onDelete={handleDelete} />
               ))}
           </TableBody>
         </Table>
@@ -341,6 +371,23 @@ export default function MainTable() {
         <DialogActions>
           <Button onClick={handleDialogClose} color="primary">
             Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={confirmDialogOpen}
+        onClose={() => setConfirmDialogOpen(false)}
+      >
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to delete this equipment?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmDialogOpen(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={confirmDelete} sx={{ color: 'error.main' }} disabled={loading}>
+            {loading ? <CircularProgress size={24} /> : 'Confirm'}
           </Button>
         </DialogActions>
       </Dialog>
