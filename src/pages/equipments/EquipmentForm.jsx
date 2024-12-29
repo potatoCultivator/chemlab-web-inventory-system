@@ -7,12 +7,15 @@ import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
+import Autocomplete from '@mui/material/Autocomplete'; // Import Autocomplete
+import debounce from 'lodash/debounce'; // Import debounce
+import Tooltip from '@mui/material/Tooltip'; // Import Tooltip
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 import { Timestamp } from 'firebase/firestore';
 
 // Firestore
-import { addEquipment, uploadImageAndGetUrl, checkEquipmentExists, updateStock } from 'pages/Query';
+import { addEquipment, uploadImageAndGetUrl, checkEquipmentExists, updateStock, getAllEquipment } from 'pages/Query';
 
 const validationSchema = Yup.object({
   name: Yup.string().required('Name is required'),
@@ -34,6 +37,7 @@ export default function EquipmentForm({ onClose }) {
   const [loading, setLoading] = useState(false);
   const [nameError, setNameError] = useState('');
   const [data, setData] = useState({ firstname: '', lastname: '' });
+  const [equipmentNames, setEquipmentNames] = useState([]); // State to store equipment names
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -63,23 +67,38 @@ export default function EquipmentForm({ onClose }) {
     }
   }, [navigate]);
 
-  const handleImageChange = (event, setFieldValue) => {
-    const file = event.target.files[0];
-    if (file) {
-      setPreviewImage(URL.createObjectURL(file));
-      setFieldValue('image', file);
+  const fetchEquipmentNames = async (query) => {
+    try {
+      const equipment = await getAllEquipment();
+      const names = equipment
+        .map(item => item.name)
+        .filter(name => name.toLowerCase().includes(query.toLowerCase()));
+      setEquipmentNames(names);
+    } catch (error) {
+      console.error('Error fetching equipment names:', error);
     }
   };
+
+  const debouncedFetchEquipmentNames = debounce(fetchEquipmentNames, 300);
 
   const handleNameChange = async (event, setFieldValue, values) => {
     const name = event.target.value.trim();
     setFieldValue('name', name);
 
     if (name) {
+      debouncedFetchEquipmentNames(name);
       const exists = await checkEquipmentExists(name, values.unit, values.capacity);
       setNameError(exists ? 'Equipment with this name already exists.' : '');
     } else {
       setNameError('');
+    }
+  };
+
+  const handleImageChange = (event, setFieldValue) => {
+    const file = event.target.files[0];
+    if (file) {
+      setPreviewImage(URL.createObjectURL(file));
+      setFieldValue('image', file);
     }
   };
 
@@ -161,26 +180,37 @@ export default function EquipmentForm({ onClose }) {
         <Form>
           <Box sx={{ width: '100%', backgroundColor: 'transparent', padding: 3, borderRadius: 2 }}>
             <Grid container spacing={3} alignItems="center">
-              {/* Name Field */}
+              {/* Name Field with Autocomplete */}
               <Grid item xs={2}>
-                <Typography>Name:</Typography>
+                <Tooltip title="Enter the name of the equipment" arrow>
+                  <Typography>Name:</Typography>
+                </Tooltip>
               </Grid>
               <Grid item xs={10}>
-                <Field
-                  component={TextField}
-                  name="name"
-                  fullWidth
-                  placeholder="Enter the name of the item"
-                  sx={{ backgroundColor: 'transparent' }}
-                  onChange={(event) => handleNameChange(event, setFieldValue, values)}
-                  error={!!nameError}
-                  helperText={nameError}
+                <Autocomplete
+                  freeSolo
+                  options={equipmentNames}
+                  onInputChange={(event, newInputValue) => handleNameChange({ target: { value: newInputValue } }, setFieldValue, values)}
+                  renderInput={(params) => (
+                    <Field
+                      {...params}
+                      component={TextField}
+                      name="name"
+                      fullWidth
+                      placeholder="Enter the name of the item"
+                      sx={{ backgroundColor: 'transparent' }}
+                      error={!!nameError}
+                      helperText={nameError}
+                    />
+                  )}
                 />
               </Grid>
 
               {/* Stocks Field */}
               <Grid item xs={2}>
-                <Typography>Stocks:</Typography>
+                <Tooltip title="Enter the number of stocks available" arrow>
+                  <Typography>Stocks:</Typography>
+                </Tooltip>
               </Grid>
               <Grid item xs={10}>
                 <Field
@@ -195,7 +225,9 @@ export default function EquipmentForm({ onClose }) {
 
               {/* Unit Field */}
               <Grid item xs={2}>
-                <Typography>Unit:</Typography>
+                <Tooltip title="Select the unit of measurement" arrow>
+                  <Typography>Unit:</Typography>
+                </Tooltip>
               </Grid>
               <Grid item xs={10}>
                 <Field
@@ -220,7 +252,9 @@ export default function EquipmentForm({ onClose }) {
 
               {/* Capacity Field */}
               <Grid item xs={2}>
-                <Typography>Capacity:</Typography>
+                <Tooltip title="Enter the capacity of the item" arrow>
+                  <Typography>Capacity:</Typography>
+                </Tooltip>
               </Grid>
               <Grid item xs={10}>
                 <Field
@@ -236,7 +270,9 @@ export default function EquipmentForm({ onClose }) {
 
               {/* Category Field */}
               <Grid item xs={2}>
-                <Typography>Category:</Typography>
+                <Tooltip title="Select the category of the equipment" arrow>
+                  <Typography>Category:</Typography>
+                </Tooltip>
               </Grid>
               <Grid item xs={10}>
                 <Field
@@ -263,7 +299,9 @@ export default function EquipmentForm({ onClose }) {
 
               {/* Image Upload */}
               <Grid item xs={2}>
-                <Typography>Image:</Typography>
+                <Tooltip title="Upload an image of the equipment" arrow>
+                  <Typography>Image:</Typography>
+                </Tooltip>
               </Grid>
               <Grid item xs={10}>
                 <Button
