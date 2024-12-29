@@ -15,7 +15,7 @@ const icons = {
 
 const dashboard = {
   id: 'group-dashboard',
-  title: 'Navigation',
+  title: 'General',
   type: 'group',
   children: [
     {
@@ -26,6 +26,14 @@ const dashboard = {
       icon: icons.DashboardOutlined,
       breadcrumbs: true
       
+    },
+    {
+      id: 'teachers',
+      title: 'Teachers',
+      type: 'item',
+      url: '/instructors',
+      icon: icons.UserOutlined,
+      breadcrumbs: true
     },
   ]
 };
