@@ -133,7 +133,7 @@ function Row(props) {
                         {row.equipments.map((item) => (
                           <TableRow key={item.equipment} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
                             <TableCell component="th" scope="row">
-                              {item.name}
+                              {item.name}{' '}{item.capacity}{item.unit}
                             </TableCell>
                             <TableCell align='right'>{item.qty}</TableCell>
                           </TableRow>
