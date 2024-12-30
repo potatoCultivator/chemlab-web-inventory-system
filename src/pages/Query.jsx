@@ -23,6 +23,7 @@ import { getMonth, getYear, getWeekOfMonth, getDate } from 'date-fns';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword  } from 'firebase/auth';
 import { circIn } from 'framer-motion';
 import borrowers from 'menu-items/borrowers';
+import equipments from 'menu-items/equipments';
 
 // Function to validate tool data
 function validateToolData(data) {
@@ -362,6 +363,7 @@ function get_ID_Name_Sched(callback, errorCallback) {
               id: doc.id,
               subject: data.subject,
               borrowers: data.borrowers,
+              equipments: data.equipments,
             };
           }
           return null;

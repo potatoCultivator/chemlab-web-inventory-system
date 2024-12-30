@@ -6,7 +6,14 @@ import {
     MenuItem,
     Select,
     FormControl,
-    InputLabel
+    InputLabel,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper
 } from '@mui/material';
 import Borrower from './Borrower';
 import { get_ID_Name_Sched } from '../Query';
@@ -19,13 +26,15 @@ class BorrowerList extends Component {
             selectedSchedule: '',
             selectedScheduleSubject: '',
             schedules: [],
-            borrowers: []
+            borrowers: [],
+            equipments: []
         };
     }
 
     componentDidMount() {
         get_ID_Name_Sched(
             (schedules) => {
+                console.log('Schedules fetched:', schedules);
                 this.setState({ schedules });
             },
             (error) => {
@@ -44,19 +53,26 @@ class BorrowerList extends Component {
         const selectedScheduleObj = this.state.schedules.find(schedule => schedule.id === selectedSchedule);
         
         if (selectedScheduleObj) {
+            console.log('Selected schedule:', selectedScheduleObj);
             this.setState({ 
                 selectedSchedule,
                 selectedScheduleSubject: selectedScheduleObj.subject,
-                borrowers: selectedScheduleObj.borrowers 
+                borrowers: selectedScheduleObj.borrowers,
+                equipments: selectedScheduleObj.equipments || [] // Ensure fallback to empty array
             });
         } else {
             this.setState({ 
                 selectedSchedule,
                 selectedScheduleSubject: '',
-                borrowers: [] 
+                borrowers: [],
+                equipments: []
             });
         }
+        console.log('Selected schedule ID:', selectedSchedule);
+        console.log('Equipments:', selectedScheduleObj?.equipments);
+
     };
+    
 
     handleBorrowerApproved = (borrowerID) => {
         this.setState((prevState) => ({
@@ -65,7 +81,7 @@ class BorrowerList extends Component {
     };
 
     render() {
-        const { searchQuery, borrowers, schedules, selectedSchedule, selectedScheduleSubject } = this.state;
+        const { searchQuery, borrowers, schedules, selectedSchedule, selectedScheduleSubject, equipments } = this.state;
         const filteredBorrowers = borrowers.filter((borrower) =>
             borrower.name && borrower.name.toLowerCase().includes(searchQuery.toLowerCase())
         );
@@ -86,7 +102,33 @@ class BorrowerList extends Component {
             <Typography variant="h5" sx={{ marginBottom: 1 }}>
             Borrowers List
             </Typography>
-            
+
+            <Box sx={{ width: '100%' }}>
+            <Typography variant="h6">Equipments</Typography>
+            <TableContainer component={Paper}>
+                <Table>
+                <TableHead>
+                <TableRow>
+                <TableCell>Equipment</TableCell>
+                <TableCell align='center'>Quantity</TableCell>
+                <TableCell align='center'>Borrowers</TableCell>
+                <TableCell align='center'>Total</TableCell>
+                </TableRow>
+                </TableHead>
+                <TableBody>
+                {equipments.map((equipment, index) => (
+                <TableRow key={index}>
+                    <TableCell>{`${equipment.name} ${equipment.capacity}${equipment.unit}`}</TableCell>
+                    <TableCell align='center'>{equipment.qty}</TableCell>
+                    <TableCell align='center'>{filteredBorrowers.length}</TableCell>
+                    <TableCell align='center'>{equipment.qty * filteredBorrowers.length}</TableCell>
+                </TableRow>
+                ))}
+                </TableBody>
+                </Table>
+            </TableContainer>
+            </Box>
+
             <FormControl fullWidth sx={{ marginTop: 2 }}>
             <InputLabel id="schedule-select-label">Select Schedule</InputLabel>
             <Select
@@ -108,13 +150,13 @@ class BorrowerList extends Component {
                 )}
             </Select>
             </FormControl>
-            <FormControl fullWidth sx={{ marginTop: 2 }}/>
             <TextField
             label="Search"
             variant="outlined"
             value={searchQuery}
             onChange={this.handleSearchChange}
             fullWidth
+            sx={{ marginTop: 2 }}
             />
             </Box>
             <Box
@@ -127,19 +169,19 @@ class BorrowerList extends Component {
             padding: 2
             }}
             >
-            {filteredBorrowers.length === 0 ? (
-                <Typography variant="h6">No borrowers</Typography>
+            {filteredBorrowers.filter(borrower => borrower.status !== 'approved').length === 0 ? (
+            <Typography variant="h6">No borrowers</Typography>
             ) : (
-                filteredBorrowers
+            filteredBorrowers
                 .filter(borrower => borrower.status !== 'approved')
                 .map((borrower, index) => (
                 <Box key={index} sx={{ width: '100%' }}>
                 <Borrower 
-                    schedID={selectedSchedule} 
-                    id={borrower.userID} 
-                    name={borrower.name} 
-                    subject={selectedScheduleSubject} 
-                    onApprove={() => this.handleBorrowerApproved(borrower.userID)}
+                schedID={selectedSchedule} 
+                id={borrower.userID} 
+                name={borrower.name} 
+                subject={selectedScheduleSubject} 
+                onApprove={() => this.handleBorrowerApproved(borrower.userID)}
                 />
                 </Box>
                 ))
