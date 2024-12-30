@@ -73,71 +73,77 @@ class BorrowerList extends Component {
         return (
             <>
             <Box
-                sx={{
-                position: 'sticky',
-                top: 0,
-                backgroundColor: 'white',
-                zIndex: 1,
-                width: '100%',
-                padding: 2,
-                marginBottom: 2
-                }}
+            sx={{
+            position: 'sticky',
+            top: 0,
+            backgroundColor: 'white',
+            zIndex: 1,
+            width: '100%',
+            padding: 2,
+            marginBottom: 2
+            }}
             >
-                <Typography variant="h5" sx={{ marginBottom: 1 }}>
-                Borrowers List
-                </Typography>
-                <TextField
-                label="Search"
-                variant="outlined"
-                value={searchQuery}
-                onChange={this.handleSearchChange}
-                fullWidth
-                />
-                <FormControl fullWidth sx={{ marginTop: 2 }}>
-                <InputLabel id="schedule-select-label">Select Schedule</InputLabel>
-                <Select
-                    labelId="schedule-select-label"
-                    value={selectedSchedule}
-                    onChange={this.handleScheduleChange}
-                    label="Select Schedule"
-                >
-                    {schedules.length === 0 ? (
-                    <MenuItem value="">
-                        <em>No Subject</em>
-                    </MenuItem>
-                    ) : (
-                    schedules.map((schedule) => (
-                        <MenuItem key={schedule.id} value={schedule.id}>
-                        {schedule.subject}
-                        </MenuItem>
-                    ))
-                    )}
-                </Select>
-                </FormControl>
+            <Typography variant="h5" sx={{ marginBottom: 1 }}>
+            Borrowers List
+            </Typography>
+            
+            <FormControl fullWidth sx={{ marginTop: 2 }}>
+            <InputLabel id="schedule-select-label">Select Schedule</InputLabel>
+            <Select
+                labelId="schedule-select-label"
+                value={selectedSchedule}
+                onChange={this.handleScheduleChange}
+                label="Select Schedule"
+            >
+                {schedules.length === 0 ? (
+                <MenuItem value="">
+                <em>No Subject</em>
+                </MenuItem>
+                ) : (
+                schedules.map((schedule) => (
+                <MenuItem key={schedule.id} value={schedule.id}>
+                {schedule.subject}
+                </MenuItem>
+                ))
+                )}
+            </Select>
+            </FormControl>
+            <FormControl fullWidth sx={{ marginTop: 2 }}/>
+            <TextField
+            label="Search"
+            variant="outlined"
+            value={searchQuery}
+            onChange={this.handleSearchChange}
+            fullWidth
+            />
             </Box>
             <Box
-                sx={{
-                height: 'calc(100vh - 200px)', // Adjusts dynamically to screen height
-                overflow: 'auto',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                padding: 2
-                }}
+            sx={{
+            height: 'calc(100vh - 200px)', // Adjusts dynamically to screen height
+            overflow: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            padding: 2
+            }}
             >
-                {filteredBorrowers
+            {filteredBorrowers.length === 0 ? (
+                <Typography variant="h6">No borrowers</Typography>
+            ) : (
+                filteredBorrowers
                 .filter(borrower => borrower.status !== 'approved')
                 .map((borrower, index) => (
-                    <Box key={index} sx={{ width: '100%' }}>
-                    <Borrower 
-                        schedID={selectedSchedule} 
-                        id={borrower.userID} 
-                        name={borrower.name} 
-                        subject={selectedScheduleSubject} 
-                        onApprove={() => this.handleBorrowerApproved(borrower.userID)}
-                    />
-                    </Box>
-                ))}
+                <Box key={index} sx={{ width: '100%' }}>
+                <Borrower 
+                    schedID={selectedSchedule} 
+                    id={borrower.userID} 
+                    name={borrower.name} 
+                    subject={selectedScheduleSubject} 
+                    onApprove={() => this.handleBorrowerApproved(borrower.userID)}
+                />
+                </Box>
+                ))
+            )}
             </Box>
             </>
         );
