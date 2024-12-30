@@ -22,6 +22,7 @@ import { sendEmail } from './emailService'; // Import the email service
 import { getMonth, getYear, getWeekOfMonth, getDate } from 'date-fns';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword  } from 'firebase/auth';
 import { circIn } from 'framer-motion';
+import borrowers from 'menu-items/borrowers';
 
 // Function to validate tool data
 function validateToolData(data) {
@@ -339,6 +340,48 @@ async function deleteLastHistoryEntry(id) {
   }
 }
 
+function get_ID_Name_Sched(callback, errorCallback) {
+  const db = firestore;
+  const collectionRef = collection(db, 'schedule');
+
+  // Set up a real-time listener
+  const unsubscribe = onSnapshot(
+    collectionRef,
+    (snapshot) => {
+      const currentDate = new Date();
+      const schedList = snapshot.docs
+        .map(doc => {
+          const data = doc.data();
+          const docDate = data.start.toDate(); // Assuming dateAdded is a Firestore Timestamp
+          if (
+            docDate.getFullYear() === currentDate.getFullYear() &&
+            docDate.getMonth() === currentDate.getMonth() &&
+            docDate.getDate() === currentDate.getDate()
+          ) {
+            return {
+              id: doc.id,
+              subject: data.subject,
+              borrowers: data.borrowers,
+            };
+          }
+          return null;
+        })
+        .filter(item => item !== null); // Filter out null values
+      callback(schedList); // Call the callback with the updated schedule list
+    },
+    (error) => {
+      if (errorCallback) {
+        errorCallback(error); // Handle errors with the provided callback
+      } else {
+        console.error("Snapshot error:", error); // Fallback error handling
+      }
+    }
+  );
+
+  return unsubscribe; // Return the unsubscribe function for cleanup
+}
+
+
 
 export { 
   addEquipment,
@@ -358,5 +401,6 @@ export {
   deleteEquipment,
   editEquipment,
   updateLastHistoryEntry,
-  deleteLastHistoryEntry
+  deleteLastHistoryEntry,
+  get_ID_Name_Sched
 };

@@ -6,8 +6,7 @@ import Grid from '@mui/material/Grid';
 // import CustomTab from './CustomTab';
 import ScheduleTable from './ScheduleTable';
 import MainCard from 'components/MainCard';
-import AccountableList from './AccountableList';
-import FulfillList from './FulfillList';
+import BorrowerList from './BorrowerList';
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
@@ -21,27 +20,18 @@ export default function Borrowers() {
       <Box sx={{ mt: 2 }} /> */}
 
       <Grid container rowSpacing={4.5} columnSpacing={1}>
-        {/* CustomTab on the left side */}
         <Grid item xs={12} md={6}>
+            <MainCard >
+              <BorrowerList />
+            </MainCard>
+        </Grid>
+
+        <Grid item xs={12} md={12}>
           <MainCard>
             <ScheduleTable />
           </MainCard>
         </Grid>
-        {/* Two MainCard components on the right side */}
-        <Grid item xs={12} md={3}>
-            <Grid item xs={12}>
-              <MainCard >
-                <FulfillList />
-              </MainCard>
-            </Grid>
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <Grid item xs={12}>
-              <MainCard >
-                <AccountableList />
-              </MainCard>
-            </Grid>
-        </Grid>
+        
       </Grid>
     </>
   );
