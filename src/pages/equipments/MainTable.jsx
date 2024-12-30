@@ -135,10 +135,10 @@ function Row(props) {
           </Tooltip>
         </TableCell>
         <TableCell component="th" scope="row">
-          {row.name}
+          {row.name}{' '}{row.unit !== 'pcs' && `${row.capacity}${row.unit}`}
         </TableCell>
         <TableCell>{row.category}</TableCell>
-        <TableCell>{row.capacity}{row.unit}</TableCell>
+        {/* <TableCell>{row.unit !== 'pcs' && `${row.capacity}`}{row.unit}</TableCell> */}
         <TableCell align="right">{row.stocks}</TableCell>
         <TableCell align="right">{row.total}</TableCell>
         <TableCell align="right">
@@ -440,7 +440,7 @@ export default function MainTable() {
                   direction={orderBy === 'name' ? order : 'asc'}
                   onClick={() => handleRequestSort('name')}
                 >
-                  Equipment Name
+                  Equipment
                 </TableSortLabel>
               </TableCell>
               <TableCell sortDirection={orderBy === 'category' ? order : false}>
@@ -452,7 +452,7 @@ export default function MainTable() {
                   Category
                 </TableSortLabel>
               </TableCell>
-              <TableCell sortDirection={orderBy === 'unit' ? order : false}>
+              {/* <TableCell sortDirection={orderBy === 'unit' ? order : false}>
                 <TableSortLabel
                   active={orderBy === 'unit'}
                   direction={orderBy === 'unit' ? order : 'asc'}
@@ -460,7 +460,7 @@ export default function MainTable() {
                 >
                   Unit
                 </TableSortLabel>
-              </TableCell>
+              </TableCell> */}
               <TableCell align="right" sortDirection={orderBy === 'stocks' ? order : false}>
                 <TableSortLabel
                   active={orderBy === 'stocks'}

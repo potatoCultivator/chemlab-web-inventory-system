@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import {
   ListItem, ListItemText, ListItemAvatar, Avatar,
-  Dialog, DialogTitle, DialogContent, Divider,
+  Dialog, DialogTitle, DialogContent, 
   Button, Typography, Box, DialogActions
 } from '@mui/material';
 
 import { updatedBorrowerStatus } from '../Query';
 
-const Borrower = ({ schedID, id, name, subject, onApprove }) => {
+const Borrower_Return = ({ schedID, id, name, subject, onApprove }) => {
   const [open, setOpen] = useState(false);
 
   const handleApprove = async () => {
@@ -48,11 +48,11 @@ const Borrower = ({ schedID, id, name, subject, onApprove }) => {
         </DialogContent>
         <DialogActions sx={{ backgroundColor: "#f5f5f5", display: 'flex', justifyContent: 'space-between' }}>
           <Button onClick={() => setOpen(false)} color="primary" sx={{ flex: 1 }}>Close</Button>
-          <Button onClick={handleApprove} color="success" sx={{ flex: 1 }}>Approve</Button>
+          <Button onClick={handleApprove} color="success" sx={{ flex: 1 }}>Return</Button>
         </DialogActions>
       </Dialog>
     </>
   );
 };
 
-export default Borrower;
+export default Borrower_Return;

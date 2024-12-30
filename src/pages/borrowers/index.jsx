@@ -7,6 +7,7 @@ import Grid from '@mui/material/Grid';
 import ScheduleTable from './ScheduleTable';
 import MainCard from 'components/MainCard';
 import BorrowerList from './BorrowerList';
+import Borrower_Return_List from './Borrower_Return_List';
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
@@ -25,13 +26,17 @@ export default function Borrowers() {
               <BorrowerList />
             </MainCard>
         </Grid>
+        <Grid item xs={12} md={6}>
+            <MainCard >
+              <Borrower_Return_List />
+            </MainCard>
+        </Grid>
 
         <Grid item xs={12} md={12}>
           <MainCard>
             <ScheduleTable />
           </MainCard>
         </Grid>
-        
       </Grid>
     </>
   );

@@ -15,10 +15,11 @@ import {
     TableRow,
     Paper
 } from '@mui/material';
-import Borrower from './Borrower';
+// import Borrower from './Borrower';
+import Borrower_Return from './Borrower_Return';
 import { get_ID_Name_Sched } from '../Query';
 
-class BorrowerList extends Component {
+class Borrower_Return_List extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -169,14 +170,14 @@ class BorrowerList extends Component {
             padding: 2
             }}
             >
-            {filteredBorrowers.filter(borrower => borrower.status !== 'approved').length === 0 ? (
+            {filteredBorrowers.filter(borrower => borrower.status !== 'pending').length === 0 ? (
             <Typography variant="h6">No borrowers</Typography>
             ) : (
             filteredBorrowers
-                .filter(borrower => borrower.status !== 'approved')
+                .filter(borrower => borrower.status !== 'pending')
                 .map((borrower, index) => (
                 <Box key={index} sx={{ width: '100%' }}>
-                <Borrower 
+                <Borrower_Return 
                 schedID={selectedSchedule} 
                 id={borrower.userID} 
                 name={borrower.name} 
@@ -192,4 +193,4 @@ class BorrowerList extends Component {
     }
 }
 
-export default BorrowerList;
+export default Borrower_Return_List;

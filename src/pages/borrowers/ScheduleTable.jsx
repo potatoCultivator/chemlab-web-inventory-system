@@ -310,7 +310,7 @@ export default function ScheduleTable({ title }) {
   return (
     <Box>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography variant="h5">List of Borrowers</Typography>
+        <Typography variant="h5">Schedules</Typography>
       </Box>
       <TableContainer
         component={Paper}

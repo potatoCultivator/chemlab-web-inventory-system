@@ -254,11 +254,16 @@ export default function EquipmentForm({ onClose }) {
                   <MenuItem value="" disabled>
                     Please select the unit of measurement
                   </MenuItem>
-                  <MenuItem value="kg">kg</MenuItem>
-                  <MenuItem value="g">g</MenuItem>
-                  <MenuItem value="L">L</MenuItem>
-                  <MenuItem value="mL">mL</MenuItem>
-                  <MenuItem value="pcs">pcs</MenuItem>
+                    <MenuItem value="kg">kg</MenuItem>
+                    <MenuItem value="g">g</MenuItem>
+                    <MenuItem value="L">L</MenuItem>
+                    <MenuItem value="mL">mL</MenuItem>
+                    <MenuItem value="pcs">pcs</MenuItem>
+                    <MenuItem value="cm">cm</MenuItem>
+                    <MenuItem value="in">inches (in)</MenuItem>
+                    <MenuItem value="mm">mm</MenuItem>
+                    <MenuItem value="m">meters (m)</MenuItem>
+                    <MenuItem value="ft">feet (ft)</MenuItem>
                 </Field>
               </Grid>
 
