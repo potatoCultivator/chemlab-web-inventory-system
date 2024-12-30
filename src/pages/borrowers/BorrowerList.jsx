@@ -120,8 +120,8 @@ class BorrowerList extends Component {
                 <TableRow key={index}>
                     <TableCell>{`${equipment.name} ${equipment.capacity}${equipment.unit}`}</TableCell>
                     <TableCell align='center'>{equipment.qty}</TableCell>
-                    <TableCell align='center'>{filteredBorrowers.filter(borrower => borrower.status !== 'approved').length}</TableCell>
-                    <TableCell align='center'>{equipment.qty * filteredBorrowers.filter(borrower => borrower.status !== 'approved').length}</TableCell>
+                    <TableCell align='center'>{filteredBorrowers.filter(borrower => borrower.status === 'pending').length}</TableCell>
+                    <TableCell align='center'>{equipment.qty * filteredBorrowers.filter(borrower => borrower.status === 'pending').length}</TableCell>
                 </TableRow>
                 ))}
                 </TableBody>
@@ -169,11 +169,11 @@ class BorrowerList extends Component {
             padding: 2
             }}
             >
-            {filteredBorrowers.filter(borrower => borrower.status !== 'approved').length === 0 ? (
+            {filteredBorrowers.filter(borrower => borrower.status === 'pending').length === 0 ? (
             <Typography variant="h6">No borrowers</Typography>
             ) : (
             filteredBorrowers
-                .filter(borrower => borrower.status !== 'approved')
+                .filter(borrower => borrower.status === 'pending')
                 .map((borrower, index) => (
                 <Box key={index} sx={{ width: '100%' }}>
                 <Borrower 
