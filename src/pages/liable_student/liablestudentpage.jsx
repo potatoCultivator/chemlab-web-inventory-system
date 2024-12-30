@@ -23,8 +23,9 @@ import {
   Snackbar,
   Alert,
   Grid,
+  Chip,
 } from '@mui/material';
-import { SearchOutlined, CheckCircleOutlined, MailOutlined, EyeOutlined, ClearOutlined } from '@ant-design/icons';
+import { SearchOutlined, MailOutlined, EyeOutlined, ClearOutlined } from '@ant-design/icons';
 import { Timestamp } from 'firebase/firestore';
 
 const LiableStudentsPage = () => {
@@ -53,6 +54,7 @@ const LiableStudentsPage = () => {
       },
       issue_id: 'bkadfsjfks',
       replaced: false,
+      status: 'Pending',
     },
     {
       borrower: 'Jane Smith',
@@ -69,6 +71,7 @@ const LiableStudentsPage = () => {
       },
       issue_id: 'bkadfsjfks',
       replaced: true,
+      status: 'Settled',
     },
   ];
 
@@ -92,16 +95,6 @@ const LiableStudentsPage = () => {
     setSnackbarOpen(false);
   };
 
-  const handleMarkAsPaid = (student) => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setSnackbarMessage('Marked as Paid');
-      setSnackbarSeverity('success');
-      setSnackbarOpen(true);
-    }, 1000);
-  };
-
   const handleSendReminder = (student) => {
     setLoading(true);
     setTimeout(() => {
@@ -120,7 +113,7 @@ const LiableStudentsPage = () => {
   });
 
   return (
-    <Box sx={{ p: 3, backgroundColor: '#ffffff', minHeight: '100vh' }}>
+    <Box sx={{ p: 4, backgroundColor: '#ffffff', minHeight: '100vh' }}>
       <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#333' }}>
         Liable Students
       </Typography>
@@ -129,7 +122,7 @@ const LiableStudentsPage = () => {
       </Typography>
 
       {/* Search and Filters */}
-      <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+      <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
         <TextField
           variant="outlined"
           placeholder="Search by Name or ID"
@@ -161,7 +154,7 @@ const LiableStudentsPage = () => {
       </Box>
 
       {/* Table */}
-      <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: 1 }}>
+      <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: 1, mb: 4 }}>
         <Table>
           <TableHead sx={{ backgroundColor: '#e0e0e0' }}>
             <TableRow>
@@ -182,18 +175,19 @@ const LiableStudentsPage = () => {
                 <TableCell>{student.borrowerID}</TableCell>
                 <TableCell>{student.description}</TableCell>
                 <TableCell>{student.equipments.qty}</TableCell>
-                <TableCell>{student.status || 'Pending'}</TableCell>
+                <TableCell>
+                  <Chip
+                    label={student.status}
+                    color={student.status === 'Settled' ? 'success' : 'warning'}
+                    variant="outlined"
+                  />
+                </TableCell>
                 <TableCell>{student.date_issued.toDate().toLocaleString()}</TableCell>
                 <TableCell>{student.due_date.toDate().toLocaleString()}</TableCell>
                 <TableCell>
                   <Tooltip title="Send Reminder">
                     <IconButton size="small" onClick={() => handleSendReminder(student)} disabled={loading}>
                       <MailOutlined style={{ fontSize: '20px', color: '#ff9800' }} />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Mark as Paid">
-                    <IconButton size="small" onClick={() => handleMarkAsPaid(student)} disabled={loading}>
-                      <CheckCircleOutlined style={{ fontSize: '20px', color: '#4caf50' }} />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="View Details">
@@ -210,46 +204,30 @@ const LiableStudentsPage = () => {
 
       {/* Dialog for Student Details */}
       <Dialog open={dialogOpen} onClose={handleDialogClose} fullWidth maxWidth="sm">
-        <DialogTitle sx={{ backgroundColor: '#f0f0f0', fontWeight: 'bold' }}>Liability Details</DialogTitle>
+        <DialogTitle sx={{ backgroundColor: '#f0f0f0', fontWeight: 'bold', fontSize: '1.5rem' }}>Liability Details</DialogTitle>
         <DialogContent>
           {selectedStudent ? (
             <Box>
-              <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>Borrower Information</Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  <Typography><strong>Borrower:</strong> {selectedStudent.borrower}</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography><strong>Borrower ID:</strong> {selectedStudent.borrowerID}</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography><strong>Date Issued:</strong> {selectedStudent.date_issued.toDate().toLocaleString()}</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography><strong>Due Date:</strong> {selectedStudent.due_date.toDate().toLocaleString()}</Typography>
-                </Grid>
-              </Grid>
-              <Typography variant="h6" sx={{ mt: 3, mb: 2, fontWeight: 'bold' }}>Liability Details</Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  <Typography><strong>Liability:</strong> {selectedStudent.description}</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography><strong>Quantity:</strong> {selectedStudent.equipments.qty}</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography><strong>Status:</strong> {selectedStudent.status || 'Pending'}</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography><strong>Amount Due:</strong> {selectedStudent.amountDue || 'N/A'}</Typography>
-                </Grid>
-              </Grid>
-              <Typography variant="h6" sx={{ mt: 3, mb: 2, fontWeight: 'bold' }}>Equipment Details</Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+              <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', fontSize: '1.25rem' }}>Invoice</Typography>
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="body1" sx={{ fontSize: '1rem' }}><strong>Borrower:</strong> {selectedStudent.borrower}</Typography>
+                <Typography variant="body1" sx={{ fontSize: '1rem' }}><strong>Borrower ID:</strong> {selectedStudent.borrowerID}</Typography>
+                <Typography variant="body1" sx={{ fontSize: '1rem' }}><strong>Date Issued:</strong> {selectedStudent.date_issued.toDate().toLocaleString()}</Typography>
+                <Typography variant="body1" sx={{ fontSize: '1rem' }}><strong>Due Date:</strong> {selectedStudent.due_date.toDate().toLocaleString()}</Typography>
+              </Box>
+              <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', fontSize: '1.25rem' }}>Liability Details</Typography>
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="body1" sx={{ fontSize: '1rem' }}><strong>Liability:</strong> {selectedStudent.description}</Typography>
+                <Typography variant="body1" sx={{ fontSize: '1rem' }}><strong>Quantity:</strong> {selectedStudent.equipments.qty}</Typography>
+                <Typography variant="body1" sx={{ fontSize: '1rem' }}><strong>Status:</strong> {selectedStudent.status || 'Pending'}</Typography>
+                <Typography variant="body1" sx={{ fontSize: '1rem' }}><strong>Amount Due:</strong> {selectedStudent.amountDue || 'N/A'}</Typography>
+              </Box>
+              <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', fontSize: '1.25rem' }}>Equipment Details</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <img src={selectedStudent.equipments.image} alt={selectedStudent.equipments.name} style={{ width: 100, height: 100, marginRight: 16, borderRadius: 8 }} />
                 <Box>
-                  <Typography><strong>Name:</strong> {selectedStudent.equipments.name}</Typography>
-                  <Typography><strong>Capacity:</strong> {selectedStudent.equipments.capacity} {selectedStudent.equipments.unit}</Typography>
+                  <Typography variant="body1" sx={{ fontSize: '1rem' }}><strong>Name:</strong> {selectedStudent.equipments.name}</Typography>
+                  <Typography variant="body1" sx={{ fontSize: '1rem' }}><strong>Capacity:</strong> {selectedStudent.equipments.capacity} {selectedStudent.equipments.unit}</Typography>
                 </Box>
               </Box>
             </Box>
@@ -259,11 +237,8 @@ const LiableStudentsPage = () => {
             </Box>
           )}
         </DialogContent>
-        <DialogActions sx={{ backgroundColor: '#f0f0f0' }}>
+        <DialogActions sx={{ backgroundColor: '#f0f0f0', p: 2 }}>
           <Button onClick={handleDialogClose} sx={{ backgroundColor: '#e0e0e0' }}>Close</Button>
-          <Button onClick={() => handleMarkAsPaid(selectedStudent)} color="success" disabled={loading}>
-            Mark as Paid
-          </Button>
           <Button onClick={() => handleSendReminder(selectedStudent)} color="primary" disabled={loading}>
             Send Reminder
           </Button>
