@@ -27,6 +27,10 @@ import {
 } from '@mui/material';
 import { SearchOutlined, MailOutlined, EyeOutlined, ClearOutlined } from '@ant-design/icons';
 import { Timestamp } from 'firebase/firestore';
+import LiableStudentDetails from './SampleDialog';
+import Invoice from './invoice';
+
+
 
 const LiableStudentsPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -114,7 +118,7 @@ const LiableStudentsPage = () => {
 
   return (
     <Box sx={{ p: 4, backgroundColor: '#ffffff', minHeight: '100vh' }}>
-      <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#333' }}>
+      <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#333', mb: 2 }}>
         Liable Students
       </Typography>
       <Typography variant="body1" paragraph sx={{ mb: 4, color: '#666' }}>
@@ -204,40 +208,10 @@ const LiableStudentsPage = () => {
 
       {/* Dialog for Student Details */}
       <Dialog open={dialogOpen} onClose={handleDialogClose} fullWidth maxWidth="sm">
-        <DialogTitle sx={{ backgroundColor: '#f0f0f0', fontWeight: 'bold', fontSize: '1.5rem' }}>Liability Details</DialogTitle>
-        <DialogContent>
-          {selectedStudent ? (
-            <Box>
-              <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', fontSize: '1.25rem' }}>Invoice</Typography>
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="body1" sx={{ fontSize: '1rem' }}><strong>Borrower:</strong> {selectedStudent.borrower}</Typography>
-                <Typography variant="body1" sx={{ fontSize: '1rem' }}><strong>Borrower ID:</strong> {selectedStudent.borrowerID}</Typography>
-                <Typography variant="body1" sx={{ fontSize: '1rem' }}><strong>Date Issued:</strong> {selectedStudent.date_issued.toDate().toLocaleString()}</Typography>
-                <Typography variant="body1" sx={{ fontSize: '1rem' }}><strong>Due Date:</strong> {selectedStudent.due_date.toDate().toLocaleString()}</Typography>
-              </Box>
-              <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', fontSize: '1.25rem' }}>Liability Details</Typography>
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="body1" sx={{ fontSize: '1rem' }}><strong>Liability:</strong> {selectedStudent.description}</Typography>
-                <Typography variant="body1" sx={{ fontSize: '1rem' }}><strong>Quantity:</strong> {selectedStudent.equipments.qty}</Typography>
-                <Typography variant="body1" sx={{ fontSize: '1rem' }}><strong>Status:</strong> {selectedStudent.status || 'Pending'}</Typography>
-                <Typography variant="body1" sx={{ fontSize: '1rem' }}><strong>Amount Due:</strong> {selectedStudent.amountDue || 'N/A'}</Typography>
-              </Box>
-              <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', fontSize: '1.25rem' }}>Equipment Details</Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <img src={selectedStudent.equipments.image} alt={selectedStudent.equipments.name} style={{ width: 100, height: 100, marginRight: 16, borderRadius: 8 }} />
-                <Box>
-                  <Typography variant="body1" sx={{ fontSize: '1rem' }}><strong>Name:</strong> {selectedStudent.equipments.name}</Typography>
-                  <Typography variant="body1" sx={{ fontSize: '1rem' }}><strong>Capacity:</strong> {selectedStudent.equipments.capacity} {selectedStudent.equipments.unit}</Typography>
-                </Box>
-              </Box>
-            </Box>
-          ) : (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
-              <CircularProgress />
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions sx={{ backgroundColor: '#f0f0f0', p: 2 }}>
+        <Box sx={{ p: 2 }}>
+          <Invoice />
+        </Box>
+        <DialogActions sx={{ backgroundColor: '#f0f0f0', p: 1 }}>
           <Button onClick={handleDialogClose} sx={{ backgroundColor: '#e0e0e0' }}>Close</Button>
           <Button onClick={() => handleSendReminder(selectedStudent)} color="primary" disabled={loading}>
             Send Reminder
