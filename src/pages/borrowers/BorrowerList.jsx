@@ -179,7 +179,8 @@ class BorrowerList extends Component {
                 <Borrower 
                 schedID={selectedSchedule} 
                 id={borrower.userID} 
-                name={borrower.name} 
+                name={borrower.name}
+                equipments={equipments}
                 subject={selectedScheduleSubject} 
                 onApprove={() => this.handleBorrowerApproved(borrower.userID)}
                 />

@@ -16,7 +16,7 @@
 // import { storage } from '../firebase'; // Adjust the path as necessary
 // import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { firestore, storage, auth } from '../firebase'; // Adjust the path as necessary
-import { collection, query, where, writeBatch, doc, getDocs, updateDoc, deleteDoc, onSnapshot, arrayUnion,getDoc, setDoc } from "firebase/firestore"; 
+import { collection, query, where, writeBatch, doc, getDocs, updateDoc, deleteDoc, onSnapshot, arrayUnion,getDoc, setDoc, } from "firebase/firestore"; 
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { sendEmail } from './emailService'; // Import the email service
 import { getMonth, getYear, getWeekOfMonth, getDate } from 'date-fns';
@@ -412,6 +412,49 @@ async function updatedBorrowerStatus(schedID, borrowerID, newStatus) {
   }
 }
 
+async function getSchedEquipments(schedID) {
+  const db = firestore;
+  const docRef = doc(db, 'schedule', schedID);
+  
+  try {
+    const docSnap = await getDoc(docRef); // Await the Promise
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      return data.equipments || []; // Return an empty array if no equipments
+    } else {
+      console.error('Document does not exist!');
+      return []; // Return an empty array to prevent errors
+    }
+  } catch (error) {
+    console.error('Error fetching scheduled equipments:', error);
+    throw error; // Rethrow the error for the calling function to handle
+  }
+}
+
+
+async function updateStocks(equipmentID, value) {
+  const db = firestore;
+  const docRef = doc(db, 'equipments', equipmentID);
+
+  // Retrieve the current document
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    console.log('Document data:', data); // Log the retrieved data
+
+    const currentStocks = data.stocks || 0;  // Fallback to 0 if stocks are undefined
+    const newStocks = currentStocks - value;
+
+    // Update the document with the new stock values
+    await updateDoc(docRef, { stocks: newStocks });
+    console.log('Stocks updated successfully!');
+  } else {
+    console.error('Document does not exist!');
+  }
+}
+
+
+
 
 export { 
   addEquipment,
@@ -433,5 +476,7 @@ export {
   updateLastHistoryEntry,
   deleteLastHistoryEntry,
   get_ID_Name_Sched,
-  updatedBorrowerStatus
+  updatedBorrowerStatus,
+  updateStocks,
+  getSchedEquipments
 };
