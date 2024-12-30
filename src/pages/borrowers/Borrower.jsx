@@ -23,7 +23,7 @@ const Borrower = ({ schedID, id, name: initialName, equipments, subject: initial
           continue; // Skip invalid qty
         }
         console.log('Updating stock:', equipment.id, qty);
-        await updateStocks(equipment.id, qty); // Ensure value is a valid number
+        await updateStocks(equipment.id, -qty); // Ensure value is a valid number
       }
       await updatedBorrowerStatus(schedID, id, 'approved');
       alert("Borrower Approved!");

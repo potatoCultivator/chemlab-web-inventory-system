@@ -443,7 +443,7 @@ async function updateStocks(equipmentID, value) {
     console.log('Document data:', data); // Log the retrieved data
 
     const currentStocks = data.stocks || 0;  // Fallback to 0 if stocks are undefined
-    const newStocks = currentStocks - value;
+    const newStocks = currentStocks + value;
 
     // Update the document with the new stock values
     await updateDoc(docRef, { stocks: newStocks });
