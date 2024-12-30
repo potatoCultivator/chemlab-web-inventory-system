@@ -381,6 +381,33 @@ function get_ID_Name_Sched(callback, errorCallback) {
   return unsubscribe; // Return the unsubscribe function for cleanup
 }
 
+async function updatedBorrowerStatus(schedID, borrowerID) {
+  const db = firestore;
+  const docRef = doc(db, 'schedule', schedID);
+
+  try {
+    // Retrieve the current document
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      const borrowers = data.borrowers || [];
+
+      // Update the status of the specific borrower
+      const updatedBorrowers = borrowers.map(borrower => 
+        borrower.userID === borrowerID ? { ...borrower, status: 'approved' } : borrower
+      );
+
+      // Update the document with the modified borrowers array
+      await updateDoc(docRef, { borrowers: updatedBorrowers });
+      console.log("Borrower status updated successfully!");
+    } else {
+      console.error("Document does not exist!");
+    }
+  } catch (error) {
+    console.error("Error updating borrower status:", error);
+  }
+}
+
 
 
 export { 
@@ -402,5 +429,6 @@ export {
   editEquipment,
   updateLastHistoryEntry,
   deleteLastHistoryEntry,
-  get_ID_Name_Sched
+  get_ID_Name_Sched,
+  updatedBorrowerStatus
 };

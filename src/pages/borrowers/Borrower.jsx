@@ -5,8 +5,22 @@ import {
   Button, Typography, Box, DialogActions
 } from '@mui/material';
 
-const Borrower = ({ id, name, subject }) => {
+import { updatedBorrowerStatus } from '../Query';
+
+const Borrower = ({ schedID, id, name, subject, onApprove }) => {
   const [open, setOpen] = useState(false);
+
+  const handleApprove = async () => {
+    try {
+      await updatedBorrowerStatus(schedID, id);
+      alert("Borrower Approved!");
+      setOpen(false);
+      onApprove();
+    } catch (error) {
+      console.error("Error approving borrower: ", error);
+      alert("Failed to approve borrower. Please try again.");
+    }
+  };
 
   return (
     <>
@@ -34,7 +48,7 @@ const Borrower = ({ id, name, subject }) => {
         </DialogContent>
         <DialogActions sx={{ backgroundColor: "#f5f5f5", display: 'flex', justifyContent: 'space-between' }}>
           <Button onClick={() => setOpen(false)} color="primary" sx={{ flex: 1 }}>Close</Button>
-          <Button onClick={() => alert("Borrower Approved!")} color="success" sx={{ flex: 1 }}>Approve</Button>
+          <Button onClick={handleApprove} color="success" sx={{ flex: 1 }}>Approve</Button>
         </DialogActions>
       </Dialog>
     </>
