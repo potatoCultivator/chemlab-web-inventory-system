@@ -15,7 +15,6 @@ import {
     TableRow,
     Paper
 } from '@mui/material';
-// import Borrower from './Borrower';
 import Borrower_Return from './Borrower_Return';
 import { get_ID_Name_Sched } from '../Query';
 
@@ -170,17 +169,18 @@ class Borrower_Return_List extends Component {
             padding: 2
             }}
             >
-            {filteredBorrowers.filter(borrower => borrower.status !== 'pending').length === 0 ? (
+            {filteredBorrowers.filter(borrower => borrower.status === 'approved').length === 0 ? (
             <Typography variant="h6">No borrowers</Typography>
             ) : (
             filteredBorrowers
-                .filter(borrower => borrower.status !== 'pending')
+                .filter(borrower => borrower.status === 'approved')
                 .map((borrower, index) => (
                 <Box key={index} sx={{ width: '100%' }}>
                 <Borrower_Return 
                 schedID={selectedSchedule} 
                 id={borrower.userID} 
-                name={borrower.name} 
+                name={borrower.name}
+                equipments={equipments}
                 subject={selectedScheduleSubject} 
                 onApprove={() => this.handleBorrowerApproved(borrower.userID)}
                 />

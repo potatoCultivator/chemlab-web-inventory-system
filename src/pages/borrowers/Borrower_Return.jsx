@@ -1,39 +1,43 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   ListItem, ListItemText, ListItemAvatar, Avatar,
-  Dialog, DialogTitle, DialogContent, 
+  Dialog, DialogTitle, DialogContent,
   Button, Typography, Box, DialogActions
 } from '@mui/material';
 
-import { updatedBorrowerStatus } from '../Query';
+import { updatedBorrowerStatus, updateStocks } from '../Query';
+// import { get_ID_Name_Sched } from '../Query';
 
-const Borrower_Return = ({ schedID, id, name, subject, onApprove }) => {
+const Borrower_Return = ({ schedID, id, name: initialName, equipments, subject: initialSubject, onApprove }) => {
   const [open, setOpen] = useState(false);
+  const [name, setName] = useState(initialName);
+  const [subject, setSubject] = useState(initialSubject);
 
-  const handleApprove = async (status) => {
+  const handleApprove = async () => {
     try {
-      await updatedBorrowerStatus(schedID, id, status);
-      alert(`Borrower ${status === 'returned' ? 'Returned' : 'Broke'} the item!`);
-      generateInvoice(status);
+      for (const equipment of equipments) {
+        const qty = Number(equipment.qty);
+        if (isNaN(qty) || qty <= 0) {
+          console.warn(`Skipping equipment with invalid qty: ${equipment.id}`);
+          continue; // Skip invalid qty
+        }
+        console.log('Updating stock:', equipment.id, qty);
+        await updateStocks(equipment.id, qty); // Ensure value is a valid number
+      }
+      await updatedBorrowerStatus(schedID, id, 'return');
+      alert("Borrower Approved!");
       setOpen(false);
+      setName('');
+      setSubject('');
       onApprove();
     } catch (error) {
-      console.error(`Error updating borrower status to ${status}: `, error);
-      alert(`Failed to update borrower status. Please try again.`);
+      console.error("Error approving borrower: ", error);
+      alert("Failed to approve borrower. Please try again.");
     }
   };
-
-  const generateInvoice = (status) => {
-    const invoiceContent = `
-      <h1>Invoice</h1>
-      <p><strong>Name:</strong> ${name || 'N/A'}</p>
-      <p><strong>Subject:</strong> ${subject || 'N/A'}</p>
-      <p><strong>Status:</strong> ${status === 'returned' ? 'Returned' : 'Broke'}</p>
-    `;
-    const newWindow = window.open();
-    newWindow.document.write(invoiceContent);
-    newWindow.print();
-  };
+  
+  
 
   return (
     <>
@@ -59,12 +63,22 @@ const Borrower_Return = ({ schedID, id, name, subject, onApprove }) => {
         </DialogContent>
         <DialogActions sx={{ backgroundColor: "#f5f5f5", display: 'flex', justifyContent: 'space-between' }}>
           <Button onClick={() => setOpen(false)} color="primary" sx={{ flex: 1 }}>Close</Button>
-          <Button onClick={() => handleApprove('returned')} color="success" sx={{ flex: 1 }}>Return</Button>
-          <Button onClick={() => handleApprove('broke')} color="error" sx={{ flex: 1 }}>Broke</Button>
+          <Button onClick={handleApprove} color="success" sx={{ flex: 1 }}>Approve</Button>
         </DialogActions>
       </Dialog>
     </>
   );
+};
+Borrower_Return.propTypes = {
+  schedID: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  name: PropTypes.string,
+  equipments: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    qty: PropTypes.number.isRequired
+  })).isRequired,
+  subject: PropTypes.string,
+  onApprove: PropTypes.func.isRequired
 };
 
 export default Borrower_Return;
