@@ -12,7 +12,7 @@ const Borrower = ({ schedID, id, name, subject, onApprove }) => {
 
   const handleApprove = async () => {
     try {
-      await updatedBorrowerStatus(schedID, id);
+      await updatedBorrowerStatus(schedID, id, 'approved');
       alert("Borrower Approved!");
       setOpen(false);
       onApprove();

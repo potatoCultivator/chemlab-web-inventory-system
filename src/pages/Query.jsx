@@ -383,7 +383,9 @@ function get_ID_Name_Sched(callback, errorCallback) {
   return unsubscribe; // Return the unsubscribe function for cleanup
 }
 
-async function updatedBorrowerStatus(schedID, borrowerID) {
+// Removed duplicate function
+
+async function updatedBorrowerStatus(schedID, borrowerID, newStatus) {
   const db = firestore;
   const docRef = doc(db, 'schedule', schedID);
 
@@ -396,7 +398,7 @@ async function updatedBorrowerStatus(schedID, borrowerID) {
 
       // Update the status of the specific borrower
       const updatedBorrowers = borrowers.map(borrower => 
-        borrower.userID === borrowerID ? { ...borrower, status: 'approved' } : borrower
+        borrower.userID === borrowerID ? { ...borrower, status: newStatus } : borrower
       );
 
       // Update the document with the modified borrowers array
@@ -409,7 +411,6 @@ async function updatedBorrowerStatus(schedID, borrowerID) {
     console.error("Error updating borrower status:", error);
   }
 }
-
 
 
 export { 

@@ -121,8 +121,8 @@ class Borrower_Return_List extends Component {
                 <TableRow key={index}>
                     <TableCell>{`${equipment.name} ${equipment.capacity}${equipment.unit}`}</TableCell>
                     <TableCell align='center'>{equipment.qty}</TableCell>
-                    <TableCell align='center'>{filteredBorrowers.length}</TableCell>
-                    <TableCell align='center'>{equipment.qty * filteredBorrowers.length}</TableCell>
+                    <TableCell align='center'>{filteredBorrowers.filter(borrower => borrower.status === 'approved').length}</TableCell>
+                    <TableCell align='center'>{equipment.qty * filteredBorrowers.filter(borrower => borrower.status === 'approved').length}</TableCell>
                 </TableRow>
                 ))}
                 </TableBody>

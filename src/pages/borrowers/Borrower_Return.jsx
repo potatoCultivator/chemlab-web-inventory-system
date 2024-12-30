@@ -10,16 +10,29 @@ import { updatedBorrowerStatus } from '../Query';
 const Borrower_Return = ({ schedID, id, name, subject, onApprove }) => {
   const [open, setOpen] = useState(false);
 
-  const handleApprove = async () => {
+  const handleApprove = async (status) => {
     try {
-      await updatedBorrowerStatus(schedID, id);
-      alert("Borrower Approved!");
+      await updatedBorrowerStatus(schedID, id, status);
+      alert(`Borrower ${status === 'returned' ? 'Returned' : 'Broke'} the item!`);
+      generateInvoice(status);
       setOpen(false);
       onApprove();
     } catch (error) {
-      console.error("Error approving borrower: ", error);
-      alert("Failed to approve borrower. Please try again.");
+      console.error(`Error updating borrower status to ${status}: `, error);
+      alert(`Failed to update borrower status. Please try again.`);
     }
+  };
+
+  const generateInvoice = (status) => {
+    const invoiceContent = `
+      <h1>Invoice</h1>
+      <p><strong>Name:</strong> ${name || 'N/A'}</p>
+      <p><strong>Subject:</strong> ${subject || 'N/A'}</p>
+      <p><strong>Status:</strong> ${status === 'returned' ? 'Returned' : 'Broke'}</p>
+    `;
+    const newWindow = window.open();
+    newWindow.document.write(invoiceContent);
+    newWindow.print();
   };
 
   return (
@@ -39,8 +52,6 @@ const Borrower_Return = ({ schedID, id, name, subject, onApprove }) => {
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="xs" fullWidth>
         <DialogTitle sx={{ backgroundColor: "#f5f5f5", fontWeight: "bold" }}>Invoice</DialogTitle>
         <DialogContent sx={{ padding: "20px" }}>
-          {/* <Typography variant="h6" gutterBottom>Borrower Details</Typography>
-          <Divider /> */}
           <Box my={2}>
             <Typography gutterBottom><strong>Name:</strong> {name || 'N/A'}</Typography>
             <Typography gutterBottom><strong>Subject:</strong> {subject || 'N/A'}</Typography>
@@ -48,7 +59,8 @@ const Borrower_Return = ({ schedID, id, name, subject, onApprove }) => {
         </DialogContent>
         <DialogActions sx={{ backgroundColor: "#f5f5f5", display: 'flex', justifyContent: 'space-between' }}>
           <Button onClick={() => setOpen(false)} color="primary" sx={{ flex: 1 }}>Close</Button>
-          <Button onClick={handleApprove} color="success" sx={{ flex: 1 }}>Return</Button>
+          <Button onClick={() => handleApprove('returned')} color="success" sx={{ flex: 1 }}>Return</Button>
+          <Button onClick={() => handleApprove('broke')} color="error" sx={{ flex: 1 }}>Broke</Button>
         </DialogActions>
       </Dialog>
     </>
