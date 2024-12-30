@@ -17,6 +17,7 @@ class BorrowerList extends Component {
         this.state = {
             searchQuery: '',
             selectedSchedule: '',
+            selectedScheduleSubject: '',
             schedules: [],
             borrowers: []
         };
@@ -40,18 +41,25 @@ class BorrowerList extends Component {
 
     handleScheduleChange = (event) => {
         const selectedSchedule = event.target.value;
-        this.setState({ selectedSchedule });
-
         const selectedScheduleObj = this.state.schedules.find(schedule => schedule.id === selectedSchedule);
+        
         if (selectedScheduleObj) {
-            this.setState({ borrowers: selectedScheduleObj.borrowers });
+            this.setState({ 
+                selectedSchedule,
+                selectedScheduleSubject: selectedScheduleObj.subject,
+                borrowers: selectedScheduleObj.borrowers 
+            });
         } else {
-            this.setState({ borrowers: [] });
+            this.setState({ 
+                selectedSchedule,
+                selectedScheduleSubject: '',
+                borrowers: [] 
+            });
         }
     };
 
     render() {
-        const { searchQuery, borrowers, schedules, selectedSchedule } = this.state;
+        const { searchQuery, borrowers, schedules, selectedSchedule, selectedScheduleSubject } = this.state;
         const filteredBorrowers = borrowers.filter((borrower) =>
             borrower.name && borrower.name.toLowerCase().includes(searchQuery.toLowerCase())
         );
@@ -113,7 +121,7 @@ class BorrowerList extends Component {
                 >
                     {filteredBorrowers.map((borrower, index) => (
                         <Box key={index} sx={{ width: '100%' }}>
-                            <Borrower id={borrower.userID} name={borrower.name} subject={selectedSchedule}/>
+                            <Borrower id={borrower.userID} name={borrower.name} subject={selectedScheduleSubject}/>
                         </Box>
                     ))}
                 </Box>
