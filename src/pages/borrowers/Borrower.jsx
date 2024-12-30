@@ -13,43 +13,28 @@ const Borrower = ({ id, name, subject }) => {
       <ListItem button onClick={() => setOpen(true)} sx={{ transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.05)' } }}>
         <ListItemAvatar>
           <Avatar sx={{ backgroundColor: '#00796b', color: '#ffffff' }}>
-            {name ? name.charAt(0) : 'U'}
+            {name?.charAt(0) || 'U'}
           </Avatar>
         </ListItemAvatar>
         <ListItemText
           primary={<Typography variant="h6">{name || 'Unknown Borrower'}</Typography>}
-          secondary={
-            <Box display="flex" justifyContent="space-between" alignItems="center">
-              <Typography variant="body2" color="textSecondary">
-                {subject || 'N/A'}
-              </Typography>
-            </Box>
-          }
+          secondary={<Typography variant="body2" color="textSecondary">{subject || 'N/A'}</Typography>}
         />
       </ListItem>
 
-      <Divider />
-
-      <Dialog open={open} onClose={() => setOpen(false)} fullWidth aria-labelledby="main-dialog-title">
-        <DialogTitle id="main-dialog-title" sx={{ backgroundColor: "#f5f5f5", fontWeight: "bold" }}>Invoice</DialogTitle>
+      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ backgroundColor: "#f5f5f5", fontWeight: "bold" }}>Invoice</DialogTitle>
         <DialogContent sx={{ padding: "20px" }}>
           <Typography variant="h6" gutterBottom>Borrower Details</Typography>
           <Divider />
           <Box my={2}>
             <Typography gutterBottom><strong>Name:</strong> {name || 'N/A'}</Typography>
             <Typography gutterBottom><strong>Subject:</strong> {subject || 'N/A'}</Typography>
-            {/* Add other details if needed */}
-          </Box>
-          <Divider />
-          <Box mt={2}>
-            <Typography variant="body1" color="textSecondary" mt={1}>
-              Please ensure that the borrower follows all ChemLab equipment handling guidelines. Contact the borrower if additional verification is required.
-            </Typography>
           </Box>
         </DialogContent>
-        <DialogActions sx={{ backgroundColor: "#f5f5f5" }}>
-          <Button onClick={() => setOpen(false)} color="primary">Close</Button>
-          <Button onClick={() => alert("Generating Invoice PDF...")} color="secondary">Generate Invoice</Button>
+        <DialogActions sx={{ backgroundColor: "#f5f5f5", display: 'flex', justifyContent: 'space-between' }}>
+          <Button onClick={() => setOpen(false)} color="primary" sx={{ flex: 1 }}>Close</Button>
+          <Button onClick={() => alert("Borrower Approved!")} color="success" sx={{ flex: 1 }}>Approve</Button>
         </DialogActions>
       </Dialog>
     </>
