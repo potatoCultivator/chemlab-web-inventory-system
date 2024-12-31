@@ -484,8 +484,24 @@ async function updateStocks(equipmentID, value) {
   }
 }
 
+async function uploadInvoice(invoiceData) {
+  const db = firestore;
+  const batch = writeBatch(db);
 
+  // Reference to the "invoices" collection
+  const invoicesCollection = collection(db, 'invoice');
 
+  // Create a new document reference
+  const newInvoiceDoc = doc(invoicesCollection);
+
+  // Add the invoice data to the batch
+  batch.set(newInvoiceDoc, invoiceData);
+
+  // Commit the batch
+  await batch.commit();
+
+  console.log('Invoice uploaded successfully!');
+}
 
 export { 
   addEquipment,
@@ -510,5 +526,6 @@ export {
   updatedBorrowerStatus,
   updateStocks,
   getSchedEquipments,
-  get_Sched
+  get_Sched,
+  uploadInvoice
 };

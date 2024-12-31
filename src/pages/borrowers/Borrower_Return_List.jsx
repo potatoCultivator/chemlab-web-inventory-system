@@ -176,13 +176,14 @@ class Borrower_Return_List extends Component {
                 .filter(borrower => borrower.status === 'pending return')
                 .map((borrower, index) => (
                 <Box key={index} sx={{ width: '100%' }}>
+                {console.log('Borrower:', borrower)}
                 <Borrower_Return 
                 schedID={selectedSchedule} 
-                id={borrower.userID} 
+                id={borrower.userId} // Ensure userId is passed as id
                 name={borrower.name}
                 equipments={equipments}
                 subject={selectedScheduleSubject} 
-                onApprove={() => this.handleBorrowerApproved(borrower.userID)}
+                onApprove={() => this.handleBorrowerApproved(borrower.userId)} // Ensure userId is passed correctly
                 />
                 </Box>
                 ))

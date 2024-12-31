@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   Grid,
   Typography,
@@ -15,12 +15,21 @@ import * as Yup from 'yup';
 import MainCard from 'components/MainCard';
 import './AccountableForm.css'; // Import custom CSS
 
+import { uploadInvoice } from 'pages/Query';
+
 const InvoiceForm = ({ schedID, id, student, equipments }) => {
+  const [loading, setLoading] = useState(false);
+
+  if (!id) {
+    console.error('Error: borrowerID is undefined');
+    return <div>Error: borrowerID is undefined</div>;
+  }
+
   const initialValues = {
     schedID,
     borrowerName: student,
     studentID: '',
-    borrowerID: id,
+    borrowerID: id, // Ensure borrowerID is correctly set
     dateIssued: new Date(),
     dueDate: new Date(),
     issueID: '',
@@ -32,13 +41,33 @@ const InvoiceForm = ({ schedID, id, student, equipments }) => {
   };
 
   const validationSchema = Yup.object().shape({
-    borrowerName: Yup.string().required('Borrower Name is required'),
     studentID: Yup.string().required('Student ID is required'),
     quantity: Yup.number().min(1, 'Quantity must be at least 1').required('Quantity is required'),
+    dueDate: Yup.date().required('Due Date is required'),
   });
 
-  const handleSubmit = useCallback((values) => {
-    console.log('Form data', values);
+  const handleSubmit = useCallback(async (values) => {
+    setLoading(true);
+    try {
+      await uploadInvoice(values);
+      console.log('Form data', values);
+    } catch (error) {
+      console.error('Error uploading invoice:', error);
+      if (error.response) {
+        // Server responded with a status other than 200 range
+        console.error('Response data:', error.response.data);
+        console.error('Response status:', error.response.status);
+        console.error('Response headers:', error.response.headers);
+      } else if (error.request) {
+        // Request was made but no response received
+        console.error('Request data:', error.request);
+      } else {
+        // Something else happened
+        console.error('Error message:', error.message);
+      }
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   return (
@@ -99,6 +128,7 @@ const InvoiceForm = ({ schedID, id, student, equipments }) => {
                     customInput={<TextField fullWidth label="Due Date" />}
                     popperClassName="datepicker-popper"
                   />
+                  <ErrorMessage name="dueDate" component="div" className="error-message" />
                 </Grid>
 
                 <Grid item xs={12}>
@@ -149,10 +179,10 @@ const InvoiceForm = ({ schedID, id, student, equipments }) => {
 
                 <Grid item xs={12}>
                   <Box display="flex" justifyContent="flex-end" gap={2}>
-                    <Button type="submit" variant="contained" color="primary">
-                      Save
+                    <Button type="submit" variant="contained" color="primary" disabled={loading}>
+                      {loading ? 'Saving...' : 'Save'}
                     </Button>
-                    <Button type="button" variant="outlined" color="secondary" onClick={resetForm}>
+                    <Button type="button" variant="outlined" color="secondary" onClick={resetForm} disabled={loading}>
                       Reset
                     </Button>
                   </Box>
