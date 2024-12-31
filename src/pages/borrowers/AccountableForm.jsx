@@ -7,7 +7,6 @@ import {
   CardContent,
   Divider,
   Box,
-  MenuItem,
 } from '@mui/material';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -16,24 +15,25 @@ import * as Yup from 'yup';
 import MainCard from 'components/MainCard';
 import './AccountableForm.css'; // Import custom CSS
 
-const InvoiceForm = () => {
+const InvoiceForm = ({ schedID, id, student, equipments }) => {
   const initialValues = {
-    borrowerName: '',
-    borrowerID: '',
+    schedID,
+    borrowerName: student,
+    studentID: '',
+    borrowerID: id,
     dateIssued: new Date(),
     dueDate: new Date(),
     issueID: '',
     equipmentName: '',
     quantity: 1,
-    capacity: '',
-    unit: 'ml',
+    equipments,
     description: '',
     replaced: false,
   };
 
   const validationSchema = Yup.object().shape({
     borrowerName: Yup.string().required('Borrower Name is required'),
-    borrowerID: Yup.string().required('Borrower ID is required'),
+    studentID: Yup.string().required('Student ID is required'),
     quantity: Yup.number().min(1, 'Quantity must be at least 1').required('Quantity is required'),
   });
 
@@ -53,7 +53,7 @@ const InvoiceForm = () => {
             <Form>
               <Grid container spacing={3}>
                 <Grid item xs={12}>
-                  <Typography variant="h6">Borrower Information</Typography>
+                  <Typography variant="h6" gutterBottom>Borrower Information</Typography>
                   <Divider />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -63,32 +63,31 @@ const InvoiceForm = () => {
                     label="Borrower Name"
                     name="borrowerName"
                     value={values.borrowerName}
-                    onChange={handleChange}
-                    helperText={<ErrorMessage name="borrowerName" />}
-                    error={Boolean(<ErrorMessage name="borrowerName" />)}
+                    disabled
                   />
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <FastField
                     as={TextField}
                     fullWidth
-                    label="Borrower ID"
-                    name="borrowerID"
-                    value={values.borrowerID}
+                    label="Student ID"
+                    name="studentID"
+                    value={values.studentID}
                     onChange={handleChange}
-                    helperText={<ErrorMessage name="borrowerID" />}
-                    error={Boolean(<ErrorMessage name="borrowerID" />)}
+                    helperText={<ErrorMessage name="studentID" />}
+                    error={Boolean(<ErrorMessage name="studentID" />)}
                   />
                 </Grid>
 
                 <Grid item xs={12}>
-                  <Typography variant="h6">Issue Details</Typography>
+                  <Typography variant="h6" gutterBottom>Issue Details</Typography>
                   <Divider />
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <DatePicker
                     selected={values.dateIssued}
                     onChange={(date) => setFieldValue('dateIssued', date)}
+                    disabled
                     customInput={<TextField fullWidth label="Date Issued" />}
                     popperClassName="datepicker-popper"
                   />
@@ -103,31 +102,37 @@ const InvoiceForm = () => {
                 </Grid>
 
                 <Grid item xs={12}>
-                  <Typography variant="h6">Equipment Details</Typography>
+                  <Typography variant="h6" gutterBottom>Equipment Details</Typography>
                   <Divider />
                 </Grid>
-                <Grid item xs={12} md={6}>
-                  <FastField
-                    as={TextField}
-                    fullWidth
-                    label="Equipment Name"
-                    name="equipmentName"
-                    value={values.equipmentName}
-                    onChange={handleChange}
-                  />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <FastField
-                    as={TextField}
-                    fullWidth
-                    label="Quantity"
-                    name="quantity"
-                    type="number"
-                    value={values.quantity}
-                    onChange={handleChange}
-                    helperText={<ErrorMessage name="quantity" />}
-                    error={Boolean(<ErrorMessage name="quantity" />)}
-                  />
+                <Grid item xs={12}>
+                  <table className="equipment-table">
+                    <thead>
+                      <tr>
+                        <th>Equipment Name</th>
+                        <th>Quantity</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {equipments.map((equipment, index) => (
+                        <tr key={index}>
+                          <td>{equipment.name} {equipment.capacity}{equipment.unit}</td>
+                          <td>
+                            <FastField
+                              as={TextField}
+                              fullWidth
+                              name={`equipments[${index}].quantity`}
+                              type="number"
+                              value={values.equipments[index].quantity}
+                              onChange={handleChange}
+                              helperText={<ErrorMessage name={`equipments[${index}].quantity`} />}
+                              error={Boolean(<ErrorMessage name={`equipments[${index}].quantity`} />)}
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </Grid>
                 <Grid item xs={12}>
                   <FastField
@@ -147,6 +152,9 @@ const InvoiceForm = () => {
                     <Button type="submit" variant="contained" color="primary">
                       Save
                     </Button>
+                    <Button type="button" variant="outlined" color="secondary" onClick={resetForm}>
+                      Reset
+                    </Button>
                   </Box>
                 </Grid>
               </Grid>
@@ -156,6 +164,21 @@ const InvoiceForm = () => {
       </CardContent>
     </MainCard>
   );
+};
+
+import PropTypes from 'prop-types';
+
+InvoiceForm.propTypes = {
+  schedID: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  student: PropTypes.string.isRequired,
+  equipments: PropTypes.arrayOf(PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    id: PropTypes.string.isRequired,
+    quantity: PropTypes.number.isRequired,
+    capacity: PropTypes.string,
+    unit: PropTypes.string,
+  })).isRequired,
 };
 
 export default InvoiceForm;

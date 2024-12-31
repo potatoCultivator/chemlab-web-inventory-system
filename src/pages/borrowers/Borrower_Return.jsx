@@ -73,7 +73,12 @@ const Borrower_Return = ({ schedID, id, name: initialName, equipments, subject: 
       <Dialog open={invoiceOpen} onClose={() => setInvoiceOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ backgroundColor: "#f5f5f5", fontWeight: "bold" }}>Invoice Form</DialogTitle>
         <DialogContent sx={{ padding: "20px" }}>
-          <InvoiceForm /> {/* Display InvoiceForm */}
+          <InvoiceForm 
+            schedID={schedID}
+            id={id}
+            student={name}
+            equipments={equipments}
+          /> {/* Display InvoiceForm */}
         </DialogContent>
         <DialogActions sx={{ backgroundColor: "#f5f5f5" }}>
           <Button onClick={() => setInvoiceOpen(false)} color="primary">Close</Button>
@@ -87,6 +92,7 @@ Borrower_Return.propTypes = {
   id: PropTypes.string.isRequired,
   name: PropTypes.string,
   equipments: PropTypes.arrayOf(PropTypes.shape({
+    name: PropTypes.string.isRequired,
     id: PropTypes.string.isRequired,
     qty: PropTypes.number.isRequired
   })).isRequired,
