@@ -30,7 +30,7 @@ const borrowers = {
         },
         {
             id: 'liable-students',
-            title: 'Liable Students',
+            title: 'Liability Records',
             type: 'item',
             url: '/liablestudents',
             icon: icons.WarningOutlined,
