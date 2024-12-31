@@ -123,7 +123,7 @@ const LiableStudentsPage = () => {
   });
 
   return (
-    <Box sx={{ p: 4, backgroundColor: '#f0f0f0', minHeight: '100vh' }}>
+    <Box sx={{ p: 4, backgroundColor: 'transparent', minHeight: '100vh' }}>
       <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#333', mb: 2 }}>
         Liable Students
       </Typography>

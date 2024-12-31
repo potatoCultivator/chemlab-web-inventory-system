@@ -36,7 +36,12 @@ const InvoiceForm = () => {
 
   const handleDownloadPDF = () => {
     const input = componentRef.current.querySelector('.card-content');
-    html2canvas(input, { backgroundColor: null }).then((canvas) => {
+    const scale = 2; // Scale for higher resolution
+    html2canvas(input, {
+      scale, // Increase the canvas resolution
+      backgroundColor: null, // Maintain transparency
+      useCORS: true, // Handle cross-origin resources
+    }).then((canvas) => {
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -45,6 +50,7 @@ const InvoiceForm = () => {
       pdf.save('invoice.pdf');
     });
   };
+  
 
   return (
     <div>
@@ -66,8 +72,22 @@ const InvoiceForm = () => {
           }
         `}
       </style>
-      <div ref={componentRef} className="printable">
-        <Card className="card-content" sx={{ p: 3, width: '210mm', minHeight: '297mm', margin: 'auto', boxShadow: 'none', backgroundColor: '#ffffff', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '25.4mm 19.05mm' }}>
+      <div ref={componentRef} className="printable" style={{ padding: '20px', backgroundColor: '#f9f9f9' }}>
+      <Card
+  className="card-content"
+  sx={{
+    p: 3,
+    width: '210mm',
+    minHeight: '297mm',
+    margin: 'auto',
+    boxShadow: 'none',
+    backgroundColor: '#ffffff',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    padding: '25.4mm 19.05mm',
+  }}
+>
           <CardContent>
             {/* Invoice Header */}
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
@@ -155,7 +175,6 @@ const InvoiceForm = () => {
 
       {/* Print and Download Buttons */}
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2, gap: 2 }}>
-        <Button onClick={handlePrint} sx={{ backgroundColor: '#3f51b5', color: '#ffffff' }}>Print Invoice</Button>
         <Button onClick={handleDownloadPDF} sx={{ backgroundColor: '#3f51b5', color: '#ffffff' }}>Download PDF</Button>
       </Box>
     </div>
