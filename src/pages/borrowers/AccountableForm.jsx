@@ -27,14 +27,12 @@ const InvoiceForm = ({ schedID, id, student, equipments }) => {
 
   const initialValues = {
     schedID,
-    borrowerName: student,
+    borrower: student,
     studentID: '',
     borrowerID: id, // Ensure borrowerID is correctly set
     dateIssued: new Date(),
     dueDate: new Date(),
-    issueID: '',
-    equipmentName: '',
-    quantity: 1,
+    issueID: `${new Date().getFullYear()}${(new Date().getMonth() + 1).toString().padStart(2, '0')}${new Date().getDate().toString().padStart(2, '0')}${new Date().getHours().toString().padStart(2, '0')}${new Date().getMinutes().toString().padStart(2, '0')}`,
     equipments,
     description: '',
     replaced: false,
@@ -42,7 +40,6 @@ const InvoiceForm = ({ schedID, id, student, equipments }) => {
 
   const validationSchema = Yup.object().shape({
     studentID: Yup.string().required('Student ID is required'),
-    quantity: Yup.number().min(1, 'Quantity must be at least 1').required('Quantity is required'),
     dueDate: Yup.date().required('Due Date is required'),
   });
 
@@ -151,12 +148,18 @@ const InvoiceForm = ({ schedID, id, student, equipments }) => {
                             <FastField
                               as={TextField}
                               fullWidth
-                              name={`equipments[${index}].quantity`}
+                              name={`equipments[${index}].qty`}
                               type="number"
-                              value={values.equipments[index].quantity}
-                              onChange={handleChange}
-                              helperText={<ErrorMessage name={`equipments[${index}].quantity`} />}
-                              error={Boolean(<ErrorMessage name={`equipments[${index}].quantity`} />)}
+                              value={values.equipments[index].qty}
+                              onChange={(e) => {
+                                const value = parseInt(e.target.value, 10);
+                                if (value >= 1 && value <= equipment.qty) {
+                                  handleChange(e);
+                                }
+                              }}
+                              inputProps={{ min: 1, max: equipment.qty }}
+                              helperText={<ErrorMessage name={`equipments[${index}].qty`} />}
+                              error={Boolean(<ErrorMessage name={`equipments[${index}].qty`} />)}
                             />
                           </td>
                         </tr>
@@ -205,7 +208,7 @@ InvoiceForm.propTypes = {
   equipments: PropTypes.arrayOf(PropTypes.shape({
     name: PropTypes.string.isRequired,
     id: PropTypes.string.isRequired,
-    quantity: PropTypes.number.isRequired,
+    qty: PropTypes.number.isRequired,
     capacity: PropTypes.string,
     unit: PropTypes.string,
   })).isRequired,
