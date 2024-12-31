@@ -7,10 +7,12 @@ import {
 } from '@mui/material';
 
 import { updatedBorrowerStatus, updateStocks } from '../Query';
+import InvoiceForm from './AccountableForm';
 // import { get_ID_Name_Sched } from '../Query';
 
 const Borrower_Return = ({ schedID, id, name: initialName, equipments, subject: initialSubject, onApprove }) => {
   const [open, setOpen] = useState(false);
+  const [invoiceOpen, setInvoiceOpen] = useState(false); // State for InvoiceForm
   const [name, setName] = useState(initialName);
   const [subject, setSubject] = useState(initialSubject);
 
@@ -63,7 +65,18 @@ const Borrower_Return = ({ schedID, id, name: initialName, equipments, subject: 
         </DialogContent>
         <DialogActions sx={{ backgroundColor: "#f5f5f5", display: 'flex', justifyContent: 'space-between' }}>
           <Button onClick={() => setOpen(false)} color="primary" sx={{ flex: 1 }}>Close</Button>
+          <Button onClick={() => setInvoiceOpen(true)} color="secondary" sx={{ flex: 1 }}>Invoice</Button> {/* New Invoice Button */}
           <Button onClick={handleApprove} color="success" sx={{ flex: 1 }}>Approve</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={invoiceOpen} onClose={() => setInvoiceOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle sx={{ backgroundColor: "#f5f5f5", fontWeight: "bold" }}>Invoice Form</DialogTitle>
+        <DialogContent sx={{ padding: "20px" }}>
+          <InvoiceForm /> {/* Display InvoiceForm */}
+        </DialogContent>
+        <DialogActions sx={{ backgroundColor: "#f5f5f5" }}>
+          <Button onClick={() => setInvoiceOpen(false)} color="primary">Close</Button>
         </DialogActions>
       </Dialog>
     </>
