@@ -41,6 +41,7 @@ const LiableStudentsPage = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const [viewInvoice, setViewInvoice] = useState(false);
 
   const sampleData = [
     {
@@ -87,7 +88,12 @@ const LiableStudentsPage = () => {
 
   const handleViewDetails = (student) => {
     setSelectedStudent(student);
-    setDialogOpen(true);
+    setViewInvoice(true);
+  };
+
+  const handleReturnToTable = () => {
+    setViewInvoice(false);
+    setSelectedStudent(null);
   };
 
   const handleDialogClose = () => {
@@ -117,7 +123,7 @@ const LiableStudentsPage = () => {
   });
 
   return (
-    <Box sx={{ p: 4, backgroundColor: '#ffffff', minHeight: '100vh' }}>
+    <Box sx={{ p: 4, backgroundColor: '#f0f0f0', minHeight: '100vh' }}>
       <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#333', mb: 2 }}>
         Liable Students
       </Typography>
@@ -143,13 +149,13 @@ const LiableStudentsPage = () => {
             ),
           }}
           fullWidth
-          sx={{ backgroundColor: '#f9f9f9', borderRadius: 1 }}
+          sx={{ backgroundColor: '#ffffff', borderRadius: 1 }}
         />
         <Select
           value={filterStatus}
           onChange={handleFilterChange}
           displayEmpty
-          sx={{ width: 150, backgroundColor: '#f9f9f9', borderRadius: 1 }}
+          sx={{ width: 150, backgroundColor: '#ffffff', borderRadius: 1 }}
         >
           <MenuItem value="All">All</MenuItem>
           <MenuItem value="Pending">Pending</MenuItem>
@@ -157,67 +163,62 @@ const LiableStudentsPage = () => {
         </Select>
       </Box>
 
-      {/* Table */}
-      <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: 1, mb: 4 }}>
-        <Table>
-          <TableHead sx={{ backgroundColor: '#e0e0e0' }}>
-            <TableRow>
-              <TableCell>Borrower</TableCell>
-              <TableCell>Borrower ID</TableCell>
-              <TableCell>Liability</TableCell>
-              <TableCell>Quantity</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Date Issued</TableCell>
-              <TableCell>Due Date</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredData.map((student) => (
-              <TableRow key={student.borrowerID}>
-                <TableCell>{student.borrower}</TableCell>
-                <TableCell>{student.borrowerID}</TableCell>
-                <TableCell>{student.description}</TableCell>
-                <TableCell>{student.equipments.qty}</TableCell>
-                <TableCell>
-                  <Chip
-                    label={student.status}
-                    color={student.status === 'Settled' ? 'success' : 'warning'}
-                    variant="outlined"
-                  />
-                </TableCell>
-                <TableCell>{student.date_issued.toDate().toLocaleString()}</TableCell>
-                <TableCell>{student.due_date.toDate().toLocaleString()}</TableCell>
-                <TableCell>
-                  <Tooltip title="Send Reminder">
-                    <IconButton size="small" onClick={() => handleSendReminder(student)} disabled={loading}>
-                      <MailOutlined style={{ fontSize: '20px', color: '#ff9800' }} />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="View Details">
-                    <IconButton size="small" onClick={() => handleViewDetails(student)}>
-                      <EyeOutlined style={{ fontSize: '20px', color: '#2196f3' }} />
-                    </IconButton>
-                  </Tooltip>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-
-      {/* Dialog for Student Details */}
-      <Dialog open={dialogOpen} onClose={handleDialogClose} fullWidth maxWidth="sm">
-        <Box sx={{ p: 2 }}>
+      {viewInvoice ? (
+        <Box>
           <Invoice />
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+            <Button onClick={handleReturnToTable} sx={{ backgroundColor: '#3f51b5', color: '#ffffff' }}>Return to Table</Button>
+          </Box>
         </Box>
-        <DialogActions sx={{ backgroundColor: '#f0f0f0', p: 1 }}>
-          <Button onClick={handleDialogClose} sx={{ backgroundColor: '#e0e0e0' }}>Close</Button>
-          <Button onClick={() => handleSendReminder(selectedStudent)} color="primary" disabled={loading}>
-            Send Reminder
-          </Button>
-        </DialogActions>
-      </Dialog>
+      ) : (
+        <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: 1, mb: 4 }}>
+          <Table>
+            <TableHead sx={{ backgroundColor: '#e0e0e0' }}>
+              <TableRow>
+                <TableCell>Borrower</TableCell>
+                <TableCell>Borrower ID</TableCell>
+                <TableCell>Liability</TableCell>
+                <TableCell>Quantity</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Date Issued</TableCell>
+                <TableCell>Due Date</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredData.map((student) => (
+                <TableRow key={student.borrowerID}>
+                  <TableCell>{student.borrower}</TableCell>
+                  <TableCell>{student.borrowerID}</TableCell>
+                  <TableCell>{student.description}</TableCell>
+                  <TableCell>{student.equipments.qty}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={student.status}
+                      color={student.status === 'Settled' ? 'success' : 'warning'}
+                      variant="outlined"
+                    />
+                  </TableCell>
+                  <TableCell>{student.date_issued.toDate().toLocaleString()}</TableCell>
+                  <TableCell>{student.due_date.toDate().toLocaleString()}</TableCell>
+                  <TableCell>
+                    <Tooltip title="Send Reminder">
+                      <IconButton size="small" onClick={() => handleSendReminder(student)} disabled={loading}>
+                        <MailOutlined style={{ fontSize: '20px', color: '#ff9800' }} />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="View Details">
+                      <IconButton size="small" onClick={() => handleViewDetails(student)}>
+                        <EyeOutlined style={{ fontSize: '20px', color: '#2196f3' }} />
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
 
       {/* Snackbar for Feedback */}
       <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>

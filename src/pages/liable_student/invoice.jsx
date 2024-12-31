@@ -22,27 +22,27 @@ import {
 
 const InvoiceForm = () => {
   return (
-    <Card>
+    <Card sx={{ p: 3, width: '210mm', minHeight: '297mm', margin: 'auto', boxShadow: 'none', backgroundColor: '#f9f9f9', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '25.4mm 19.05mm' }}>
       <CardContent>
         {/* Invoice Header */}
-        <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Typography variant="h6">Invoice #bkadfsjfks</Typography>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Typography variant="h5" fontWeight="bold">Invoice #bkadfsjfks</Typography>
         </Box>
 
-        <Divider sx={{ my: 2 }} />
+        <Divider sx={{ my: 3 }} />
 
         {/* Borrower Information */}
-        <Box display="flex" justifyContent="space-between" mb={2}>
+        <Box display="flex" justifyContent="space-between" mb={3}>
           <Box>
-            <Typography variant="subtitle1" fontWeight="bold">
+            <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
               <UserOutlined /> Borrower:
             </Typography>
-            <Typography>blah blah</Typography>
+            <Typography>Name: John Doe</Typography>
             <Typography>ID: 0fXKGlajQiKcMzLWjZ7V</Typography>
           </Box>
 
           <Box>
-            <Typography variant="subtitle1" fontWeight="bold">
+            <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
               <ClockCircleOutlined /> Issue Details:
             </Typography>
             <Typography>Date Issued: December 30, 2024, 5:18:39 PM UTC+8</Typography>
@@ -50,7 +50,7 @@ const InvoiceForm = () => {
           </Box>
         </Box>
 
-        <Divider sx={{ my: 2 }} />
+        <Divider sx={{ my: 3 }} />
 
         {/* Equipment Details Table */}
         <Table>
@@ -77,22 +77,34 @@ const InvoiceForm = () => {
         </Table>
 
         {/* Summary */}
-        <Box mt={3} p={2} sx={{ backgroundColor: '#f5f5f5', borderRadius: 1 }}>
+        <Box mt={4} p={2} sx={{ backgroundColor: '#e0e0e0', borderRadius: 1 }}>
           <Box display="flex" justifyContent="space-between" mb={1}>
-            <Typography>Total Quantity:</Typography>
-            <Typography>5</Typography>
+            <Typography variant="subtitle1" fontWeight="bold">Total Quantity:</Typography>
+            <Typography variant="subtitle1">5</Typography>
           </Box>
           <Divider />
         </Box>
 
         {/* Terms and Conditions */}
-        <Box mt={3}>
-          <Typography variant="subtitle2" fontWeight="bold">Terms and Conditions:</Typography>
+        <Box mt={4}>
+          <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Terms and Conditions:</Typography>
           <Typography variant="body2">
             Please ensure that the equipment is returned in good condition by the due date. For any issues, contact support@chemlab.com.
           </Typography>
         </Box>
       </CardContent>
+
+      {/* Signature Section */}
+      <Box mt={4} display="flex" justifyContent="space-between" sx={{ p: 3 }}>
+        <Box>
+          <Typography variant="subtitle2" fontWeight="bold">Borrower's Signature:</Typography>
+          <Box mt={2} sx={{ borderBottom: '1px solid #000', width: '200px' }}></Box>
+        </Box>
+        <Box>
+          <Typography variant="subtitle2" fontWeight="bold">Issuer's Signature:</Typography>
+          <Box mt={2} sx={{ borderBottom: '1px solid #000', width: '200px' }}></Box>
+        </Box>
+      </Box>
     </Card>
   );
 };
