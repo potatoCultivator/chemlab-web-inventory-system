@@ -25,7 +25,7 @@ const Borrower_Return = ({ schedID, id, name: initialName, equipments, subject: 
         console.log('Updating stock:', equipment.id, qty);
         await updateStocks(equipment.id, qty); // Ensure value is a valid number
       }
-      await updatedBorrowerStatus(schedID, id, 'return');
+      await updatedBorrowerStatus(schedID, id, 'returned');
       alert("Borrower Approved!");
       setOpen(false);
       setName('');

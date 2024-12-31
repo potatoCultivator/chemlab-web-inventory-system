@@ -169,11 +169,11 @@ class Borrower_Return_List extends Component {
             padding: 2
             }}
             >
-            {filteredBorrowers.filter(borrower => borrower.status === 'approved').length === 0 ? (
+            {filteredBorrowers.filter(borrower => borrower.status === 'pending return').length === 0 ? (
             <Typography variant="h6">No borrowers</Typography>
             ) : (
             filteredBorrowers
-                .filter(borrower => borrower.status === 'approved')
+                .filter(borrower => borrower.status === 'pending return')
                 .map((borrower, index) => (
                 <Box key={index} sx={{ width: '100%' }}>
                 <Borrower_Return 
