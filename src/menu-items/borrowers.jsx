@@ -38,7 +38,7 @@ const borrowers = {
         },
         {
             id: 'conpensating-students',
-            title: 'Compensating Students',
+            title: 'Compensating Records',
             type: 'item',
             url: '/compenstudents',
             icon: icons.DollarOutlined,
