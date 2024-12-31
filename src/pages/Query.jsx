@@ -383,6 +383,37 @@ function get_ID_Name_Sched(callback, errorCallback) {
   return unsubscribe; // Return the unsubscribe function for cleanup
 }
 
+function get_Sched(callback, errorCallback) {
+  const db = firestore;
+  const collectionRef = collection(db, 'schedule');
+
+  // Set up a real-time listener
+  const unsubscribe = onSnapshot(
+    collectionRef,
+    (snapshot) => {
+      const schedList = snapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          subject: data.subject,
+          borrowers: data.borrowers,
+          equipments: data.equipments,
+        };
+      });
+      callback(schedList); // Call the callback with the updated schedule list
+    },
+    (error) => {
+      if (errorCallback) {
+        errorCallback(error); // Handle errors with the provided callback
+      } else {
+        console.error("Snapshot error:", error); // Fallback error handling
+      }
+    }
+  );
+
+  return unsubscribe; // Return the unsubscribe function for cleanup
+}
+
 // Removed duplicate function
 
 async function updatedBorrowerStatus(schedID, borrowerID, newStatus) {
@@ -478,5 +509,6 @@ export {
   get_ID_Name_Sched,
   updatedBorrowerStatus,
   updateStocks,
-  getSchedEquipments
+  getSchedEquipments,
+  get_Sched
 };

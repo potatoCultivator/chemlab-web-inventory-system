@@ -16,7 +16,7 @@ import {
     Paper
 } from '@mui/material';
 import Borrower_Return from './Borrower_Return';
-import { get_ID_Name_Sched } from '../Query';
+import { get_Sched } from '../Query';
 
 class Borrower_Return_List extends Component {
     constructor(props) {
@@ -32,7 +32,7 @@ class Borrower_Return_List extends Component {
     }
 
     componentDidMount() {
-        get_ID_Name_Sched(
+        get_Sched(
             (schedules) => {
                 console.log('Schedules fetched:', schedules);
                 this.setState({ schedules });
