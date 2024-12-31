@@ -409,7 +409,7 @@ export default function MainTable() {
             // sx={{ mb: { xs: 0, sm: 2 } }} // Remove bottom margin on mobile
           />
         </Grid>
-        <Grid item xs={4} sm={4} display="flex" justifyContent={{ xs: 'flex-end', sm: 'flex-end' }} mt={{ xs: 2, sm: 0 }}>
+        <Grid item xs={4} sm={4} display="</Grid>flex" justifyContent={{ xs: 'flex-end', sm: 'flex-end' }} mt={{ xs: 2, sm: 0 }}>
           <CustomButton type="add" variant="contained" color="primary" onClick={handleDialogOpen}>
             Add
           </CustomButton>
@@ -503,9 +503,17 @@ export default function MainTable() {
       <Dialog
         open={dialogOpen}
         onClose={handleDialogClose}
-        maxWidth={isMobile ? 'xs' : 'md'} // Change the maxWidth based on screen size
+        maxWidth={isMobile ? 'xs' : 'lg'} // Change the maxWidth to 'lg' for larger width
         fullWidth
-        sx={{ '& .MuiDialog-paper': { width: isMobile ? '100%' : '30%', maxWidth: 'none' } }} // Custom width based on screen size
+        sx={{ 
+          '& .MuiDialog-paper': { 
+            width: isMobile ? '100%' : '50%', 
+            maxWidth: 'none',
+            '@media (min-width: 600px)': { width: '75%' }, // Adjust width for medium screens
+            '@media (min-width: 960px)': { width: '50%' }, // Adjust width for large screens
+            '@media (min-width: 1280px)': { width: '40%' } // Adjust width for extra large screens
+          } 
+        }} 
       >
         <DialogTitle>Add New Equipment</DialogTitle>
         <DialogContent>

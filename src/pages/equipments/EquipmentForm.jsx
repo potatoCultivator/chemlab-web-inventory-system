@@ -196,12 +196,10 @@ export default function EquipmentForm({ onClose }) {
       {({ setFieldValue, values }) => (
         <Form>
           <Box sx={{ width: '100%', backgroundColor: 'transparent', padding: 3, borderRadius: 2 }}>
-            <Grid container spacing={3} alignItems="center">
-              {/* Name Field with Autocomplete */}
-              <Grid item xs={2}>
+            <Grid container spacing={3} direction={{ xs: 'column', sm: 'row' }}>
+              {/* Name and Stocks Fields */}
+              <Grid item xs={12} sm={6}>
                 <Typography>Name:</Typography>
-              </Grid>
-              <Grid item xs={10}>
                 <Autocomplete
                   freeSolo
                   options={equipmentNames}
@@ -221,12 +219,8 @@ export default function EquipmentForm({ onClose }) {
                   )}
                 />
               </Grid>
-
-              {/* Stocks Field */}
-              <Grid item xs={2}>
+              <Grid item xs={12} sm={6}>
                 <Typography>Stocks:</Typography>
-              </Grid>
-              <Grid item xs={10}>
                 <Field
                   component={TextField}
                   name="stocks"
@@ -237,11 +231,9 @@ export default function EquipmentForm({ onClose }) {
                 />
               </Grid>
 
-              {/* Unit Field */}
-              <Grid item xs={2}>
+              {/* Unit and Capacity Fields */}
+              <Grid item xs={12} sm={6}>
                 <Typography>Unit:</Typography>
-              </Grid>
-              <Grid item xs={10}>
                 <Field
                   component={Select}
                   name="unit"
@@ -254,24 +246,20 @@ export default function EquipmentForm({ onClose }) {
                   <MenuItem value="" disabled>
                     Please select the unit of measurement
                   </MenuItem>
-                    <MenuItem value="kg">kg</MenuItem>
-                    <MenuItem value="g">g</MenuItem>
-                    <MenuItem value="L">L</MenuItem>
-                    <MenuItem value="mL">mL</MenuItem>
-                    <MenuItem value="pcs">pcs</MenuItem>
-                    <MenuItem value="cm">cm</MenuItem>
-                    <MenuItem value="in">inches (in)</MenuItem>
-                    <MenuItem value="mm">mm</MenuItem>
-                    <MenuItem value="m">meters (m)</MenuItem>
-                    <MenuItem value="ft">feet (ft)</MenuItem>
+                  <MenuItem value="kg">kg</MenuItem>
+                  <MenuItem value="g">g</MenuItem>
+                  <MenuItem value="L">L</MenuItem>
+                  <MenuItem value="mL">mL</MenuItem>
+                  <MenuItem value="pcs">pcs</MenuItem>
+                  <MenuItem value="cm">cm</MenuItem>
+                  <MenuItem value="in">inches (in)</MenuItem>
+                  <MenuItem value="mm">mm</MenuItem>
+                  <MenuItem value="m">meters (m)</MenuItem>
+                  <MenuItem value="ft">feet (ft)</MenuItem>
                 </Field>
               </Grid>
-
-              {/* Capacity Field */}
-              <Grid item xs={2}>
+              <Grid item xs={12} sm={6}>
                 <Typography>Capacity:</Typography>
-              </Grid>
-              <Grid item xs={10}>
                 <Field
                   component={TextField}
                   name="capacity"
@@ -284,10 +272,8 @@ export default function EquipmentForm({ onClose }) {
               </Grid>
 
               {/* Category Field */}
-              <Grid item xs={2}>
+              <Grid item xs={12} sm={6}>
                 <Typography>Category:</Typography>
-              </Grid>
-              <Grid item xs={10}>
                 <Field
                   component={Select}
                   name="category"
@@ -308,10 +294,8 @@ export default function EquipmentForm({ onClose }) {
               </Grid>
 
               {/* Image Upload Field */}
-              <Grid item xs={2}>
+              <Grid item xs={12} sm={6}>
                 <Typography>Image:</Typography>
-              </Grid>
-              <Grid item xs={10}>
                 <input
                   type="file"
                   accept="image/*"
