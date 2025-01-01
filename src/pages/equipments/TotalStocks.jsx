@@ -14,13 +14,13 @@ import MainCard from 'components/MainCard';
 
 // ===========================|| DASHBOARD DEFAULT - EARNING CARD ||=========================== //
 
-const TotalCards = ({ isLoading }) => {
+const TotalStocks = ({ isLoading }) => {
   const theme = useTheme();
   const [count, setCount] = React.useState(0);
 
   useEffect(() => {
     const handleSuccess = (data) => {
-      setCount(data.totalEquipments); // Assuming you want to display totalEquipments
+      setCount(data.totalStocks); // Assuming you want to display totalEquipments
     };
 
     const handleError = (error) => {
@@ -103,7 +103,7 @@ const TotalCards = ({ isLoading }) => {
                     color: 'secondary.200'
                   }}
                 >
-                  Equipments
+                Stocks
                 </Typography>
               </Grid>
             </Grid>
@@ -114,8 +114,8 @@ const TotalCards = ({ isLoading }) => {
   );
 };
 
-TotalCards.propTypes = {
+TotalStocks.propTypes = {
   isLoading: PropTypes.bool
 };
 
-export default TotalCards;
+export default TotalStocks;

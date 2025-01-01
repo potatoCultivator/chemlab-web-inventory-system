@@ -28,14 +28,14 @@ const borrowers = {
             icon: icons.ReadOutlined,
             breadcrumbs: true
         },
-        {
-            id: 'liable-students',
-            title: 'Liability Records',
-            type: 'item',
-            url: '/liablestudents',
-            icon: icons.WarningOutlined,
-            breadcrumbs: true
-        },
+        // {
+        //     id: 'liable-students',
+        //     title: 'Liability Records',
+        //     type: 'item',
+        //     url: '/liablestudents',
+        //     icon: icons.WarningOutlined,
+        //     breadcrumbs: true
+        // },
    ]
 };
 

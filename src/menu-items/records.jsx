@@ -1,15 +1,10 @@
 // assets
-import { DashboardOutlined, ToolOutlined, ExperimentOutlined, UserOutlined, ReadOutlined, HistoryOutlined, FileTextOutlined } from '@ant-design/icons';
+import { HistoryOutlined, WarningOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
-    DashboardOutlined,
-    ToolOutlined,
-    ExperimentOutlined,
-    UserOutlined,
-    ReadOutlined,
     HistoryOutlined,
-    FileTextOutlined
+    WarningOutlined
 };
 
 // ==============================|| MENU ITEMS - DASHBOARD ||============================== //
@@ -19,14 +14,14 @@ const dashboard2 = {
     title: 'Records',
     type: 'group',
     children: [
-        // {
-        //     id: 'invoice',
-        //     title: 'Invoice',
-        //     type: 'item',
-        //     url: '/invoice',
-        //     icon: icons.FileTextOutlined,
-        //     breadcrumbs: true
-        // },
+        {
+            id: 'liable-students',
+            title: 'Liability Records',
+            type: 'item',
+            url: '/liablestudents',
+            icon: icons.WarningOutlined,
+            breadcrumbs: true
+        },
         {
             id: 'history',
             title: 'History',

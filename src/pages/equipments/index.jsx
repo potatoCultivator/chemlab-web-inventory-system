@@ -6,6 +6,7 @@ import Grid from '@mui/material/Grid';
 import MainTable from './MainTable';
 import MainCard from 'components/MainCard';
 import TotalCards from './TotalCard';
+import TotalStocks from './TotalStocks';
 import PopularCard from './PopularCard';
 
 // ==============================|| SAMPLE PAGE ||============================== //
@@ -14,8 +15,11 @@ export default function Equipments() {
   return (
     <>
       <Grid container spacing={2}>
-        <Grid item xs={12}>
+        <Grid item xs={12} sm={6}>
           <TotalCards />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TotalStocks />
         </Grid>
         <Grid item xs={12} sm={8}>
           <MainCard title="List of Equipments">

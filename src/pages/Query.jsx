@@ -546,6 +546,20 @@ function getInvoices(callback, errorCallback) {
   }, errorCallback);
 }
 
+function getEquipmentsCounts(callback, errorCallback) {
+  const db = firestore;
+  const collectionRef = collection(db, 'equipments');
+  const q = query(collectionRef, where('deleted', '==', false));
+
+  return onSnapshot(q, (snapshot) => {
+    const equipments = snapshot.docs.map(doc => doc.data());
+    const totalEquipments = equipments.length;
+    const totalStocks = equipments.reduce((total, equipment) => total + equipment.stocks, 0);
+
+    callback({ totalEquipments, totalStocks });
+  }, errorCallback);
+}
+
 export { 
   addEquipment,
   uploadImageAndGetUrl,
@@ -573,4 +587,5 @@ export {
   uploadInvoice,
   get_Borrowers,
   getInvoices,
+  getEquipmentsCounts
 };
