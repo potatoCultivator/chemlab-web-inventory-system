@@ -14,12 +14,16 @@ import {
   Button,
   InputAdornment,
   IconButton,
+  CircularProgress,
 } from '@mui/material';
 import MainCard from 'components/MainCard';
 import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import './InvoiceForm.css';
+import 'react-datepicker/dist/react-datepicker.css'; // Import the default CSS
+import './InvoiceForm.css'; // Import custom CSS
 import { CalendarOutlined, EditOutlined, SaveOutlined } from '@ant-design/icons';
+// import EditIcon from '@mui/icons-material/Edit';
+// import SaveIcon from '@mui/icons-material/Save';
+
 import { get_Sched, uploadInvoice, get_Borrowers } from 'pages/Query';
 import { Timestamp } from 'firebase/firestore';
 
@@ -27,6 +31,8 @@ const InvoiceForm = () => {
   const [scheds, setScheds] = useState([]);
   const [borrowers, setBorrowers] = useState([]);
   const [selectedBorrower, setSelectedBorrower] = useState(null);
+  const [loading, setLoading] = useState(false); // Add loading state
+  // const [equipments, setEquipments] = useState([]);
   const [formValues, setFormValues] = useState({
     schedID: '',
     borrower: '',
@@ -41,6 +47,19 @@ const InvoiceForm = () => {
   });
   const [editRowIndex, setEditRowIndex] = useState(null);
 
+  // Fetch borrowers using get_Borrowers
+  useEffect(() => {
+    if (formValues.schedID) {
+      get_Borrowers(formValues.schedID, 
+        (fetchedBorrowers) => setBorrowers(fetchedBorrowers),
+        (error) => console.error('Error fetching borrowers:', error)
+      );
+    }
+    console.log('Borrowers:', borrowers);
+  }, [formValues.schedID]);  // Trigger this effect when schedID changes
+  
+
+  // Fetch schedules using get_Sched
   useEffect(() => {
     get_Sched(
       (fetchedSchedules) => setScheds(fetchedSchedules),
@@ -48,70 +67,84 @@ const InvoiceForm = () => {
     );
   }, []);
 
-  useEffect(() => {
-    if (formValues.schedID) {
-      get_Borrowers(
-        formValues.schedID,
-        (fetchedBorrowers) => setBorrowers(fetchedBorrowers),
-        (error) => console.error('Error fetching borrowers:', error)
-      );
-    }
-  }, [formValues.schedID]);
-
   const handleInputChange = (field, value) => {
     setFormValues((prevValues) => {
-      const updatedValues = { ...prevValues, [field]: value };
-
+      let updatedValues = { ...prevValues, [field]: value };
+  
       if (field === 'schedID') {
         const selectedSched = scheds.find((sched) => sched.id === value);
-        updatedValues.equipments = selectedSched ? selectedSched.equipments || [] : [];
+        if (selectedSched) {
+          updatedValues.equipments = selectedSched.equipments || [];
+        } else {
+          updatedValues.equipments = [];
+        }
       }
-
+  
       return updatedValues;
     });
   };
+  
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formValues.schedID || !selectedBorrower || !formValues.dueDate) {
       console.error('Required fields are missing!');
       return;
     }
-
+  
+    setLoading(true);
+  
     const updatedValues = {
       ...formValues,
       borrowerID: selectedBorrower.userId,
       dateIssued: Timestamp.fromDate(formValues.dateIssued),
       dueDate: Timestamp.fromDate(formValues.dueDate),
     };
-
-    uploadInvoice(
-      updatedValues,
-      (response) => {
-        console.log('Invoice uploaded successfully:', response);
-      },
-      (error) => {
-        console.error('Error uploading invoice:', error);
-      }
-    );
+  
+    try {
+      await uploadInvoice(updatedValues);  // Assuming this is a promise-based function
+      console.log('Invoice uploaded successfully');
+      // Clear the form after saving
+      setFormValues({
+        schedID: '',
+        borrower: '',
+        studentID: '',
+        borrowerID: '',
+        dateIssued: new Date(),
+        dueDate: new Date(),
+        issueID: `${new Date().getFullYear()}${(new Date().getMonth() + 1).toString().padStart(2, '0')}${new Date().getDate().toString().padStart(2, '0')}${new Date().getHours().toString().padStart(2, '0')}${new Date().getMinutes().toString().padStart(2, '0')}`,
+        equipments: [],
+        description: '',
+        replaced: false,
+      });
+      setSelectedBorrower(null);
+    } catch (error) {
+      console.error('Error uploading invoice:', error);
+    } finally {
+      setLoading(false);  // This will stop the loading spinner
+    }
   };
+  
+  
 
   return (
-    <MainCard title="Invoice Form">
       <CardContent>
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
+          {/* Date Picker for Date Issued */}
+          <Grid item xs={12} md={6} lg={6}>
             <DatePicker
               selected={formValues.dateIssued}
               onChange={(date) => handleInputChange('dateIssued', date)}
               dateFormat="yyyy-MM-dd"
               placeholderText="Select Date Issued"
+              className="datepicker-popper"
+              disabled
               customInput={
                 <TextField
                   fullWidth
                   variant="outlined"
                   label="Date Issued"
                   InputProps={{
-                    readOnly: true,
+                    readOnly: true,  // Prevent manual input
                     endAdornment: (
                       <InputAdornment position="end">
                         <CalendarOutlined />
@@ -120,22 +153,25 @@ const InvoiceForm = () => {
                   }}
                 />
               }
-              locale="en"
+              locale="en" // Add locale prop here
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          {/* Date Picker for Due Date */}
+          <Grid item xs={12} md={6} lg={6}>
             <DatePicker
               selected={formValues.dueDate}
               onChange={(date) => handleInputChange('dueDate', date)}
               dateFormat="yyyy-MM-dd"
               placeholderText="Select Due Date"
+              className="datepicker-popper"
               customInput={
                 <TextField
                   fullWidth
                   variant="outlined"
                   label="Due Date"
                   InputProps={{
+                    readOnly: true,  // Prevent manual input
                     endAdornment: (
                       <InputAdornment position="end">
                         <CalendarOutlined />
@@ -144,10 +180,11 @@ const InvoiceForm = () => {
                   }}
                 />
               }
-              locale="en"
+              locale="en" // Add locale prop here
             />
           </Grid>
 
+          {/* Schedule Dropdown */}
           <Grid item xs={12}>
             <TextField
               select
@@ -165,6 +202,7 @@ const InvoiceForm = () => {
             </TextField>
           </Grid>
 
+          {/* Borrower Dropdown */}
           <Grid item xs={8}>
             <TextField
               select
@@ -173,13 +211,13 @@ const InvoiceForm = () => {
               variant="outlined"
               value={formValues.borrower}
               onChange={(e) => {
-                const selected = borrowers.find((borrower) => borrower.name === e.target.value);
-                setSelectedBorrower(selected);
-                handleInputChange('borrower', e.target.value);
+                const selected = borrowers.find(borrower => borrower.name === e.target.value);
+                setSelectedBorrower(selected); // Store the full borrower object
+                handleInputChange('borrower', e.target.value); // Store the name in formValues
               }}
             >
-              {borrowers.map((borrower) => (
-                <MenuItem key={borrower.userId} value={borrower.name}>
+              {borrowers.map((borrower, index) => (
+                <MenuItem key={index} value={borrower.name}>
                   {borrower.name}
                 </MenuItem>
               ))}
@@ -196,6 +234,7 @@ const InvoiceForm = () => {
             />
           </Grid>
 
+          {/* Equipment Table */}
           <Grid item xs={12}>
             <TableContainer component={Paper}>
               <Table>
@@ -227,7 +266,7 @@ const InvoiceForm = () => {
                                 return { ...prevValues, equipments: updatedEquipments };
                               });
                             }}
-                            inputProps={{ min: 0 }}
+                            inputProps={{ min: 0, max: equipment.qty }}
                           />
                         ) : (
                           equipment.qty
@@ -235,11 +274,15 @@ const InvoiceForm = () => {
                       </TableCell>
                       <TableCell align="center">
                         {editRowIndex === index ? (
-                          <IconButton onClick={() => setEditRowIndex(null)}>
+                          <IconButton
+                            onClick={() => setEditRowIndex(null)}
+                          >
                             <SaveOutlined />
                           </IconButton>
                         ) : (
-                          <IconButton onClick={() => setEditRowIndex(index)}>
+                          <IconButton
+                            onClick={() => setEditRowIndex(index)}
+                          >
                             <EditOutlined />
                           </IconButton>
                         )}
@@ -251,26 +294,33 @@ const InvoiceForm = () => {
             </TableContainer>
           </Grid>
 
+          {/* Description Field */}
           <Grid item xs={12}>
             <TextField
               fullWidth
               label="Description"
               variant="outlined"
               multiline
-              rows={4}
+              rows={4} // Allows for multi-line input
               value={formValues.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
             />
           </Grid>
 
+          {/* Save Button */}
           <Grid item xs={12}>
-            <Button variant="contained" color="primary" onClick={handleSave} fullWidth>
-              Save
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSave}
+              fullWidth
+              disabled={loading} // Disable button while loading
+            >
+              {loading ? <CircularProgress size={24} /> : 'Save'}
             </Button>
           </Grid>
         </Grid>
       </CardContent>
-    </MainCard>
   );
 };
 

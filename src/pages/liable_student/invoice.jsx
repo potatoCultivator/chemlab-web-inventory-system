@@ -104,7 +104,7 @@ const InvoiceForm = ({student}) => {
           <CardContent>
             {/* Invoice Header */}
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-              <Typography variant="h5" fontWeight="bold">Invoice #bkadfsjfks</Typography>
+              <Typography variant="h5" fontWeight="bold">Invoice {student.issueID}</Typography>
             </Box>
 
             <Divider sx={{ my: 3 }} />
@@ -194,7 +194,16 @@ const InvoiceForm = ({student}) => {
 
       {/* Print and Download Buttons */}
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2, gap: 2 }}>
-        <Button onClick={handleDownloadPDF} sx={{ backgroundColor: '#3f51b5', color: '#ffffff' }}>Download PDF</Button>
+        <Button onClick={handleDownloadPDF} 
+              sx={{
+                backgroundColor: 'primary.main',
+                color: 'white',
+                '&:hover': {
+                  backgroundColor: 'primary.dark',
+                  color: 'white',
+                },
+              }}
+            >Download PDF</Button>
       </Box>
     </div>
   );

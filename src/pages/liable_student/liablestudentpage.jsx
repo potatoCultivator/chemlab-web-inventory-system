@@ -100,13 +100,18 @@ const LiableStudentsPage = () => {
 
   return (
     <Box sx={{ p: 4, backgroundColor: 'transparent', minHeight: '100vh' }}>
-      <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#333', mb: 2 }}>
-        Liable Students
-      </Typography>
-      <Typography variant="body1" paragraph sx={{ mb: 4, color: '#666' }}>
-        Manage and track students responsible for damaged, lost, or unreturned laboratory items.
-      </Typography>
+      {!viewInvoice && (
+        <>
+          <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#333', mb: 2 }}>
+            Liable Students
+          </Typography>
+          <Typography variant="body1" paragraph sx={{ mb: 4, color: '#666' }}>
+            Manage and track students responsible for damaged, lost, or unreturned laboratory items.
+          </Typography>
+        </>
+      )}
 
+      {!viewInvoice && (
         <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
           <TextField
             variant="outlined"
@@ -114,14 +119,14 @@ const LiableStudentsPage = () => {
             value={searchQuery}
             onChange={handleSearchChange}
             InputProps={{
-          endAdornment: (
-            <>
-              <IconButton onClick={handleClearSearch}>
-            <ClearOutlined style={{ fontSize: '20px', color: '#f44336' }} />
-              </IconButton>
-              <SearchOutlined style={{ fontSize: '20px', color: '#3f51b5' }} />
-            </>
-          ),
+              endAdornment: (
+                <>
+                  <IconButton onClick={handleClearSearch}>
+                    <ClearOutlined style={{ fontSize: '20px', color: '#f44336' }} />
+                  </IconButton>
+                  <SearchOutlined style={{ fontSize: '20px', color: '#3f51b5' }} />
+                </>
+              ),
             }}
             fullWidth
             sx={{ backgroundColor: '#ffffff', borderRadius: 1 }}
@@ -137,61 +142,78 @@ const LiableStudentsPage = () => {
             <MenuItem value="Settled">Settled</MenuItem>
           </Select>
         </Box>
+      )}
 
-        {viewInvoice ? (
-          <Box>
-            <Box sx={{ display: 'flex', justifyContent: 'right', mt: 2 }}>
-                <Button onClick={handleReturnToTable} sx={{ backgroundColor: '#3f51b5', color: '#ffffff' }}>Return to Table</Button>
-            </Box>
-            <Invoice student={selectedStudent}/>
+      {viewInvoice ? (
+        <Box>
+          <Box sx={{ display: 'flex', justifyContent: 'right', mt: 2, mb: 1 }}>
+            <Button
+              onClick={handleReturnToTable}
+              sx={{
+                backgroundColor: 'primary.main',
+                color: 'white',
+                '&:hover': {
+                  backgroundColor: 'primary.dark',
+                  color: 'white',
+                },
+              }}
+            >
+              Return to Table
+            </Button>
           </Box>
-        ) : (
-          <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: 1, mb: 4 }}>
-            <Table>
-          <TableHead sx={{ backgroundColor: '#e0e0e0' }}>
-            <TableRow>
-              <TableCell>Borrower</TableCell>
-              <TableCell>Borrower ID</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Date Issued</TableCell>
-              <TableCell>Due Date</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredData.map((student) => (
-              <TableRow key={student.borrowerID}>
-            <TableCell>{student.borrower}</TableCell>
-            <TableCell>{student.studentID}</TableCell>
-            <TableCell>
-              <Chip
-                label={student.replaced === true ? 'Settled' : 'Pending'}
-                color={student.replaced === true ? 'success' : 'warning'}
-                variant="outlined"
-              />
-            </TableCell>
-            <TableCell>{formatDate(student.dateIssued, false)}</TableCell>
-            <TableCell>{formatDate(student.dueDate, false)}</TableCell>
-            <TableCell>
-              <Tooltip title="Send Reminder">
-                <IconButton size="small" onClick={() => handleSendReminder(student)} disabled={loading}>
-              <MailOutlined style={{ fontSize: '20px', color: '#ff9800' }} />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="View Details">
-                <IconButton size="small" onClick={() => handleViewDetails(student)}>
-              <EyeOutlined style={{ fontSize: '20px', color: '#2196f3' }} />
-                </IconButton>
-              </Tooltip>
-            </TableCell>
+          <Invoice student={selectedStudent} />
+        </Box>
+      ) : (
+        <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: 1, mb: 4 }}>
+          <Table>
+            <TableHead sx={{ backgroundColor: '#e0e0e0' }}>
+              <TableRow>
+                <TableCell>Borrower</TableCell>
+                <TableCell>Borrower ID</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell>Date Issued</TableCell>
+                <TableCell>Due Date</TableCell>
+                <TableCell align="center">Actions</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-            </Table>
-          </TableContainer>
-        )}
+            </TableHead>
+            <TableBody>
+              {filteredData.map((student) => (
+                <TableRow key={student.borrowerID}>
+                  <TableCell>{student.borrower}</TableCell>
+                  <TableCell>{student.studentID}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={student.replaced === true ? 'Settled' : 'Pending'}
+                      color={student.replaced === true ? 'success' : 'warning'}
+                      variant="outlined"
+                    />
+                  </TableCell>
+                  <TableCell>{formatDate(student.dateIssued, false)}</TableCell>
+                  <TableCell>{formatDate(student.dueDate, false)}</TableCell>
+                  <TableCell align="center">
+                    <Tooltip title="View Details">
+                      <IconButton
+                        size="small"
+                        onClick={() => handleViewDetails(student)}
+                        sx={{
+                          color: '#2196f3',
+                          '&:hover': {
+                            color: '#0d47a1',
+                          },
+                        }}
+                      >
+                        <EyeOutlined style={{ fontSize: '20px' }} />
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
 
-        {/* Snackbar for Feedback */}
+      {/* Snackbar for Feedback */}
       <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
         <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
           {snackbarMessage}
