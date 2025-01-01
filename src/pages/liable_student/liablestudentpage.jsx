@@ -129,7 +129,7 @@ const LiableStudentsPage = () => {
               ),
             }}
             fullWidth
-            sx={{ backgroundColor: '#ffffff', borderRadius: 1 }}
+            sx={{ backgroundColor: '#ffffff', borderRadius: 1 , height: 10}}
           />
           <Select
             value={filterStatus}
