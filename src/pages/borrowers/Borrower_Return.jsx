@@ -1,21 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   ListItem, ListItemText, ListItemAvatar, Avatar,
   Dialog, DialogTitle, DialogContent,
   Button, Typography, Box, DialogActions,
-  CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Paper
+  CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Paper,
+  Grid, Divider
 } from '@mui/material';
+import MainCard from 'components/MainCard';
+import './AccountableForm.css';
 
 import { updatedBorrowerStatus, updateStocks } from '../Query';
 
-const Borrower_Return = ({ schedID, id, name: initialName, equipments: initialEquipments, subject: initialSubject, onApprove }) => {
+const Borrower_Return = ({ schedID, userID, name: initialName, equipments: initialEquipments, subject: initialSubject, onApprove }) => {
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false); // Loading state
+  const [loading, setLoading] = useState(false);
   const [name, setName] = useState(initialName);
   const [subject, setSubject] = useState(initialSubject);
-  const [equipments, setEquipments] = useState(initialEquipments); // State for equipments
-  const [editing, setEditing] = useState(false); // State for editing
+  const [equipments, setEquipments] = useState(initialEquipments);
+  const [editing, setEditing] = useState(false);
+
+  useEffect(() => {
+    if (!userID) {
+      console.error('Error: userID is undefined in Borrower_Return component');
+    }
+  }, [userID]);
 
   const handleQtyChange = (index, value) => {
     const updatedEquipments = [...equipments];
@@ -24,19 +33,17 @@ const Borrower_Return = ({ schedID, id, name: initialName, equipments: initialEq
   };
 
   const handleApprove = async () => {
-    setLoading(true); // Set loading to true
+    setLoading(true);
     try {
       for (const equipment of equipments) {
         const qty = Number(equipment.qty);
         if (isNaN(qty) || qty <= 0) {
           console.warn(`Skipping equipment with invalid qty: ${equipment.id}`);
-          continue; // Skip invalid qty
+          continue;
         }
-        console.log('Updating stock:', equipment.id, qty);
-        await updateStocks(equipment.id, qty); // Ensure value is a valid number
+        await updateStocks(equipment.id, qty);
       }
-      console.log('Approving borrower:', id);
-      await updatedBorrowerStatus(schedID, id, 'returned');
+      await updatedBorrowerStatus(schedID, userID, 'returned');
       alert("Borrower Approved!");
       setOpen(false);
       setName('');
@@ -46,10 +53,10 @@ const Borrower_Return = ({ schedID, id, name: initialName, equipments: initialEq
       console.error("Error approving borrower: ", error);
       alert("Failed to approve borrower. Please try again.");
     } finally {
-      setLoading(false); // Set loading to false
+      setLoading(false);
     }
   };
-  
+
   return (
     <>
       <ListItem button onClick={() => setOpen(true)} sx={{ transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.05)' } }}>
@@ -65,7 +72,7 @@ const Borrower_Return = ({ schedID, id, name: initialName, equipments: initialEq
       </ListItem>
 
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="xs" fullWidth>
-        <DialogTitle sx={{ backgroundColor: "#f5f5f5", fontWeight: "bold" }}>Invoice</DialogTitle>
+        <DialogTitle sx={{ backgroundColor: "#f5f5f5", fontWeight: "bold" }}>Borrower Details</DialogTitle>
         <DialogContent sx={{ padding: "20px" }}>
           <Box my={2}>
             <Typography gutterBottom><strong>Name:</strong> {name || 'N/A'}</Typography>
@@ -116,7 +123,7 @@ const Borrower_Return = ({ schedID, id, name: initialName, equipments: initialEq
 
 Borrower_Return.propTypes = {
   schedID: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
+  userID: PropTypes.string.isRequired,
   name: PropTypes.string,
   equipments: PropTypes.arrayOf(PropTypes.shape({
     name: PropTypes.string.isRequired,
