@@ -1,10 +1,11 @@
 // assets
-import { HistoryOutlined, WarningOutlined } from '@ant-design/icons';
+import { HistoryOutlined, WarningOutlined, CheckCircleOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
     HistoryOutlined,
-    WarningOutlined
+    WarningOutlined,
+    CheckCircleOutlined
 };
 
 // ==============================|| MENU ITEMS - DASHBOARD ||============================== //
@@ -20,6 +21,14 @@ const dashboard2 = {
             type: 'item',
             url: '/liablestudents',
             icon: icons.WarningOutlined,
+            breadcrumbs: true
+        },
+        {
+            id: 'conpensating-students',
+            title: 'Compensating Records',
+            type: 'item',
+            url: '/compenstudents',
+            icon: icons.CheckCircleOutlined,
             breadcrumbs: true
         },
         {
