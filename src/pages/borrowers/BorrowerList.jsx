@@ -100,7 +100,7 @@ class BorrowerList extends Component {
             }}
             >
             <Typography variant="h5" sx={{ marginBottom: 1 }}>
-            Borrowers List
+            Borrow
             </Typography>
 
             <Box sx={{ width: '100%' }}>
@@ -118,7 +118,9 @@ class BorrowerList extends Component {
                 <TableBody>
                 {equipments.map((equipment, index) => (
                 <TableRow key={index}>
-                    <TableCell>{`${equipment.name} ${equipment.capacity}${equipment.unit}`}</TableCell>
+                    <TableCell>
+                        {equipment.unit === 'pcs' ? equipment.name : `${equipment.name} ${equipment.capacity}${equipment.unit}`}
+                    </TableCell>
                     <TableCell align='center'>{equipment.qty}</TableCell>
                     <TableCell align='center'>{filteredBorrowers.filter(borrower => borrower.status === 'pending').length}</TableCell>
                     <TableCell align='center'>{equipment.qty * filteredBorrowers.filter(borrower => borrower.status === 'pending').length}</TableCell>

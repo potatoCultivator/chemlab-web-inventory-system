@@ -1,4 +1,5 @@
 import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
 // import Typography from '@mui/material/Typography';
 // import Box from '@mui/material/Box';
 
@@ -10,9 +11,13 @@ import BorrowerList from './BorrowerList';
 import Borrower_Return_List from './Borrower_Return_List';
 import InvoiceForm from './InvoiceForm';
 
+import { useState } from 'react';
+
 // ==============================|| SAMPLE PAGE ||============================== //
 
 export default function Borrowers() {
+  const [showBorrowerList, setShowBorrowerList] = useState(true);
+
   return (
     <>
       {/* row 1 */}
@@ -23,17 +28,14 @@ export default function Borrowers() {
 
       <Grid container rowSpacing={4.5} columnSpacing={1}>
         <Grid item xs={12} md={6}>
-            <MainCard >
-              <BorrowerList />
-            </MainCard>
+          <MainCard>
+          <Button onClick={() => setShowBorrowerList(!showBorrowerList)}>
+            {showBorrowerList ? 'switch to return' : 'switch to borrow'}
+          </Button>
+            {showBorrowerList ? <BorrowerList /> : <Borrower_Return_List />}
+          </MainCard>
         </Grid>
         <Grid item xs={12} md={6}>
-            <MainCard >
-              <Borrower_Return_List />
-            </MainCard>
-        </Grid>
-
-        <Grid item xs={12} md={12}>
           <MainCard>
             <ScheduleTable />
           </MainCard>
@@ -42,7 +44,7 @@ export default function Borrowers() {
           <MainCard>
             <InvoiceForm />
           </MainCard>
-          </Grid>
+        </Grid>
       </Grid>
     </>
   );
