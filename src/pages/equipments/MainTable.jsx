@@ -453,15 +453,6 @@ export default function MainTable() {
                     Category
                   </TableSortLabel>
                 </TableCell>
-                {/* <TableCell sortDirection={orderBy === 'unit' ? order : false}>
-                  <TableSortLabel
-                    active={orderBy === 'unit'}
-                    direction={orderBy === 'unit' ? order : 'asc'}
-                    onClick={() => handleRequestSort('unit')}
-                  >
-                    Unit
-                  </TableSortLabel>
-                </TableCell> */}
                 <TableCell align="right" sortDirection={orderBy === 'stocks' ? order : false}>
                   <TableSortLabel
                     active={orderBy === 'stocks'}
