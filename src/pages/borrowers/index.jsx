@@ -8,6 +8,7 @@ import ScheduleTable from './ScheduleTable';
 import MainCard from 'components/MainCard';
 import BorrowerList from './BorrowerList';
 import Borrower_Return_List from './Borrower_Return_List';
+import InvoiceForm from './InvoiceForm';
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
@@ -37,6 +38,11 @@ export default function Borrowers() {
             <ScheduleTable />
           </MainCard>
         </Grid>
+        <Grid item xs={12} md={6}>
+          <MainCard>
+            <InvoiceForm />
+          </MainCard>
+          </Grid>
       </Grid>
     </>
   );

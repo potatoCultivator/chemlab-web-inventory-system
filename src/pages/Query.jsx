@@ -24,6 +24,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword  } from 'fir
 import { circIn } from 'framer-motion';
 import borrowers from 'menu-items/borrowers';
 import equipments from 'menu-items/equipments';
+import { teal } from '@mui/material/colors';
 
 // Function to validate tool data
 function validateToolData(data) {
@@ -398,6 +399,7 @@ function get_Sched(callback, errorCallback) {
           subject: data.subject,
           borrowers: data.borrowers,
           equipments: data.equipments,
+          teacher: data.teacher,
         };
       });
       callback(schedList); // Call the callback with the updated schedule list
@@ -504,6 +506,37 @@ async function uploadInvoice(invoiceData) {
   console.log('Invoice uploaded successfully!');
 }
 
+async function get_Borrowers(schedID, onSuccess, onError) {
+  const db = firestore;
+  
+  // Get the reference to the specific schedule document using schedID
+  const scheduleDocRef = doc(db, 'schedule', schedID);  // Reference to the specific document
+
+  try {
+    // Fetch the document
+    const scheduleDocSnapshot = await getDoc(scheduleDocRef);
+
+    if (scheduleDocSnapshot.exists()) {
+      // Extract the borrowers array from the document data
+      const borrowers = scheduleDocSnapshot.data().borrowers;
+
+      // Check if borrowers exist and return them, otherwise, return an empty array
+      const borrowerList = borrowers || [];
+
+      // Call onSuccess callback with the fetched borrowers
+      onSuccess(borrowerList);
+    } else {
+      console.log('No schedule found with the specified schedID');
+      onSuccess([]);  // Return empty array if no schedule is found
+    }
+  } catch (error) {
+    // Call onError callback in case of failure
+    onError(error);
+  }
+}
+
+
+
 export { 
   addEquipment,
   uploadImageAndGetUrl,
@@ -528,5 +561,6 @@ export {
   updateStocks,
   getSchedEquipments,
   get_Sched,
-  uploadInvoice
+  uploadInvoice,
+  get_Borrowers,
 };

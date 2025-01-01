@@ -1,0 +1,6 @@
+.datepicker-popper {
+  position: absolute !important;  /* Ensure absolute positioning */
+  z-index: 9999 !important;       /* Increase the z-index to ensure it's on top */
+  background-color: white !important; /* Optional: adds background color */
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.15); /* Optional: adds shadow for clarity */
+}
