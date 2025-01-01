@@ -45,7 +45,7 @@ const TotalStocks = ({ isLoading }) => {
           border={false}
           content={false}
           sx={{
-            bgcolor: 'secondary.dark',
+            bgcolor: 'primary.light',
             color: '#fff',
             overflow: 'hidden',
             position: 'relative',
@@ -55,7 +55,7 @@ const TotalStocks = ({ isLoading }) => {
               position: 'absolute',
               width: 210,
               height: 210,
-              background: `linear-gradient(45deg, ${theme.palette.secondary[800]}, ${theme.palette.secondary[600]})`,
+              background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`, // Updated gradient to use primary color
               borderRadius: '50%',
               top: { xs: -105, sm: -85 },
               right: { xs: -140, sm: -95 }
@@ -65,7 +65,7 @@ const TotalStocks = ({ isLoading }) => {
               position: 'absolute',
               width: 210,
               height: 210,
-              background: `linear-gradient(45deg, ${theme.palette.secondary[800]}, ${theme.palette.secondary[600]})`,
+              background: `linear-gradient(45deg, ${theme.palette.primary.dark}, ${theme.palette.secondary.dark})`, // Updated gradient to use primary color
               borderRadius: '50%',
               top: { xs: -155, sm: -125 },
               right: { xs: -70, sm: -15 },
@@ -81,12 +81,12 @@ const TotalStocks = ({ isLoading }) => {
                     <Typography sx={{ fontSize: '2.125rem', fontWeight: 700, mr: 1, mt: 1.75, mb: 0.75 }}>{count}</Typography>
                   </Grid>
                   <Grid item>
-                  <Avatar
+                    <Avatar
                       variant="rounded"
                       sx={{
                         ...theme.typography.commonAvatar,
                         ...theme.typography.largeAvatar,
-                        bgcolor: 'secondary.800',
+                        bgcolor: 'primary.main',
                         mt: 1
                       }}
                     >
@@ -103,7 +103,7 @@ const TotalStocks = ({ isLoading }) => {
                     color: 'secondary.200'
                   }}
                 >
-                Stocks
+                  Stocks
                 </Typography>
               </Grid>
             </Grid>
