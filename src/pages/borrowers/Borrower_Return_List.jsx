@@ -178,7 +178,7 @@ class BorrowerList extends Component {
                 <Box key={index} sx={{ width: '100%' }}>
                 <Borrower_Return 
                 schedID={selectedSchedule} 
-                userID={borrower.userID} 
+                userID={borrower.userId} 
                 name={borrower.name}
                 equipments={equipments}
                 subject={selectedScheduleSubject} 
