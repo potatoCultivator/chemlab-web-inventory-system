@@ -19,14 +19,14 @@ const dashboard2 = {
     title: 'Records',
     type: 'group',
     children: [
-        {
-            id: 'invoice',
-            title: 'Invoice',
-            type: 'item',
-            url: '/invoice',
-            icon: icons.FileTextOutlined,
-            breadcrumbs: true
-        },
+        // {
+        //     id: 'invoice',
+        //     title: 'Invoice',
+        //     type: 'item',
+        //     url: '/invoice',
+        //     icon: icons.FileTextOutlined,
+        //     breadcrumbs: true
+        // },
         {
             id: 'history',
             title: 'History',
