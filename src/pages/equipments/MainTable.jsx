@@ -397,151 +397,153 @@ export default function MainTable() {
   );
 
   return (
-    <Box sx={{ padding: 2 }}>
-      <Grid container spacing={2} alignItems="center" mb={2}>
-        <Grid item xs={8} sm={8} display="flex" justifyContent={{ xs: 'flex-end', sm: 'flex-end' }} mt={{ xs: 2, sm: 0 }}>
-          <TextField
-            label="Search"
-            variant="outlined"
-            fullWidth
-            value={searchQuery}
-            onChange={handleSearchChange}
-            // sx={{ mb: { xs: 0, sm: 2 } }} // Remove bottom margin on mobile
-          />
+    <Box sx={{ padding: 0 }} >
+      <Box sx={{ height: 769 }}> {/* Added Box with height 400 */}
+        <Grid container spacing={2} alignItems="center" mb={2}>
+          <Grid item xs={8} sm={8} display="flex" justifyContent={{ xs: 'flex-end', sm: 'flex-end' }} mt={{ xs: 2, sm: 0 }}>
+            <TextField
+              label="Search"
+              variant="outlined"
+              fullWidth
+              value={searchQuery}
+              onChange={handleSearchChange}
+              // sx={{ mb: { xs: 0, sm: 2 } }} // Remove bottom margin on mobile
+            />
+          </Grid>
+          <Grid item xs={4} sm={4} display="</Grid>flex" justifyContent={{ xs: 'flex-end', sm: 'flex-end' }} mt={{ xs: 2, sm: 0 }}>
+            <CustomButton type="add" variant="contained" color="primary" onClick={handleDialogOpen}>
+              Add
+            </CustomButton>
+          </Grid>
         </Grid>
-        <Grid item xs={4} sm={4} display="</Grid>flex" justifyContent={{ xs: 'flex-end', sm: 'flex-end' }} mt={{ xs: 2, sm: 0 }}>
-          <CustomButton type="add" variant="contained" color="primary" onClick={handleDialogOpen}>
-            Add
-          </CustomButton>
-        </Grid>
-      </Grid>
-      
-      <TableContainer
-        component={Paper}
-        style={{
-          maxHeight: "700px", // Set a maximum height to allow scrolling
-          overflowY: "auto",  // Enables vertical scrolling for the body
-        }}
-      >
-        <Table aria-label="collapsible table">
-          <TableHead>
-            <TableRow
-              style={{
-                backgroundColor: "#f5f5f5",
-                position: "sticky", // Make the header sticky
-                top: 0,             // Stick to the top of the container
-                zIndex: 1,          // Ensure it's above the body
-              }}
-            >
-              <TableCell />
-              <TableCell sortDirection={orderBy === 'name' ? order : false}>
-                <TableSortLabel
-                  active={orderBy === 'name'}
-                  direction={orderBy === 'name' ? order : 'asc'}
-                  onClick={() => handleRequestSort('name')}
-                >
-                  Equipment
-                </TableSortLabel>
-              </TableCell>
-              <TableCell sortDirection={orderBy === 'category' ? order : false}>
-                <TableSortLabel
-                  active={orderBy === 'category'}
-                  direction={orderBy === 'category' ? order : 'asc'}
-                  onClick={() => handleRequestSort('category')}
-                >
-                  Category
-                </TableSortLabel>
-              </TableCell>
-              {/* <TableCell sortDirection={orderBy === 'unit' ? order : false}>
-                <TableSortLabel
-                  active={orderBy === 'unit'}
-                  direction={orderBy === 'unit' ? order : 'asc'}
-                  onClick={() => handleRequestSort('unit')}
-                >
-                  Unit
-                </TableSortLabel>
-              </TableCell> */}
-              <TableCell align="right" sortDirection={orderBy === 'stocks' ? order : false}>
-                <TableSortLabel
-                  active={orderBy === 'stocks'}
-                  direction={orderBy === 'stocks' ? order : 'asc'}
-                  onClick={() => handleRequestSort('stocks')}
-                >
-                  Stocks
-                </TableSortLabel>
-              </TableCell>
-              <TableCell align="right" sortDirection={orderBy === 'total' ? order : false}>
-                <TableSortLabel
-                  active={orderBy === 'total'}
-                  direction={orderBy === 'total' ? order : 'asc'}
-                  onClick={() => handleRequestSort('total')}
-                >
-                  Total
-                </TableSortLabel>
-              </TableCell>
-              <TableCell align="right">Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {stableSort(filteredRows, getComparator(order, orderBy))
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => (
-                <Row key={row.id} row={row} onDelete={handleDelete} />
-              ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={filteredRows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-      <Dialog
-        open={dialogOpen}
-        onClose={handleDialogClose}
-        maxWidth={isMobile ? 'xs' : 'lg'} // Change the maxWidth to 'lg' for larger width
-        fullWidth
-        sx={{ 
-          '& .MuiDialog-paper': { 
-            width: isMobile ? '100%' : '50%', 
-            maxWidth: 'none',
-            '@media (min-width: 600px)': { width: '75%' }, // Adjust width for medium screens
-            '@media (min-width: 960px)': { width: '50%' }, // Adjust width for large screens
-            '@media (min-width: 1280px)': { width: '40%' } // Adjust width for extra large screens
-          } 
-        }} 
-      >
-        <DialogTitle>Add New Equipment</DialogTitle>
-        <DialogContent>
-          <EquipmentForm onClose={handleDialogClose} />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDialogClose} color="primary">
-            Cancel
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <Dialog
-        open={confirmDialogOpen}
-        onClose={() => setConfirmDialogOpen(false)}
-      >
-        <DialogTitle>Confirm Delete</DialogTitle>
-        <DialogContent>
-          <Typography>Are you sure you want to delete this equipment?</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setConfirmDialogOpen(false)} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={confirmDelete} sx={{ color: 'error.main' }} disabled={loading}>
-            {loading ? <CircularProgress size={24} /> : 'Confirm'}
-          </Button>
-        </DialogActions>
-      </Dialog>
+        
+        <TableContainer
+          component={Paper}
+          style={{
+            maxHeight: "700px", // Set a maximum height to allow scrolling
+            overflowY: "auto",  // Enables vertical scrolling for the body
+          }}
+        >
+          <Table aria-label="collapsible table">
+            <TableHead>
+              <TableRow
+                style={{
+                  backgroundColor: "#f5f5f5",
+                  position: "sticky", // Make the header sticky
+                  top: 0,             // Stick to the top of the container
+                  zIndex: 1,          // Ensure it's above the body
+                }}
+              >
+                <TableCell />
+                <TableCell sortDirection={orderBy === 'name' ? order : false}>
+                  <TableSortLabel
+                    active={orderBy === 'name'}
+                    direction={orderBy === 'name' ? order : 'asc'}
+                    onClick={() => handleRequestSort('name')}
+                  >
+                    Equipment
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell sortDirection={orderBy === 'category' ? order : false}>
+                  <TableSortLabel
+                    active={orderBy === 'category'}
+                    direction={orderBy === 'category' ? order : 'asc'}
+                    onClick={() => handleRequestSort('category')}
+                  >
+                    Category
+                  </TableSortLabel>
+                </TableCell>
+                {/* <TableCell sortDirection={orderBy === 'unit' ? order : false}>
+                  <TableSortLabel
+                    active={orderBy === 'unit'}
+                    direction={orderBy === 'unit' ? order : 'asc'}
+                    onClick={() => handleRequestSort('unit')}
+                  >
+                    Unit
+                  </TableSortLabel>
+                </TableCell> */}
+                <TableCell align="right" sortDirection={orderBy === 'stocks' ? order : false}>
+                  <TableSortLabel
+                    active={orderBy === 'stocks'}
+                    direction={orderBy === 'stocks' ? order : 'asc'}
+                    onClick={() => handleRequestSort('stocks')}
+                  >
+                    Stocks
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell align="right" sortDirection={orderBy === 'total' ? order : false}>
+                  <TableSortLabel
+                    active={orderBy === 'total'}
+                    direction={orderBy === 'total' ? order : 'asc'}
+                    onClick={() => handleRequestSort('total')}
+                  >
+                    Total
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell align="right">Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {stableSort(filteredRows, getComparator(order, orderBy))
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row) => (
+                  <Row key={row.id} row={row} onDelete={handleDelete} />
+                ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={filteredRows.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+        <Dialog
+          open={dialogOpen}
+          onClose={handleDialogClose}
+          maxWidth={isMobile ? 'xs' : 'lg'} // Change the maxWidth to 'lg' for larger width
+          fullWidth
+          sx={{ 
+            '& .MuiDialog-paper': { 
+              width: isMobile ? '100%' : '50%', 
+              maxWidth: 'none',
+              '@media (min-width: 600px)': { width: '75%' }, // Adjust width for medium screens
+              '@media (min-width: 960px)': { width: '50%' }, // Adjust width for large screens
+              '@media (min-width: 1280px)': { width: '40%' } // Adjust width for extra large screens
+            } 
+          }} 
+        >
+          <DialogTitle>Add New Equipment</DialogTitle>
+          <DialogContent>
+            <EquipmentForm onClose={handleDialogClose} />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleDialogClose} color="primary">
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog
+          open={confirmDialogOpen}
+          onClose={() => setConfirmDialogOpen(false)}
+        >
+          <DialogTitle>Confirm Delete</DialogTitle>
+          <DialogContent>
+            <Typography>Are you sure you want to delete this equipment?</Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setConfirmDialogOpen(false)} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={confirmDelete} sx={{ color: 'error.main' }} disabled={loading}>
+              {loading ? <CircularProgress size={24} /> : 'Confirm'}
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Box>
     </Box>
   );
 }

@@ -97,6 +97,7 @@ class BorrowerList extends Component {
             width: '100%',
             padding: 2,
             marginBottom: 2,
+            height: 400
              // Set constant height
                         }}
                         >

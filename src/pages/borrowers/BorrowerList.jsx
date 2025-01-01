@@ -96,7 +96,8 @@ class BorrowerList extends Component {
             zIndex: 1,
             width: '100%',
             padding: 2,
-            marginBottom: 2
+            marginBottom: 2,
+            height: 400 
             }}
             >
             <Typography variant="h5" sx={{ marginBottom: 1 }}>
@@ -162,15 +163,16 @@ class BorrowerList extends Component {
             />
             </Box>
             <Box
-            sx={{
-            height: 'calc(100vh - 500px)', // Adjusts dynamically to screen height
-            overflow: 'auto',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            padding: 2
-            }}
-            >
+                sx={{
+                height: 'calc(100vh - 500px)', // Adjusts dynamically to screen height
+                overflow: 'auto',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: 2,
+                height: 400 // Set constant height
+                }}
+                >
             {filteredBorrowers.filter(borrower => borrower.status === 'pending').length === 0 ? (
             <Typography variant="h6">No borrowers</Typography>
             ) : (

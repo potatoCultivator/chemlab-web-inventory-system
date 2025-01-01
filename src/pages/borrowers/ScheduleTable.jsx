@@ -308,7 +308,7 @@ export default function ScheduleTable({ title }) {
   // }
   
   return (
-    <Box>
+    <Box sx={{ height: 853, backgroundColor: 'transparent' }}>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
         <Typography variant="h5">Schedules</Typography>
       </Box>
