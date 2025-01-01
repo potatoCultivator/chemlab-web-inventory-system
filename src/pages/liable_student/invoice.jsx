@@ -19,8 +19,9 @@ import {
 import { useReactToPrint } from 'react-to-print';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { Timestamp } from 'firebase/firestore';
 
-const InvoiceForm = () => {
+const InvoiceForm = ({student}) => {
   const componentRef = useRef();
 
   const handlePrint = useReactToPrint({
@@ -51,6 +52,18 @@ const InvoiceForm = () => {
     });
   };
   
+  const formatDate = (timestamp) => {
+    if (!timestamp) return 'N/A';
+    const date = new Date(timestamp.seconds * 1000);
+    return date.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      // hour: 'numeric',
+      // minute: 'numeric',
+      // hour12: true,
+    });
+  };
 
   return (
     <div>
@@ -102,59 +115,65 @@ const InvoiceForm = () => {
                 <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
                   <UserOutlined /> Borrower:
                 </Typography>
-                <Typography>Name: John Doe</Typography>
-                <Typography>ID: 0fXKGlajQiKcMzLWjZ7V</Typography>
+                <Typography>Name: {student.borrower}</Typography>
+                <Typography>ID: {student.studentID  }</Typography>
               </Box>
 
               <Box>
                 <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
                   <ClockCircleOutlined /> Issue Details:
                 </Typography>
-                <Typography>Date Issued: December 30, 2024, 5:18:39 PM UTC+8</Typography>
-                <Typography>Due Date: December 30, 2024, 5:19:43 PM UTC+8</Typography>
+                <Typography>Date Issued: {formatDate(student.dateIssued)}</Typography>
+                <Typography>Due Date: {formatDate(student.dueDate)}</Typography>
               </Box>
             </Box>
 
             <Divider sx={{ my: 3 }} />
 
-            {/* Equipment Details Table */}
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Equipment Name</TableCell>
-                  <TableCell>Quantity</TableCell>
-                  <TableCell>Capacity</TableCell>
-                  <TableCell>Unit</TableCell>
-                  <TableCell>Description</TableCell>
-                  <TableCell>Replaced</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow>
-                  <TableCell>Beaker</TableCell>
-                  <TableCell>5</TableCell>
-                  <TableCell>20</TableCell>
-                  <TableCell>ml</TableCell>
-                  <TableCell>fdgufdshvjdzbvsdlgvdsyvdsuidsdzhfs</TableCell>
-                  <TableCell>false</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+                  <Table>
+                    <TableHead>
+                    <TableRow>
+                      <TableCell>Equipment Name</TableCell>
+                      <TableCell align='center'>Capacity</TableCell>
+                      <TableCell align='center'>Unit</TableCell>
+                      <TableCell align='center'>Quantity</TableCell>
+                      <TableCell align='center'>Replaced</TableCell>
+                    </TableRow>
+                    </TableHead>
+                    <TableBody>
+                    {student.equipments.map((equipment, index) => (
+                      <TableRow key={index}>
+                      <TableCell>{equipment.name}</TableCell>
+                      <TableCell align='center'>{equipment.capacity}</TableCell>
+                      <TableCell align='center'>{equipment.unit}</TableCell>
+                      <TableCell align='center'>{equipment.qty}</TableCell>
+                      <TableCell align='center'>{equipment.replaced ? 'Yes' : 'No'}</TableCell>
+                      </TableRow>
+                    ))}
+                      <TableCell align='right' colSpan={3}>Total Quantity:</TableCell>
+                      <TableCell align='center' colSpan={1}> {student.equipments.reduce((total, equipment) => total + equipment.qty, 0)}</TableCell>
+                    </TableBody>
+                  </Table>
 
-            {/* Summary */}
+                    {/* <Box mt={4} p={2} sx={{ backgroundColor: '#e0e0e0', borderRadius: 1 }}>
+                      <Box display="flex" justifyContent="space-between" mb={1}>
+                      <Typography variant="subtitle1" fontWeight="bold">Total Quantity:</Typography>
+                      <Typography variant="subtitle1">{student.equipments.reduce((total, equipment) => total + equipment.qty, 0)}</Typography>
+                      </Box>
+                      <Divider />
+                    </Box> */}
+
+                        {/* Terms and Conditions */}
             <Box mt={4} p={2} sx={{ backgroundColor: '#e0e0e0', borderRadius: 1 }}>
-              <Box display="flex" justifyContent="space-between" mb={1}>
-                <Typography variant="subtitle1" fontWeight="bold">Total Quantity:</Typography>
-                <Typography variant="subtitle1">5</Typography>
-              </Box>
-              <Divider />
+              <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Description:</Typography>
+              <Typography variant="body2">
+                {student.description}
+              </Typography>
             </Box>
-
-            {/* Terms and Conditions */}
             <Box mt={4}>
               <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Terms and Conditions:</Typography>
               <Typography variant="body2">
-                Please ensure that the equipment is returned in good condition by the due date. For any issues, contact support@chemlab.com.
+              Replacement of damaged or not working equipment shall be made by students before the due date. Otherwise, penalties may be given, or it may delay or restrict the use of equipment in the future.
               </Typography>
             </Box>
           </CardContent>

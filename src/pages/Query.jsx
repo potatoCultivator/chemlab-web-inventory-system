@@ -535,7 +535,16 @@ async function get_Borrowers(schedID, onSuccess, onError) {
   }
 }
 
+function getInvoices(callback, errorCallback) {
+  const db = firestore;
+  const invoicesCollection = collection(db, 'invoice');
 
+  // Set up a real-time listener
+  return onSnapshot(invoicesCollection, (snapshot) => {
+    const invoicesList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    callback(invoicesList);
+  }, errorCallback);
+}
 
 export { 
   addEquipment,
@@ -563,4 +572,5 @@ export {
   get_Sched,
   uploadInvoice,
   get_Borrowers,
+  getInvoices,
 };

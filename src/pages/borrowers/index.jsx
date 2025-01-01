@@ -10,6 +10,8 @@ import MainCard from 'components/MainCard';
 import BorrowerList from './BorrowerList';
 import Borrower_Return_List from './Borrower_Return_List';
 
+import InvoiceForm from './InvoiceForm';
+
 import { useState } from 'react';
 
 // ==============================|| SAMPLE PAGE ||============================== //
@@ -24,6 +26,9 @@ export default function Borrowers() {
         <Typography variant="h5" className="Borrowers-title">Borrowers</Typography>
       </Grid>
       <Box sx={{ mt: 2 }} /> */}
+
+    <InvoiceForm />
+
 
       <Grid container rowSpacing={4.5} columnSpacing={1}>
         <Grid item xs={12} md={6}>

@@ -1,6 +1,11 @@
+/* InvoiceForm.css */
 .datepicker-popper {
-  position: absolute !important;  /* Ensure absolute positioning */
-  z-index: 9999 !important;       /* Increase the z-index to ensure it's on top */
-  background-color: white !important; /* Optional: adds background color */
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.15); /* Optional: adds shadow for clarity */
+  display: flex;
+  align-items: center; /* Aligns the content vertically */
+  justify-content: center; /* Centers the content horizontally */
+}
+
+/* InvoiceForm.css */
+.MuiTextField-root {
+  margin-bottom: 16px; /* Optional: control margin bottom */
 }
