@@ -18,7 +18,7 @@ import {
 import Borrower_Return from './Borrower_Return';
 import { get_Sched } from '../Query';
 
-class Borrower_Return_List extends Component {
+class BorrowerList extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -120,8 +120,8 @@ class Borrower_Return_List extends Component {
                 <TableRow key={index}>
                     <TableCell>{`${equipment.name} ${equipment.capacity}${equipment.unit}`}</TableCell>
                     <TableCell align='center'>{equipment.qty}</TableCell>
-                    <TableCell align='center'>{filteredBorrowers.filter(borrower => borrower.status === 'approved').length}</TableCell>
-                    <TableCell align='center'>{equipment.qty * filteredBorrowers.filter(borrower => borrower.status === 'approved').length}</TableCell>
+                    <TableCell align='center'>{filteredBorrowers.filter(borrower => borrower.status === 'pending').length}</TableCell>
+                    <TableCell align='center'>{equipment.qty * filteredBorrowers.filter(borrower => borrower.status === 'pending').length}</TableCell>
                 </TableRow>
                 ))}
                 </TableBody>
@@ -176,14 +176,13 @@ class Borrower_Return_List extends Component {
                 .filter(borrower => borrower.status === 'pending return')
                 .map((borrower, index) => (
                 <Box key={index} sx={{ width: '100%' }}>
-                {console.log('Borrower:', borrower)}
                 <Borrower_Return 
                 schedID={selectedSchedule} 
-                id={borrower.userId} // Ensure userId is passed as id
+                id={borrower.userID} 
                 name={borrower.name}
                 equipments={equipments}
                 subject={selectedScheduleSubject} 
-                onApprove={() => this.handleBorrowerApproved(borrower.userId)} // Ensure userId is passed correctly
+                onApprove={() => this.handleBorrowerApproved(borrower.userID)}
                 />
                 </Box>
                 ))
@@ -194,4 +193,4 @@ class Borrower_Return_List extends Component {
     }
 }
 
-export default Borrower_Return_List;
+export default BorrowerList;

@@ -443,6 +443,7 @@ async function updatedBorrowerStatus(schedID, borrowerID, newStatus) {
   }
 }
 
+
 async function getSchedEquipments(schedID) {
   const db = firestore;
   const docRef = doc(db, 'schedule', schedID);
