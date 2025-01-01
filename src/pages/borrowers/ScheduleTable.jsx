@@ -315,7 +315,7 @@ export default function ScheduleTable({ title }) {
       <TableContainer
         component={Paper}
         style={{
-          maxHeight: "615px", // Set a maximum height to allow scrolling
+          maxHeight: "815px", // Set a maximum height to allow scrolling
           overflowY: "auto",  // Enables vertical scrolling for the body
         }}
       >
