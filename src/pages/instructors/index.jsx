@@ -26,7 +26,9 @@ export default function Instructors() {
       </Grid> */}
       {/* row 2 */}
       <Grid item xs={12}  md={8}>
-        <InstructorTable />
+        <MainCard title="List" content={InstructorTable} >
+          <InstructorTable />
+        </MainCard>
       </Grid>
       <Grid item xs={12}  md={4}>
         <MainCard title="Instructor Registration" content={InstructorRegistration} >

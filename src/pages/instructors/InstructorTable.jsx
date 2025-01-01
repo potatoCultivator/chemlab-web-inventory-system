@@ -142,7 +142,7 @@ export default function InstructorTable() {
   };
 
   return (
-    <Box>
+    <Box height={510}>
       {loading ? (
         <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
           <CircularProgress />
