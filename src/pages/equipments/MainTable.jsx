@@ -26,8 +26,12 @@ import CustomButton from './CustomButton copy';
 import { TableSortLabel, TablePagination, TextField } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip'; // Import Tooltip
 
+import { Timestamp } from 'firebase/firestore';
+
+import { useNavigate } from 'react-router-dom';
+
 // Database
-import { getAllEquipment, deleteEquipment, updateLastHistoryEntry, deleteLastHistoryEntry } from 'pages/Query';
+import { getAllEquipment, deleteEquipment, updateLastHistoryEntry, deleteLastHistoryEntry, updateStock, addHistoryEntry } from 'pages/Query';
 import { on } from 'process';
 
 function descendingComparator(a, b, orderBy) {
@@ -336,7 +340,37 @@ export default function MainTable() {
 
   const [addStockDialogOpen, setAddStockDialogOpen] = React.useState(false); // State to manage add stock dialog visibility
   const [addStockId, setAddStockId] = React.useState(null); // State to store the id of the equipment to add stock
-
+  const [addStockValue, setAddStockValue] = React.useState(0); // State to store the value of the added stock
+  const [data, setData] = React.useState({});
+  const { navigate } = useNavigate();
+  
+  React.useEffect(() => {
+      const storedData = localStorage.getItem('userData');
+  
+      if (storedData) {
+        setData(JSON.parse(storedData));
+      } else {
+        const fetchData = async () => {
+          try {
+            const userData = await fetchUserProfile();
+            const { firstname, lastname } = userData;
+  
+            if (firstname && lastname) {
+              setData({ firstname, lastname });
+              localStorage.setItem('userData', JSON.stringify({ firstname, lastname }));
+            } else {
+              console.error('Profile data is incomplete.');
+              navigate('/404');
+            }
+          } catch (err) {
+            console.error('Error fetching data:', err);
+            navigate('/404');
+          }
+        };
+        fetchData();
+      }
+    }, [navigate]);
+  
   React.useEffect(() => {
     const unsubscribe = getAllEquipment(
       (equipment) => {
@@ -410,6 +444,42 @@ export default function MainTable() {
     row.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
     row.unit.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const confirmAddStock = async () => {
+    try {
+      console.log("Add stock confirmed");
+      console.log("ID:", addStockId, "Value:", addStockValue);
+  
+      // Ensure equipment is found before proceeding
+      const equipment = rows.find((row) => row.id === addStockId);
+      if (!equipment) {
+        console.error("Equipment not found for the given ID.");
+        return;
+      }
+  
+      // Prepare updated stock values
+      const updatedStocks = Number(equipment.stocks) + Number(addStockValue);
+      const updatedTotal = Number(equipment.total) + Number(addStockValue);
+  
+      // Create history entry
+      const historyEntry = {
+        date: Timestamp.fromDate(new Date()),
+        addedBy: `${data.firstname} ${data.lastname}`,
+        addedStock: addStockValue,
+      };
+
+      // rows.find((row) => row.id === addStockId).history.push(historyEntry);
+  
+      // Call the update function
+      await updateStock(addStockId, updatedStocks, updatedTotal, historyEntry);
+      setAddStockDialogOpen(false);
+      console.log("Stock update successful.");
+    } catch (error) {
+      console.error("Error confirming stock addition:", error);
+    }
+  };
+  
+
 
   return (
     <Box sx={{ padding: 0 }} >
@@ -566,7 +636,9 @@ export default function MainTable() {
                   label="Stocks" 
                   type="number" 
                   fullWidth 
-                  variant="outlined" 
+                  variant="outlined"
+                  value={addStockValue}
+                  onChange={(e) => setAddStockValue(e.target.value)}
                 />
               </Grid>
             </Grid>
@@ -574,6 +646,9 @@ export default function MainTable() {
           <DialogActions>
             <Button onClick={() => setAddStockDialogOpen(false)} color="primary">
               Cancel
+            </Button>
+            <Button onClick={() => confirmAddStock()} color="primary">
+              Add
             </Button>
           </DialogActions>
         </Dialog>

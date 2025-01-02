@@ -147,7 +147,7 @@ const InvoiceForm = ({student}) => {
                       <TableCell align='center'>{equipment.capacity}</TableCell>
                       <TableCell align='center'>{equipment.unit}</TableCell>
                       <TableCell align='center'>{equipment.qty}</TableCell>
-                      <TableCell align='center'>{equipment.replaced ? 'Yes' : 'No'}</TableCell>
+                      <TableCell align='center'>{student.replaced ? 'Yes' : 'No'}</TableCell>
                       </TableRow>
                     ))}
                       <TableCell align='right' colSpan={3}>Total Quantity:</TableCell>

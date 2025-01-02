@@ -622,6 +622,20 @@ async function fetchBorrowedEquipments() {
   }
 }
 
+function fetchDeletedAndNotDeletedEquipments(callback, errorCallback) {
+  const db = firestore;
+  const collectionRef = collection(db, 'equipments');
+
+  return onSnapshot(collectionRef, (snapshot) => {
+    const equipments = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    
+    // Sort equipments by dateAdded in descending order (latest first)
+    equipments.sort((a, b) => b.dateAdded - a.dateAdded);
+
+    callback(equipments);
+  }, errorCallback);
+}
+
 export { 
   addEquipment,
   uploadImageAndGetUrl,
@@ -653,4 +667,5 @@ export {
   get_SchedSub,
   updateInvoice,
   fetchBorrowedEquipments,
+  fetchDeletedAndNotDeletedEquipments,
 };
