@@ -590,6 +590,38 @@ async function updateInvoice(id) {
   await updateDoc(docRef, { replaced: true });
 }
 
+async function fetchBorrowedEquipments() {
+  const db = firestore;
+  const scheduleCollectionRef = collection(db, "schedule");
+  const borrowedEquipments = [];
+
+  try {
+    const querySnapshot = await getDocs(scheduleCollectionRef);
+
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+
+      // Skip the schedule if it is marked as deleted
+      if (data.deleted) return;
+
+      // Check if the document contains `equipments` and `borrowers` arrays
+      if (data.equipments) {
+          const borrowed = data.equipments;
+          
+        if (borrowed.length > 0) {
+          borrowedEquipments.push(...borrowed);
+        }
+      }
+    });
+
+    console.log("Borrowed Equipments:", borrowedEquipments);
+    return borrowedEquipments;
+  } catch (error) {
+    console.error("Error fetching borrowed equipments:", error);
+    return [];
+  }
+}
+
 export { 
   addEquipment,
   uploadImageAndGetUrl,
@@ -620,4 +652,5 @@ export {
   getEquipmentsCounts,
   get_SchedSub,
   updateInvoice,
+  fetchBorrowedEquipments,
 };

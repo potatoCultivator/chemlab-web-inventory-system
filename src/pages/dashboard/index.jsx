@@ -9,6 +9,7 @@ import ToolAnalytics from 'components/cards/statistics/ToolAnalytics';
 import SummaryTable from './SummaryTable';
 import BorrowersReport from './BorrowersReport';
 import SampleCard from './SampleCard';
+import EquipmentSummary from './EquipmentSummary';
 
 // Firebase
 import { 
@@ -106,41 +107,10 @@ export default function DashboardDefault() {
   return (
     <>
       <Grid container rowSpacing={4.5} columnSpacing={2.75}>
-        {/* row 1 */}
-        
-        {/* Statistics Cards */}
-        {/* <Grid item xs={12} sm={6} md={4} lg={3} className="total-borrowed">
-          <ToolAnalytics 
-            title="Borrowed Tools/Equipments" 
-            count={processData(borrowedData)}
-            className="total-borrowed"
-            percentage={59.3} 
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={4} lg={3} className="total-returned">
-          <ToolAnalytics 
-            title="Returned Tools/Equipments" 
-            count={processData(returnedData)}
-            className="total-returned"
-            percentage={59.3} 
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={4} lg={3} className="total-good-condition">
-          <ToolAnalytics 
-            title="Current Borrowers" 
-            count={borrowersCount}
-            className="total-good-condition"
-            percentage={59.3} 
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={4} lg={3} className="total-bad-condition" >
-          <ToolAnalytics 
-            title="Recent Borrowed Equipment" 
-            count={recentBorrowed} 
-            className="total-bad-condition"
-            percentage={59.3} 
-          />
+        {/* <Grid item xs={12} md={6} lg={6} className="total-borrowers">
+            <EquipmentSummary />
         </Grid> */}
+        {/* row 1 */}        
         <Grid item xs={12} sm={6} md={4} lg={3} className="total-bad-condition" >
           <SampleCard />
         </Grid>
@@ -169,7 +139,7 @@ export default function DashboardDefault() {
             <Grid item />
           </Grid>
           <MainCard sx={{ mt: 2 }} content={false}>
-            <SummaryTable />
+            <EquipmentSummary />
           </MainCard>
         </Grid>
 
