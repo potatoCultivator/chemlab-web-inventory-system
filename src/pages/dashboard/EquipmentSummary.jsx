@@ -116,7 +116,7 @@ const EquipmentSummary = () => {
                             }}
                         >
                             <TableCell style={{ fontWeight: "bold" }}>Name</TableCell>
-                            <TableCell align="center" style={{ fontWeight: "bold" }}>Quantity</TableCell>
+                            <TableCell align="center" style={{ fontWeight: "bold" }}>Total Borrowed</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
