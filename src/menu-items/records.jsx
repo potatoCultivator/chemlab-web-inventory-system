@@ -24,14 +24,6 @@ const dashboard2 = {
             breadcrumbs: true
         },
         {
-            id: 'conpensating-students',
-            title: 'Compensating Records',
-            type: 'item',
-            url: '/compenstudents',
-            icon: icons.CheckCircleOutlined,
-            breadcrumbs: true
-        },
-        {
             id: 'history',
             title: 'History',
             type: 'item',
