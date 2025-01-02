@@ -116,7 +116,7 @@ const Borrower_Return = ({ schedID, userId, name: initialName, equipments: initi
         </DialogContent>
         <DialogActions sx={{ backgroundColor: "#f5f5f5", display: 'flex', justifyContent: 'space-between' }}>
           <Button onClick={() => setOpen(false)} color="primary" sx={{ flex: 1 }}>Close</Button>
-          <Button onClick={() => setInvoiceOpen(true)} color="secondary" sx={{ flex: 1 }}>Invoice</Button> {/* New Invoice Button */}
+          {/* New Invoice Button */}
           <Button onClick={handleApprove} color="success" sx={{ flex: 1 }}>Approve</Button>
         </DialogActions>
       </Dialog>
