@@ -16,11 +16,16 @@ import {
   CircularProgress,
   Snackbar,
   Alert,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from '@mui/material';
 import 'react-datepicker/dist/react-datepicker.css'; // Import the default CSS
 import './InvoiceForm.css'; // Import custom CSS
 import { CalendarOutlined } from '@ant-design/icons';
-import { get_Sched, uploadInvoice, get_SchedSub } from 'pages/Query';
+import { get_Sched, uploadInvoice, get_SchedSub, updateInvoice } from 'pages/Query';
 import { Timestamp } from 'firebase/firestore';
 
 const InvoiceForm = ({ invoice }) => {
@@ -43,6 +48,7 @@ const InvoiceForm = ({ invoice }) => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     if (invoice) {
@@ -101,51 +107,33 @@ const InvoiceForm = ({ invoice }) => {
     });
   };
 
-  const handleSave = async () => {
-    if (!formValues.schedID || !selectedBorrower || !formValues.due_date || !formValues.studentID || formValues.equipments.length === 0) {
-      setSnackbarMessage('Please fill in all required fields!');
-      setSnackbarSeverity('error');
-      setSnackbarOpen(true);
-      return;
-    }
+  const handleDialogOpen = () => {
+    setDialogOpen(true);
+  };
 
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+  };
+
+  const handleReplace = async () => {
     setLoading(true);
-
-    const updatedValues = {
-      ...formValues,
-      borrowerID: selectedBorrower.userId,
-      date_issued: Timestamp.fromDate(formValues.date_issued),
-      due_date: Timestamp.fromDate(formValues.due_date),
-    };
-
     try {
-      await uploadInvoice(updatedValues);  // Assuming this is a promise-based function
-      setSnackbarMessage('Invoice uploaded successfully');
+      await updateInvoice(invoice.id);  // Assuming this is a promise-based function
+      setSnackbarMessage('Invoice updated successfully');
       setSnackbarSeverity('success');
       setSnackbarOpen(true);
-      // Clear the form after saving
-      setFormValues({
-        schedID: '',
-        borrower: '',
-        studentID: '',
-        borrowerID: '',
-        date_issued: new Date(),
-        due_date: new Date(),
-        issueID: `${new Date().getFullYear()}${(new Date().getMonth() + 1).toString().padStart(2, '0')}${new Date().getDate().toString().padStart(2, '0')}${new Date().getHours().toString().padStart(2, '0')}${new Date().getMinutes().toString().padStart(2, '0')}`,
-        equipments: [],
-        description: '',
-        replaced: false,
-        subject: '',
-        teacher: '',
-      });
-      setSelectedBorrower(null);
+      setFormValues((prevValues) => ({
+        ...prevValues,
+        replaced: true,
+      }));
     } catch (error) {
-      setSnackbarMessage('Error uploading invoice');
+      setSnackbarMessage('Error updating invoice');
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
-      console.error('Error uploading invoice:', error);
+      console.error('Error updating invoice:', error);
     } finally {
-      setLoading(false);  // This will stop the loading spinner
+      setLoading(false);
+      handleDialogClose();
     }
   };
 
@@ -268,19 +256,40 @@ const InvoiceForm = ({ invoice }) => {
           />
         </Grid>
 
-        {/* Save Button */}
+        {/* Replace Button */}
         <Grid item xs={12}>
           <Button
             variant="contained"
             color="primary"
-            onClick={handleSave}
+            onClick={handleDialogOpen}
             fullWidth
             disabled={loading} // Disable button while loading
           >
-            {loading ? <CircularProgress size={24} /> : 'Save'}
+            {loading ? <CircularProgress size={24} /> : 'Replace'}
           </Button>
         </Grid>
       </Grid>
+
+      {/* Confirmation Dialog */}
+      <Dialog
+        open={dialogOpen}
+        onClose={handleDialogClose}
+      >
+        <DialogTitle>Confirm Replacement</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to mark this invoice as replaced?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleReplace} color="primary" autoFocus>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Snackbar for alerts */}
       <Snackbar

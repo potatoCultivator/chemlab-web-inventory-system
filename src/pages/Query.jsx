@@ -584,6 +584,12 @@ async function get_SchedSub(schedID, callback, errorCallback) {
   }
 }
 
+async function updateInvoice(id) {
+  const db = firestore;
+  const docRef = doc(db, 'invoice', id);
+  await updateDoc(docRef, { replaced: true });
+}
+
 export { 
   addEquipment,
   uploadImageAndGetUrl,
@@ -613,4 +619,5 @@ export {
   getInvoices,
   getEquipmentsCounts,
   get_SchedSub,
+  updateInvoice,
 };
