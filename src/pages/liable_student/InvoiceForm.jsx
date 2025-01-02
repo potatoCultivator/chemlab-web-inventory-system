@@ -13,21 +13,17 @@ import {
   Paper,
   Button,
   InputAdornment,
-  IconButton,
   CircularProgress,
   Snackbar,
   Alert,
 } from '@mui/material';
-import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css'; // Import the default CSS
 import './InvoiceForm.css'; // Import custom CSS
-import { CalendarOutlined, EditOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
-import { get_Sched, uploadInvoice, get_Borrowers } from 'pages/Query';
+import { CalendarOutlined } from '@ant-design/icons';
+import { get_Sched, uploadInvoice, get_SchedSub } from 'pages/Query';
 import { Timestamp } from 'firebase/firestore';
 
-const InvoiceForm = () => {
-  const [scheds, setScheds] = useState([]);
-  const [borrowers, setBorrowers] = useState([]);
+const InvoiceForm = ({ invoice }) => {
   const [selectedBorrower, setSelectedBorrower] = useState(null);
   const [loading, setLoading] = useState(false); // Add loading state
   const [formValues, setFormValues] = useState({
@@ -41,36 +37,57 @@ const InvoiceForm = () => {
     equipments: [],
     description: '',
     replaced: false,
+    subject: '',
+    teacher: '',
   });
-  const [editRowIndex, setEditRowIndex] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
-  // Fetch borrowers using get_Borrowers
+  useEffect(() => {
+    if (invoice) {
+      setFormValues({
+        schedID: invoice.schedID || '',
+        borrower: invoice.borrower || '',
+        studentID: invoice.studentID || '',
+        borrowerID: invoice.borrowerID || '',
+        date_issued: invoice.date_issued ? new Date(invoice.date_issued.seconds * 1000) : new Date(),
+        due_date: invoice.due_date ? new Date(invoice.due_date.seconds * 1000) : new Date(),
+        issueID: invoice.issueID || `${new Date().getFullYear()}${(new Date().getMonth() + 1).toString().padStart(2, '0')}${new Date().getDate().toString().padStart(2, '0')}${new Date().getHours().toString().padStart(2, '0')}${new Date().getMinutes().toString().padStart(2, '0')}`,
+        equipments: invoice.equipments || [],
+        description: invoice.description || '',
+        replaced: invoice.replaced || false,
+        subject: invoice.subject || '',
+        teacher: invoice.teacher || '',
+      });
+    }
+  }, [invoice]);
+
   useEffect(() => {
     if (formValues.schedID) {
-      get_Borrowers(formValues.schedID, 
-        (fetchedBorrowers) => setBorrowers(fetchedBorrowers),
-        (error) => console.error('Error fetching borrowers:', error)
+      get_SchedSub(formValues.schedID,
+        (data) => {
+          if (data) {
+            setFormValues((prevValues) => ({
+              ...prevValues,
+              subject: data.subject,
+              teacher: data.teacher,
+            }));
+          }
+        },
+        (error) => {
+          setSnackbarMessage('Failed to fetch schedule subject');
+          setSnackbarSeverity('error');
+          setSnackbarOpen(true);
+        }
       );
     }
-    console.log('Borrowers:', borrowers);
-  }, [formValues.schedID]);  // Trigger this effect when schedID changes
-  
-
-  // Fetch schedules using get_Sched
-  useEffect(() => {
-    get_Sched(
-      (fetchedSchedules) => setScheds(fetchedSchedules),
-      (error) => console.error('Error fetching schedules:', error)
-    );
-  }, []);
+  }, [formValues.schedID]);
 
   const handleInputChange = (field, value) => {
     setFormValues((prevValues) => {
       let updatedValues = { ...prevValues, [field]: value };
-  
+
       if (field === 'schedID') {
         const selectedSched = scheds.find((sched) => sched.id === value);
         if (selectedSched) {
@@ -79,7 +96,7 @@ const InvoiceForm = () => {
           updatedValues.equipments = [];
         }
       }
-  
+
       return updatedValues;
     });
   };
@@ -91,16 +108,16 @@ const InvoiceForm = () => {
       setSnackbarOpen(true);
       return;
     }
-  
+
     setLoading(true);
-  
+
     const updatedValues = {
       ...formValues,
       borrowerID: selectedBorrower.userId,
       date_issued: Timestamp.fromDate(formValues.date_issued),
       due_date: Timestamp.fromDate(formValues.due_date),
     };
-  
+
     try {
       await uploadInvoice(updatedValues);  // Assuming this is a promise-based function
       setSnackbarMessage('Invoice uploaded successfully');
@@ -118,6 +135,8 @@ const InvoiceForm = () => {
         equipments: [],
         description: '',
         replaced: false,
+        subject: '',
+        teacher: '',
       });
       setSelectedBorrower(null);
     } catch (error) {
@@ -134,24 +153,16 @@ const InvoiceForm = () => {
     setSnackbarOpen(false);
   };
 
-  const handleDeleteRow = (index) => {
-    setFormValues((prevValues) => {
-      const updatedEquipments = [...prevValues.equipments];
-      updatedEquipments.splice(index, 1);
-      return { ...prevValues, equipments: updatedEquipments };
-    });
-  };
-
   return (
     <CardContent>
       <Grid container spacing={3}>
-        {/* Display Date Issued */}
-          <Grid item xs={12} md={6} lg={6}>
+        {/* Date Issued */}
+        <Grid item xs={12} md={6} lg={6}>
           <TextField
             fullWidth
             variant="outlined"
             label="Date Issued"
-            defaultValue={formValues.date_issued?.toLocaleDateString()} // Use defaultValue
+            value={formValues.date_issued.toISOString().split('T')[0]}
             InputProps={{
               readOnly: true,
               endAdornment: (
@@ -161,73 +172,48 @@ const InvoiceForm = () => {
               ),
             }}
           />
+        </Grid>
 
-          </Grid>
-
-          {/* Date Picker for Due Date */}
+        {/* Due Date */}
         <Grid item xs={12} md={6} lg={6}>
-          <DatePicker
-            selected={formValues.due_date}
-            onChange={(date) => handleInputChange('dueDate', date)}
-            // dateFormat="yyyy-MM-dd"  
-            placeholderText="Select Due Date"
-            className="datepicker-popper"
-            customInput={
-              <TextField
-                fullWidth
-                variant="outlined"
-                label="Due Date"
-                InputProps={{
-                  readOnly: true,  // Prevent manual input
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <CalendarOutlined />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            }
-            locale="en" // Add locale prop here
+          <TextField
+            fullWidth
+            variant="outlined"
+            label="Due Date"
+            value={formValues.due_date.toISOString().split('T')[0]}
+            InputProps={{
+              readOnly: true,
+              endAdornment: (
+                <InputAdornment position="end">
+                  <CalendarOutlined />
+                </InputAdornment>
+              ),
+            }}
           />
         </Grid>
 
         {/* Schedule Dropdown */}
         <Grid item xs={12}>
           <TextField
-            select
             fullWidth
-            label="Schedule"
+            label="Subject"
             variant="outlined"
-            value={formValues.schedID}
-            onChange={(e) => handleInputChange('schedID', e.target.value)}
-          >
-            {scheds.map((sched) => (
-              <MenuItem key={sched.id} value={sched.id}>
-                {sched.subject} ({sched.teacher})
-              </MenuItem>
-            ))}
-          </TextField>
+            value={`${formValues.subject} (${formValues.teacher})`}
+            InputProps={{
+              readOnly: true,
+            }}
+          />
         </Grid>
 
         {/* Borrower Dropdown */}
         <Grid item xs={8}>
           <TextField
-            select
             fullWidth
             label="Borrower"
             variant="outlined"
+            defaultValue={invoice ? invoice.borrower : ''}
             value={formValues.borrower}
-            onChange={(e) => {
-              const selected = borrowers.find(borrower => borrower.name === e.target.value);
-              setSelectedBorrower(selected); // Store the full borrower object
-              handleInputChange('borrower', e.target.value); // Store the name in formValues
-            }}
           >
-            {borrowers.map((borrower, index) => (
-              <MenuItem key={index} value={borrower.name}>
-                {borrower.name}
-              </MenuItem>
-            ))}
           </TextField>
         </Grid>
 
@@ -249,7 +235,6 @@ const InvoiceForm = () => {
                 <TableRow>
                   <TableCell>Equipment Name</TableCell>
                   <TableCell align="center">Quantity</TableCell>
-                  <TableCell align="center">Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -259,45 +244,7 @@ const InvoiceForm = () => {
                       {equipment.name} {equipment.capacity} {equipment.unit}
                     </TableCell>
                     <TableCell align="center">
-                      {editRowIndex === index ? (
-                        <TextField
-                          type="number"
-                          variant="outlined"
-                          size="small"
-                          value={equipment.qty}
-                          onChange={(e) => {
-                            const updatedQty = e.target.value;
-                            setFormValues((prevValues) => {
-                              const updatedEquipments = [...prevValues.equipments];
-                              updatedEquipments[index].qty = updatedQty;
-                              return { ...prevValues, equipments: updatedEquipments };
-                            });
-                          }}
-                          inputProps={{ min: 0, max: equipment.qty }}
-                        />
-                      ) : (
-                        equipment.qty
-                      )}
-                    </TableCell>
-                    <TableCell align="center">
-                      {editRowIndex === index ? (
-                        <IconButton
-                          onClick={() => setEditRowIndex(null)}
-                        >
-                          <SaveOutlined />
-                        </IconButton>
-                      ) : (
-                        <IconButton
-                          onClick={() => setEditRowIndex(index)}
-                        >
-                          <EditOutlined />
-                        </IconButton>
-                      )}
-                      <IconButton
-                        onClick={() => handleDeleteRow(index)}
-                      >
-                        <DeleteOutlined />
-                      </IconButton>
+                      {equipment.qty}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -315,7 +262,9 @@ const InvoiceForm = () => {
             multiline
             rows={4} // Allows for multi-line input
             value={formValues.description}
-            onChange={(e) => handleInputChange('description', e.target.value)}
+            InputProps={{
+              readOnly: true,
+            }}
           />
         </Grid>
 
@@ -345,6 +294,12 @@ const InvoiceForm = () => {
       </Snackbar>
     </CardContent>
   );
+};
+
+import PropTypes from 'prop-types';
+
+InvoiceForm.propTypes = {
+  invoice: PropTypes.object,
 };
 
 export default InvoiceForm;

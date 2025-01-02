@@ -18,11 +18,16 @@ import {
   Paper,
   IconButton,
   Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from '@mui/material';
-import { SearchOutlined, MailOutlined, EyeOutlined, ClearOutlined } from '@ant-design/icons';
+import { SearchOutlined, MailOutlined, EyeOutlined, ClearOutlined, EditOutlined } from '@ant-design/icons';
 import { Timestamp } from 'firebase/firestore';
 import Invoice from './invoice';
 import { getInvoices } from 'pages/Query';
+import InvoiceForm from './InvoiceForm';
 
 const LiableStudentsPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -34,6 +39,8 @@ const LiableStudentsPage = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [invoices, setInvoices] = useState([]);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [studentToEdit, setStudentToEdit] = useState(null);
 
   useEffect(() => {
     const unsubscribe = getInvoices(
@@ -78,6 +85,16 @@ const LiableStudentsPage = () => {
     }, 1000);
   };
 
+  const handleEditStudent = (student) => {
+    setStudentToEdit(student);
+    setEditDialogOpen(true);
+  };
+
+  const handleEditDialogClose = () => {
+    setEditDialogOpen(false);
+    setStudentToEdit(null);
+  };
+
   const formatDate = (timestamp) => {
     if (!timestamp) return 'N/A';
     const date = new Date(timestamp.seconds * 1000);
@@ -85,9 +102,6 @@ const LiableStudentsPage = () => {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
-      // hour: 'numeric',
-      // minute: 'numeric',
-      // hour12: true,
     });
   };
 
@@ -205,6 +219,20 @@ const LiableStudentsPage = () => {
                         <EyeOutlined style={{ fontSize: '20px' }} />
                       </IconButton>
                     </Tooltip>
+                    <Tooltip title="Edit">
+                      <IconButton
+                        size="small"
+                        onClick={() => handleEditStudent(student)}
+                        sx={{
+                          color: '#4caf50',
+                          '&:hover': {
+                            color: '#2e7d32',
+                          },
+                        }}
+                      >
+                        <EditOutlined style={{ fontSize: '20px' }} />
+                      </IconButton>
+                    </Tooltip>
                   </TableCell>
                 </TableRow>
               ))}
@@ -212,6 +240,17 @@ const LiableStudentsPage = () => {
           </Table>
         </TableContainer>
       )}
+
+      {/* Edit Student Dialog */}
+      <Dialog open={editDialogOpen} onClose={handleEditDialogClose}>
+        <DialogTitle>Edit Borrower</DialogTitle>
+          <InvoiceForm invoice={studentToEdit}/>
+        <DialogActions>
+          <Button onClick={handleEditDialogClose} color="primary">
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Snackbar for Feedback */}
       <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>

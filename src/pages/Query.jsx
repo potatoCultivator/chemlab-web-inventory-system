@@ -560,6 +560,30 @@ function getEquipmentsCounts(callback, errorCallback) {
   }, errorCallback);
 }
 
+async function get_SchedSub(schedID, callback, errorCallback) {
+  const db = firestore;
+  const docRef = doc(db, 'schedule', schedID);
+
+  try {
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      const subject = data.subject; // Extract only the subject
+      const teacher = data.teacher;
+      callback({ subject, teacher }); // Call the callback with the subject and teacher
+    } else {
+      console.error("Document does not exist!");
+      callback(null); // Call the callback with null if the document does not exist
+    }
+  } catch (error) {
+    if (errorCallback) {
+      errorCallback(error); // Handle errors with the provided callback
+    } else {
+      console.error("Error fetching schedule:", error); // Fallback error handling
+    }
+  }
+}
+
 export { 
   addEquipment,
   uploadImageAndGetUrl,
@@ -587,5 +611,6 @@ export {
   uploadInvoice,
   get_Borrowers,
   getInvoices,
-  getEquipmentsCounts
+  getEquipmentsCounts,
+  get_SchedSub,
 };

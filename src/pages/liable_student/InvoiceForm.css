@@ -1,0 +1,11 @@
+/* InvoiceForm.css */
+.datepicker-popper {
+  display: flex;
+  align-items: center; /* Aligns the content vertically */
+  justify-content: center; /* Centers the content horizontally */
+}
+
+/* InvoiceForm.css */
+.MuiTextField-root {
+  margin-bottom: 16px; /* Optional: control margin bottom */
+}
