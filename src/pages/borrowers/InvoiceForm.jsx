@@ -21,7 +21,7 @@ import {
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css'; // Import the default CSS
 import './InvoiceForm.css'; // Import custom CSS
-import { CalendarOutlined, EditOutlined, SaveOutlined } from '@ant-design/icons';
+import { CalendarOutlined, EditOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
 import { get_Sched, uploadInvoice, get_Borrowers } from 'pages/Query';
 import { Timestamp } from 'firebase/firestore';
 
@@ -132,6 +132,14 @@ const InvoiceForm = () => {
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
+  };
+
+  const handleDeleteRow = (index) => {
+    setFormValues((prevValues) => {
+      const updatedEquipments = [...prevValues.equipments];
+      updatedEquipments.splice(index, 1);
+      return { ...prevValues, equipments: updatedEquipments };
+    });
   };
 
   return (
@@ -295,6 +303,11 @@ const InvoiceForm = () => {
                           <EditOutlined />
                         </IconButton>
                       )}
+                      <IconButton
+                        onClick={() => handleDeleteRow(index)}
+                      >
+                        <DeleteOutlined />
+                      </IconButton>
                     </TableCell>
                   </TableRow>
                 ))}
