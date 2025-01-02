@@ -626,8 +626,8 @@ export {
   addEquipment,
   uploadImageAndGetUrl,
   checkEquipmentExists,
-  updateStock,
-  addHistoryEntry,
+  updateStock, // will use for onAdd
+  addHistoryEntry, //will use for onAdd
   getEquipment,
   fetchAllEquipments,
   getAllEquipment,

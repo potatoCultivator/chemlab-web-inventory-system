@@ -28,6 +28,7 @@ import Tooltip from '@mui/material/Tooltip'; // Import Tooltip
 
 // Database
 import { getAllEquipment, deleteEquipment, updateLastHistoryEntry, deleteLastHistoryEntry } from 'pages/Query';
+import { on } from 'process';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -56,7 +57,7 @@ function stableSort(array, comparator) {
 }
 
 function Row(props) {
-  const { row, onDelete } = props;
+  const { row, onDelete, onAddStock } = props;
   const [open, setOpen] = React.useState(false);
   const [editing, setEditing] = React.useState(false);
   const [editedHistory, setEditedHistory] = React.useState([...row.history]);
@@ -147,8 +148,8 @@ function Row(props) {
               <DeleteOutlined />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Delete" arrow>
-            <IconButton aria-label="add" size="small" onClick={() => onDelete(row.id)} sx={{ color: 'primary.main' }}>
+          <Tooltip title="Add Stock" arrow>
+            <IconButton aria-label="add" size="small" onClick={() => onAddStock(row.id)} sx={{ color: 'primary.main' }}>
               <PlusCircleOutlined />
             </IconButton>
           </Tooltip>
@@ -316,6 +317,7 @@ Row.propTypes = {
     ).isRequired,
   }).isRequired,
   onDelete: PropTypes.func.isRequired,
+  onAddStock: PropTypes.func.isRequired,
 };
 
 export default function MainTable() {
@@ -331,6 +333,9 @@ export default function MainTable() {
   const [loading, setLoading] = React.useState(false); // State to manage loading state
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Check if the screen size is small or below
+
+  const [addStockDialogOpen, setAddStockDialogOpen] = React.useState(false); // State to manage add stock dialog visibility
+  const [addStockId, setAddStockId] = React.useState(null); // State to store the id of the equipment to add stock
 
   React.useEffect(() => {
     const unsubscribe = getAllEquipment(
@@ -380,6 +385,11 @@ export default function MainTable() {
   const handleDelete = (id) => {
     setDeleteId(id);
     setConfirmDialogOpen(true);
+  };
+
+  const handleAddStock = (id) => {
+    setAddStockId(id);
+    setAddStockDialogOpen(true);
   };
 
   const confirmDelete = async () => {
@@ -483,7 +493,7 @@ export default function MainTable() {
               {stableSort(filteredRows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => (
-                  <Row key={row.id} row={row} onDelete={handleDelete} />
+                  <Row key={row.id} row={row} onDelete={handleDelete} onAddStock={handleAddStock} />
                 ))}
             </TableBody>
           </Table>
@@ -536,6 +546,34 @@ export default function MainTable() {
             </Button>
             <Button onClick={confirmDelete} sx={{ color: 'error.main' }} disabled={loading}>
               {loading ? <CircularProgress size={24} /> : 'Confirm'}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog open={addStockDialogOpen} onClose={() => setAddStockDialogOpen(false)}>
+          <DialogTitle>Add Stock</DialogTitle>
+          <DialogContent dividers>
+             <Grid container spacing={2}>
+              <Grid item xs={6} display="flex" justifyContent="center" alignItems="center">
+                <Typography variant="body1" textAlign="center">
+                  {filteredRows.find((row) => row.id === addStockId)?.name}{" "}
+                  {filteredRows.find((row) => row.id === addStockId)?.capacity}{" "}
+                  {filteredRows.find((row) => row.id === addStockId)?.unit}
+                </Typography>
+              </Grid>
+              <Grid item xs={6} display="flex" justifyContent="center" alignItems="center">
+                <TextField 
+                  label="Stocks" 
+                  type="number" 
+                  fullWidth 
+                  variant="outlined" 
+                />
+              </Grid>
+            </Grid>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setAddStockDialogOpen(false)} color="primary">
+              Cancel
             </Button>
           </DialogActions>
         </Dialog>
