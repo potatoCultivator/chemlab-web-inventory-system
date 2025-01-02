@@ -16,7 +16,7 @@ import {
   IconButton,
   CircularProgress,
 } from '@mui/material';
-import MainCard from 'components/MainCard';
+// import MainCard from 'components/MainCard';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css'; // Import the default CSS
 import './InvoiceForm.css'; // Import custom CSS
@@ -38,8 +38,8 @@ const InvoiceForm = () => {
     borrower: '',
     studentID: '',
     borrowerID: '',
-    dateIssued: new Date(),
-    dueDate: new Date(),
+    date_issued: new Date(),
+    due_date: new Date(),
     issueID: `${new Date().getFullYear()}${(new Date().getMonth() + 1).toString().padStart(2, '0')}${new Date().getDate().toString().padStart(2, '0')}${new Date().getHours().toString().padStart(2, '0')}${new Date().getMinutes().toString().padStart(2, '0')}`,
     equipments: [],
     description: '',
@@ -86,7 +86,7 @@ const InvoiceForm = () => {
   
 
   const handleSave = async () => {
-    if (!formValues.schedID || !selectedBorrower || !formValues.dueDate) {
+    if (!formValues.schedID || !selectedBorrower || !formValues.due_date) {
       console.error('Required fields are missing!');
       return;
     }
@@ -96,8 +96,8 @@ const InvoiceForm = () => {
     const updatedValues = {
       ...formValues,
       borrowerID: selectedBorrower.userId,
-      dateIssued: Timestamp.fromDate(formValues.dateIssued),
-      dueDate: Timestamp.fromDate(formValues.dueDate),
+      date_issued: Timestamp.fromDate(formValues.date_issued),
+      due_date: Timestamp.fromDate(formValues.due_date),
     };
   
     try {
@@ -109,8 +109,8 @@ const InvoiceForm = () => {
         borrower: '',
         studentID: '',
         borrowerID: '',
-        dateIssued: new Date(),
-        dueDate: new Date(),
+        date_issued: new Date(),
+        due_date: new Date(),
         issueID: `${new Date().getFullYear()}${(new Date().getMonth() + 1).toString().padStart(2, '0')}${new Date().getDate().toString().padStart(2, '0')}${new Date().getHours().toString().padStart(2, '0')}${new Date().getMinutes().toString().padStart(2, '0')}`,
         equipments: [],
         description: '',
@@ -132,11 +132,12 @@ const InvoiceForm = () => {
           {/* Date Picker for Date Issued */}
           <Grid item xs={12} md={6} lg={6}>
             <DatePicker
-              selected={formValues.dateIssued}
+              selected={formValues.date_issued}
               onChange={(date) => handleInputChange('dateIssued', date)}
               dateFormat="yyyy-MM-dd"
               placeholderText="Select Date Issued"
               className="datepicker-popper"
+              defaultValue={new Date()}
               disabled
               customInput={
                 <TextField
@@ -160,7 +161,7 @@ const InvoiceForm = () => {
           {/* Date Picker for Due Date */}
           <Grid item xs={12} md={6} lg={6}>
             <DatePicker
-              selected={formValues.dueDate}
+              selected={formValues.due_date}
               onChange={(date) => handleInputChange('dueDate', date)}
               dateFormat="yyyy-MM-dd"
               placeholderText="Select Due Date"
