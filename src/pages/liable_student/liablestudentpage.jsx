@@ -188,8 +188,8 @@ const LiableStudentsPage = () => {
                       variant="outlined"
                     />
                   </TableCell>
-                  <TableCell>{formatDate(student.dateIssued, false)}</TableCell>
-                  <TableCell>{formatDate(student.dueDate, false)}</TableCell>
+                  <TableCell>{formatDate(student.date_issued, false)}</TableCell>
+                  <TableCell>{formatDate(student.due_date, false)}</TableCell>
                   <TableCell align="center">
                     <Tooltip title="View Details">
                       <IconButton

@@ -123,8 +123,8 @@ const InvoiceForm = ({student}) => {
                 <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
                   <ClockCircleOutlined /> Issue Details:
                 </Typography>
-                <Typography>Date Issued: {formatDate(student.dateIssued)}</Typography>
-                <Typography>Due Date: {formatDate(student.dueDate)}</Typography>
+                <Typography>Date Issued: {formatDate(student.date_issued)}</Typography>
+                <Typography>Due Date: {formatDate(student.due_date)}</Typography>
               </Box>
             </Box>
 
@@ -155,16 +155,7 @@ const InvoiceForm = ({student}) => {
                     </TableBody>
                   </Table>
 
-                    {/* <Box mt={4} p={2} sx={{ backgroundColor: '#e0e0e0', borderRadius: 1 }}>
-                      <Box display="flex" justifyContent="space-between" mb={1}>
-                      <Typography variant="subtitle1" fontWeight="bold">Total Quantity:</Typography>
-                      <Typography variant="subtitle1">{student.equipments.reduce((total, equipment) => total + equipment.qty, 0)}</Typography>
-                      </Box>
-                      <Divider />
-                    </Box> */}
-
-                        {/* Terms and Conditions */}
-            <Box mt={4} p={2} sx={{ backgroundColor: '#e0e0e0', borderRadius: 1 }}>
+              <Box mt={4} p={2} sx={{ backgroundColor: '#e0e0e0', borderRadius: 1 }}>
               <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Description:</Typography>
               <Typography variant="body2">
                 {student.description}
