@@ -10,6 +10,11 @@ import SummaryTable from './SummaryTable';
 import BorrowersReport from './BorrowersReport';
 import SampleCard from './SampleCard';
 import EquipmentSummary from './EquipmentSummary';
+import TotalEquipmentBorrowed from './Cards/TotalEquipmentBorrowed';
+import TotalReplacedEquipment from './Cards/TotalReplacedEquipment';
+import TotalDamageEquipment from './Cards/TotalDamageEquipment';
+import DistinctEquipment from './Cards/DistinctEquipment';
+import UniqueVisitorCard from './UniqueVisitorCard';
 
 // Firebase
 import { 
@@ -112,18 +117,18 @@ export default function DashboardDefault() {
         </Grid> */}
         {/* row 1 */}        
         <Grid item xs={12} sm={6} md={4} lg={3} className="total-bad-condition" >
-          <SampleCard />
+          <TotalEquipmentBorrowed />
         </Grid>
 
         <Grid item xs={12} sm={6} md={4} lg={3} className="total-bad-condition" >
-          <SampleCard />
+          <TotalReplacedEquipment />
         </Grid>
 
         <Grid item xs={12} sm={6} md={4} lg={3} className="total-bad-condition" >
-          <SampleCard />
+          <TotalDamageEquipment />
         </Grid>
         <Grid item xs={12} sm={6} md={4} lg={3} className="total-bad-condition" >
-          <SampleCard />
+          <DistinctEquipment />
         </Grid>
         
       <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
