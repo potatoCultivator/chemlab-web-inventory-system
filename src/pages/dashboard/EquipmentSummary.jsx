@@ -28,24 +28,54 @@ const EquipmentSummary = () => {
 
     useEffect(() => {
         let isSubscribed = true;
-
+    
         const getEquipmentDetails = async () => {
             try {
                 const details = await fetchBorrowedEquipments();
+    
                 if (isSubscribed) {
-                    setEquipments(details);
+                    // Sort the equipment details by name, capacity, and unit
+                    const sortedDetails = details.sort((a, b) => {
+                        if (a.name !== b.name) {
+                            return a.name.localeCompare(b.name);
+                        }
+                        if (a.capacity !== b.capacity) {
+                            return a.capacity - b.capacity;
+                        }
+                        return a.unit.localeCompare(b.unit);
+                    });
+    
+                    // Combine redundant equipment
+                    const combinedEquipments = sortedDetails.reduce((acc, item) => {
+                        const existingItem = acc.find(equip =>
+                            equip.name === item.name &&
+                            equip.capacity === item.capacity &&
+                            equip.unit === item.unit
+                        );
+    
+                        if (existingItem) {
+                            existingItem.qty += item.qty;
+                        } else {
+                            acc.push({ ...item });
+                        }
+                        return acc;
+                    }, []);
+    
+                    setEquipments(combinedEquipments);
                 }
             } catch (error) {
                 console.error('Error fetching equipment details:', error);
             }
         };
-
+    
         getEquipmentDetails();
-
+    
         return () => {
             isSubscribed = false;
         };
     }, []);
+    
+    
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -67,11 +97,11 @@ const EquipmentSummary = () => {
     };
 
     return (
-        <div>
+        <Box height="457px" overflow="hidden">
             <TableContainer
                 component={Paper}
                 style={{
-                    maxHeight: "774px",
+                    maxHeight: "100%",
                     overflowY: "auto",
                 }}
             >
@@ -97,7 +127,7 @@ const EquipmentSummary = () => {
                                 style={{ cursor: "pointer" }}
                                 onClick={() => handleRowClick(equipment)}
                             >
-                                <TableCell>{equipment.name}{' '}{equipment.capacity}{equipment.unit}</TableCell>
+                                <TableCell>{equipment.name}{' '}{equipment.unit !== 'pcs' && `${equipment.capacity}${equipment.unit}`}</TableCell>
                                 <TableCell align="center">{equipment.qty}</TableCell>
                             </TableRow>
                         ))}
@@ -147,16 +177,16 @@ const EquipmentSummary = () => {
                     </DialogContent>
                     <DialogActions style={{ backgroundColor: "#f5f5f5" }}>
                         <Button onClick={handleClose} color="primary">Close</Button>
-                        <Button
+                        {/* <Button
                             onClick={() => alert("Generating Equipment Report...")}
                             color="secondary"
                         >
                             Generate Report
-                        </Button>
+                        </Button> */}
                     </DialogActions>
                 </Dialog>
             )}
-        </div>
+        </Box>
     );
 };
 
