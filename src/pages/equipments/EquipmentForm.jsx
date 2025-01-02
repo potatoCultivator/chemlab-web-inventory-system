@@ -288,8 +288,11 @@ export default function EquipmentForm({ onClose }) {
                   <MenuItem value="glassware">Glassware</MenuItem>
                   <MenuItem value="plasticware">Plasticware</MenuItem>
                   <MenuItem value="metalware">Metalware</MenuItem>
-                  <MenuItem value="chemicals">Chemicals</MenuItem>
-                  <MenuItem value="others">Others</MenuItem>
+                  <MenuItem value="heating">Heating</MenuItem>
+                  <MenuItem value="measuring">Measuring</MenuItem>
+                  <MenuItem value="container">Container</MenuItem>
+                  <MenuItem value="separator">Separation Equipment</MenuItem>
+                  <MenuItem value="mixing">Mixing & Stirring</MenuItem>
                 </Field>
               </Grid>
 

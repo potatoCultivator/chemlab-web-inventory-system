@@ -636,6 +636,25 @@ function fetchDeletedAndNotDeletedEquipments(callback, errorCallback) {
   }, errorCallback);
 }
 
+function getMonthlyEquipmentStocksCount(callback, errorCallback) {
+  const db = firestore;
+  const collectionRef = collection(db, 'equipments');
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth();
+  const currentYear = currentDate.getFullYear();
+
+  return onSnapshot(collectionRef, (snapshot) => {
+    const monthlyEquipments = snapshot.docs.filter(doc => {
+      const data = doc.data();
+      const dateAdded = data.dateAdded.toDate(); // Assuming dateAdded is a Firestore Timestamp
+      return dateAdded.getMonth() === currentMonth && dateAdded.getFullYear() === currentYear;
+    });
+
+    const totalStocks = monthlyEquipments.reduce((total, equipment) => total + parseInt(equipment.stocks, 10), 0);
+    callback(totalStocks);
+  }, errorCallback);
+}
+
 export { 
   addEquipment,
   uploadImageAndGetUrl,
@@ -668,4 +687,5 @@ export {
   updateInvoice,
   fetchBorrowedEquipments,
   fetchDeletedAndNotDeletedEquipments,
+  getMonthlyEquipmentStocksCount,
 };

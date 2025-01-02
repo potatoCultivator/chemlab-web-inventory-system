@@ -70,7 +70,7 @@ const ChemistryLabInventoryCard = ({ isLoading }) => {
                     <Grid item>
                       <Typography variant="h4">Chemistry Lab Equipment</Typography>
                     </Grid>
-                    <Grid item>
+                    {/* <Grid item>
                       <MoreOutlined
                         style={{
                           fontSize: '1.5rem',
@@ -99,7 +99,7 @@ const ChemistryLabInventoryCard = ({ isLoading }) => {
                         <MenuItem onClick={handleClose}>This Week</MenuItem>
                         <MenuItem onClick={handleClose}>This Month</MenuItem>
                       </Menu>
-                    </Grid>
+                    </Grid> */}
                   </Grid>
                 </Grid>
                 <Grid item xs={12} sx={{ pt: '16px !important' }}>
@@ -120,7 +120,7 @@ const ChemistryLabInventoryCard = ({ isLoading }) => {
                               <Grid container alignItems="center" justifyContent="space-between">
                                 <Grid item>
                                   <Typography variant="subtitle1" color="inherit">
-                                    {equipment.total}
+                                    {equipment.dateAdded.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                                   </Typography>
                                 </Grid>
                                 <Grid item>
