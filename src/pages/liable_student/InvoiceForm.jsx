@@ -21,6 +21,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Typography,
 } from '@mui/material';
 import 'react-datepicker/dist/react-datepicker.css'; // Import the default CSS
 import './InvoiceForm.css'; // Import custom CSS
@@ -254,6 +255,13 @@ const InvoiceForm = ({ invoice }) => {
               readOnly: true,
             }}
           />
+        </Grid>
+
+        {/* Replaced Status */}
+        <Grid item xs={12}>
+          <Typography variant="h6" color={formValues.replaced ? 'green' : 'orange '}>
+            {formValues.replaced ? 'Settled' : 'Pending'}
+          </Typography>
         </Grid>
 
         {/* Replace Button */}
