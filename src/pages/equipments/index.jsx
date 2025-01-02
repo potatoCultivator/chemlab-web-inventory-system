@@ -7,7 +7,7 @@ import MainTable from './MainTable';
 import MainCard from 'components/MainCard';
 import TotalCards from './TotalCard';
 import TotalStocks from './TotalStocks';
-import PopularCard from './PopularCard';
+import PopularCard from './NewEquipmentCard';
 
 // ==============================|| SAMPLE PAGE ||============================== //
 

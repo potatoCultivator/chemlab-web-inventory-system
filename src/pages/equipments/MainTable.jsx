@@ -19,7 +19,7 @@ import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress'; // Import CircularProgress
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import { UpOutlined, DownOutlined, DeleteOutlined } from '@ant-design/icons';
+import { UpOutlined, DownOutlined, DeleteOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import Grid from '@mui/material/Grid';
 import EquipmentForm from './EquipmentForm'; // Import the EquipmentForm component
 import CustomButton from './CustomButton copy';
@@ -145,6 +145,11 @@ function Row(props) {
           <Tooltip title="Delete" arrow>
             <IconButton aria-label="delete" size="small" onClick={() => onDelete(row.id)} sx={{ color: 'error.main' }}>
               <DeleteOutlined />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete" arrow>
+            <IconButton aria-label="add" size="small" onClick={() => onDelete(row.id)} sx={{ color: 'primary.main' }}>
+              <PlusCircleOutlined />
             </IconButton>
           </Tooltip>
         </TableCell>
