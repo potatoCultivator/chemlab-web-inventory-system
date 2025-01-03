@@ -505,7 +505,7 @@ export default function MainTable() {
         <TableContainer
           component={Paper}
           style={{
-            maxHeight: "660px", // Set a maximum height to allow scrolling
+            maxHeight: "640px", // Set a maximum height to allow scrolling
             overflowY: "auto",  // Enables vertical scrolling for the body
           }}
         >
