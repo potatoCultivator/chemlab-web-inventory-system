@@ -143,16 +143,16 @@ export default function EquipmentForm({ onClose }) {
       };
   
       // Check if an existing item with the same name and unit exists
-      const notExisting = await checkEquipmentExists(values.name, values.unit, values.capacity);
-      console.log('Existing equipment:', notExisting);
-      if (!notExisting) {
+      const existing = await checkEquipmentExists(values.name, values.unit, values.capacity);
+      console.log('Existing equipment:', existing);
+      if (existing) {
         // Show dialog if equipment already exists
         setDialogOpen(true);
         return; // Stop execution if the equipment already exists
       }
   
       // If item doesn't exist, add a new one
-      if (notExisting) {
+      if (existing === null) {
       const imageUrl = await uploadImageAndGetUrl(values.image);
       const newEquipment = {
         name: values.name,

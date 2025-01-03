@@ -91,7 +91,7 @@ async function checkEquipmentExists(name, unit, capacity) {
     q = query(
       collectionRef,
       where('name', '==', name.toLowerCase().trim()),
-      where('unit', '==', unit.toLowerCase().trim()),
+      where('unit', '==', unit),
       where('capacity', '==', Number(capacity)),  // Ensure capacity is a number
       where('deleted', '==', false)
     );
@@ -100,9 +100,15 @@ async function checkEquipmentExists(name, unit, capacity) {
   const querySnapshot = await getDocs(q);
   console.log(querySnapshot.empty, querySnapshot.docs);  // Debugging log
 
-  // Return true if the equipment exists (query is not empty), false otherwise
-  return !querySnapshot.empty;
+  if (!querySnapshot.empty) {
+    // Return the document if it's not marked as deleted
+    const doc = querySnapshot.docs[0];
+    return { id: doc.id, ...doc.data() };
+  }
+
+  return null;
 }
+
 
 // Function to update the stock of existing equipment
 async function updateStock(id, newStock, newTotal, historyEntry) {

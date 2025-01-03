@@ -70,36 +70,6 @@ const ChemistryLabInventoryCard = ({ isLoading }) => {
                     <Grid item>
                       <Typography variant="h4">Chemistry Lab Equipment</Typography>
                     </Grid>
-                    {/* <Grid item>
-                      <MoreOutlined
-                        style={{
-                          fontSize: '1.5rem',
-                          color: '#90caf9',
-                          cursor: 'pointer'
-                        }}
-                        onClick={handleClick}
-                      />
-                      <Menu
-                        id="menu-equipment-card"
-                        anchorEl={anchorEl}
-                        keepMounted
-                        open={Boolean(anchorEl)}
-                        onClose={handleClose}
-                        variant="selectedMenu"
-                        anchorOrigin={{
-                          vertical: 'bottom',
-                          horizontal: 'right'
-                        }}
-                        transformOrigin={{
-                          vertical: 'top',
-                          horizontal: 'right'
-                        }}
-                      >
-                        <MenuItem onClick={handleClose}>Today</MenuItem>
-                        <MenuItem onClick={handleClose}>This Week</MenuItem>
-                        <MenuItem onClick={handleClose}>This Month</MenuItem>
-                      </Menu>
-                    </Grid> */}
                   </Grid>
                 </Grid>
                 <Grid item xs={12} sx={{ pt: '16px !important' }}>

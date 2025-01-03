@@ -47,9 +47,14 @@ const ChemistryLabAreaChartCard = () => {
   });
 
   const newAdded = currentMonthEquipments.reduce((sum, equipment) => sum + Number(equipment.stocks), 0);
-  const allStocks = equipments.reduce((sum, equipment) => sum + Number(equipment.stocks), 0);
-  const previousStock = allStocks - newAdded;
-  const percentageIncrease = previousStock > 0 ? (newAdded / previousStock) * 100 : 0;
+const allStocks = equipments.reduce((sum, equipment) => sum + Number(equipment.stocks), 0);
+const previousStock = allStocks - newAdded;
+
+// If previousStock is 0, set percentage increase to 100, otherwise calculate the percentage increase
+const percentageIncrease = previousStock === 0 ? 100 : (newAdded / previousStock) * 100;
+
+console.log(percentageIncrease);
+
 
   return (
     <Card sx={{ bgcolor: 'secondary.light' }}>
@@ -70,7 +75,7 @@ const ChemistryLabAreaChartCard = () => {
         </Grid>
         <Grid item xs={12}>
           <Typography variant="subtitle2" sx={{ color: 'grey.800' }}>
-            {percentageIncrease.toFixed(2)}% Increase in Available Equipment
+            {percentageIncrease.toFixed(0)}% Increase in Available Equipment
           </Typography>
         </Grid>
       </Grid>
