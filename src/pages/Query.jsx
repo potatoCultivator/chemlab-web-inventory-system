@@ -655,6 +655,30 @@ function getMonthlyEquipmentStocksCount(callback, errorCallback) {
   }, errorCallback);
 }
 
+function getDamagedEquipments(callback, errorCallback) {
+  const db = firestore;
+  const collectionRef = collection(db, 'invoice');
+
+  return onSnapshot(collectionRef, (snapshot) => {
+    const equipments = snapshot.docs
+      .map(doc => ({
+        id: doc.id,
+        equipments: doc.data().equipments,
+      }))
+
+    const borrowers = snapshot.docs
+        .map((doc) => ({
+            id: doc.id,
+            borrower: doc.data().borrower,
+        }))
+        .flat();
+
+    console.log('Equipments:', equipments);
+    console.log('Borrowers:', borrowers);
+    callback({equipments, borrowers});
+  }, errorCallback);
+}
+
 export { 
   addEquipment,
   uploadImageAndGetUrl,
@@ -688,4 +712,5 @@ export {
   fetchBorrowedEquipments,
   fetchDeletedAndNotDeletedEquipments,
   getMonthlyEquipmentStocksCount,
+  getDamagedEquipments,
 };
