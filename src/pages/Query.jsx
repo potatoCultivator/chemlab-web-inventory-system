@@ -80,29 +80,28 @@ async function checkEquipmentExists(name, unit, capacity) {
 
   // Create the query based on the unit and capacity
   let q;
-  if (unit === 'pcs') {
-    q = query(collectionRef, where('name', '==', name.toLowerCase()), where('unit', '==', unit.toLowerCase()));
+  if (unit.toLowerCase() === 'pcs') {
+    q = query(
+      collectionRef,
+      where('name', '==', name.toLowerCase().trim()),  // Trim and lowercase for consistent comparison
+      where('unit', '==', unit.toLowerCase().trim()),  // Trim and lowercase for unit
+      where('deleted', '==', false)
+    );
   } else {
-    q = query(collectionRef, where('name', '==', name.toLowerCase()), where('unit', '==', unit.toLowerCase()), where('capacity', '==', capacity));
+    q = query(
+      collectionRef,
+      where('name', '==', name.toLowerCase().trim()),
+      where('unit', '==', unit.toLowerCase().trim()),
+      where('capacity', '==', Number(capacity)),  // Ensure capacity is a number
+      where('deleted', '==', false)
+    );
   }
 
   const querySnapshot = await getDocs(q);
+  console.log(querySnapshot.empty, querySnapshot.docs);  // Debugging log
 
-  if (!querySnapshot.empty) {
-    // Check if 'deleted' is false
-    const doc = querySnapshot.docs[0];
-    const data = doc.data();
-    
-    if (data.deleted === true) {
-      // If the document is marked as deleted, return null
-      return null;
-    }
-
-    // Return the document if it's not marked as deleted
-    return { id: doc.id, ...data };
-  }
-
-  return null;
+  // Return true if the equipment exists (query is not empty), false otherwise
+  return !querySnapshot.empty;
 }
 
 // Function to update the stock of existing equipment
@@ -661,21 +660,24 @@ function getDamagedEquipments(callback, errorCallback) {
 
   return onSnapshot(collectionRef, (snapshot) => {
     const equipments = snapshot.docs
-      .map(doc => ({
-        id: doc.id,
-        equipments: doc.data().equipments,
-      }))
+      .map(doc => doc.data().equipments.map(equipment => ({ ...equipment, id: doc.id })))
+      .flat();
 
-    const borrowers = snapshot.docs
-        .map((doc) => ({
-            id: doc.id,
-            borrower: doc.data().borrower,
-        }))
-        .flat();
+    callback(equipments);
+  }, errorCallback);
+}
 
-    console.log('Equipments:', equipments);
-    console.log('Borrowers:', borrowers);
-    callback({equipments, borrowers});
+function getLiableBorrowers(callback, errorCallback) {
+  const db = firestore;
+  const collectionRef = collection(db, 'invoice');
+
+  return onSnapshot(collectionRef, (snapshot) => {
+    const borrowers = snapshot.docs.map(doc => ({
+      id: doc.id,
+      borrower: doc.data().borrower
+    }));
+
+    callback(borrowers);
   }, errorCallback);
 }
 
@@ -713,4 +715,5 @@ export {
   fetchDeletedAndNotDeletedEquipments,
   getMonthlyEquipmentStocksCount,
   getDamagedEquipments,
+  getLiableBorrowers
 };

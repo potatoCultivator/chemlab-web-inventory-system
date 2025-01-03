@@ -143,34 +143,39 @@ export default function EquipmentForm({ onClose }) {
       };
   
       // Check if an existing item with the same name and unit exists
-      const existingEquipment = await checkEquipmentExists(values.name, values.unit, values.capacity);
-  
-      if (existingEquipment) {
+      const notExisting = await checkEquipmentExists(values.name, values.unit, values.capacity);
+      console.log('Existing equipment:', notExisting);
+      if (!notExisting) {
         // Show dialog if equipment already exists
         setDialogOpen(true);
-      } else {
-        // If item doesn't exist, add a new one
-        const imageUrl = await uploadImageAndGetUrl(values.image);
-        const newEquipment = {
-          name: values.name,
-          stocks: values.stocks,
-          total: values.stocks,
-          capacity: values.unit === 'pcs' ? null : values.capacity,
-          unit: values.unit,
-          category: values.category,
-          image: imageUrl,
-          dateAdded: Timestamp.fromDate(new Date()),
-          history: [historyEntry],
-        };
-        await addEquipment(newEquipment);
-        alert('Equipment added successfully!');
-  
-        // Reset the form after submission
-        resetForm();
-        setPreviewImage(null);
-        setNameError('');
-        if (onClose) onClose();
+        return; // Stop execution if the equipment already exists
       }
+  
+      // If item doesn't exist, add a new one
+      if (notExisting) {
+      const imageUrl = await uploadImageAndGetUrl(values.image);
+      const newEquipment = {
+        name: values.name,
+        stocks: values.stocks,
+        total: values.stocks,
+        capacity: values.unit === 'pcs' ? null : values.capacity,
+        unit: values.unit,
+        category: values.category,
+        image: imageUrl,
+        dateAdded: Timestamp.fromDate(new Date()),
+        history: [historyEntry],
+      };
+      await addEquipment(newEquipment);
+      alert('Equipment added successfully!');
+      } else {
+        setDialogOpen(true);
+      }
+  
+      // Reset the form after submission
+      resetForm();
+      setPreviewImage(null);
+      setNameError('');
+      if (onClose) onClose();
     } catch (error) {
       console.error('Error adding/updating equipment:', error);
       alert('Failed to add/update equipment. Please try again.');
@@ -179,6 +184,7 @@ export default function EquipmentForm({ onClose }) {
       setLoading(false);
     }
   };
+  
 
   const handleDialogClose = () => {
     setDialogOpen(false);

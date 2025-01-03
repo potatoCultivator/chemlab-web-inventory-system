@@ -40,14 +40,14 @@ export default function CustomTable({ title }) {
 
   React.useEffect(() => {
     const unsubscribe = getDamagedEquipments(
-      (equipments = []) => {
-        setDamagedEquipments(Array.isArray(equipments) ? equipments : []);
-      },
+      (equipments) => setDamagedEquipments(equipments),
       (error) => console.error('Error fetching damaged equipments:', error)
     );
-
+  
+    // Cleanup subscription on unmount
     return () => unsubscribe && unsubscribe();
   }, []);
+  
 
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -65,19 +65,16 @@ export default function CustomTable({ title }) {
           <TableHead>
             <TableRow style={{ backgroundColor: '#f5f5f5', position: 'sticky', top: 0, zIndex: 1 }}>
               <TableCell onClick={() => handleRequestSort('name')}>Equipment Name</TableCell>
-              <TableCell onClick={() => handleRequestSort('capacity')}>Capacity</TableCell>
-              <TableCell align="right" onClick={() => handleRequestSort('qty')}>Total</TableCell>
+              <TableCell onClick={() => handleRequestSort('unit')}>Capacity</TableCell>
+              <TableCell align="right" onClick={() => handleRequestSort('stocks')}>Total</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {stableSort(
-              damagedEquipments.flatMap((row) => row.equipments), // Flatten the array
-              getComparator(order, orderBy)
-            ).map((equipment) => (
-              <TableRow key={equipment.id}>
-                <TableCell>{equipment.name}</TableCell>
-                <TableCell>{equipment.capacity} {equipment.unit}</TableCell>
-                <TableCell align="right">{equipment.qty}</TableCell>
+            {stableSort(damagedEquipments, getComparator(order, orderBy)).map((row) => (
+              <TableRow key={row.id}>
+                <TableCell>{row.name}</TableCell>
+                <TableCell>{row.capacity}{row.unit}</TableCell>
+                <TableCell align="right">{row.qty}</TableCell>
               </TableRow>
             ))}
           </TableBody>
