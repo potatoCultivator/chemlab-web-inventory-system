@@ -75,7 +75,7 @@ console.log(percentageIncrease);
         </Grid>
         <Grid item xs={12}>
           <Typography variant="subtitle2" sx={{ color: 'grey.800' }}>
-            {percentageIncrease.toFixed(0)}% Increase in Available Equipment
+            {percentageIncrease.toFixed(0)}% Increase in Equipment This Month
           </Typography>
         </Grid>
       </Grid>

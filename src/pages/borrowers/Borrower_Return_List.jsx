@@ -117,10 +117,17 @@ class BorrowerList extends Component {
 
                     <Box sx={{ width: '100%' }}>
                         <Typography variant="h6">Equipments</Typography>
-                        <TableContainer component={Paper}>
-                            <Table>
-                                <TableHead>
-                                    <TableRow>
+                        <TableContainer component={Paper} style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                                        <Table>
+                                        <TableHead>
+                                        <TableRow
+                                            style={{
+                                            backgroundColor: "#f5f5f5",
+                                            position: "sticky", // Make the header sticky
+                                            top: 0,             // Stick to the top of the container
+                                            zIndex: 1,          // Ensure it's above the body
+                                            }}
+                                        >
                                         <TableCell>Equipment</TableCell>
                                         <TableCell align="center">Quantity</TableCell>
                                         <TableCell align="center">Borrowers</TableCell>

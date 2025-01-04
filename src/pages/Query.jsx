@@ -84,7 +84,7 @@ async function checkEquipmentExists(name, unit, capacity) {
     q = query(
       collectionRef,
       where('name', '==', name.toLowerCase().trim()),  // Trim and lowercase for consistent comparison
-      where('unit', '==', unit.toLowerCase().trim()),  // Trim and lowercase for unit
+      where('unit', '==', unit),  // Trim and lowercase for unit
       where('deleted', '==', false)
     );
   } else {
@@ -660,6 +660,21 @@ function getMonthlyEquipmentStocksCount(callback, errorCallback) {
   }, errorCallback);
 }
 
+// function getDamagedEquipments(callback, errorCallback) {
+//   const db = firestore;
+//   const collectionRef = collection(db, 'invoice');
+
+//   return onSnapshot(collectionRef, (snapshot) => {
+//     const equipments = snapshot.docs
+//       .map(doc => doc.data().equipments.map(equipment => ({ ...equipment, id: doc.id })))
+//       .flat();
+
+//     callback(equipments);
+//   }, errorCallback);
+// }
+
+import _ from 'lodash';
+
 function getDamagedEquipments(callback, errorCallback) {
   const db = firestore;
   const collectionRef = collection(db, 'invoice');
@@ -669,7 +684,35 @@ function getDamagedEquipments(callback, errorCallback) {
       .map(doc => doc.data().equipments.map(equipment => ({ ...equipment, id: doc.id })))
       .flat();
 
-    callback(equipments);
+    const groupedEquipments = _.groupBy(equipments, equipment => `${equipment.name}-${equipment.unit}-${equipment.capacity}`);
+    const uniqueEquipments = Object.values(groupedEquipments).map(group => ({
+      ...group[0],
+      id_list: group.map(equipment => ({ id: equipment.id, qty: equipment.qty })),
+      total_qty: group.reduce((total, equipment) => total + equipment.qty, 0)
+    }));
+
+    callback(uniqueEquipments);
+  }, errorCallback);
+}
+
+function getReplacedEquipments(callback, errorCallback) {
+  const db = firestore;
+  const collectionRef = collection(db, 'invoice');
+
+  return onSnapshot(collectionRef, (snapshot) => {
+    const equipments = snapshot.docs
+      .filter(doc => doc.data().replaced === true) // Ensure each doc.replaced is true
+      .map(doc => doc.data().equipments.map(equipment => ({ ...equipment, id: doc.id })))
+      .flat();
+
+    const groupedEquipments = _.groupBy(equipments, equipment => `${equipment.name}-${equipment.unit}-${equipment.capacity}`);
+    const uniqueEquipments = Object.values(groupedEquipments).map(group => ({
+      ...group[0],
+      id_list: group.map(equipment => ({ id: equipment.id, qty: equipment.qty })),
+      total_qty: group.reduce((total, equipment) => total + equipment.qty, 0)
+    }));
+
+    callback(uniqueEquipments);
   }, errorCallback);
 }
 
@@ -680,7 +723,9 @@ function getLiableBorrowers(callback, errorCallback) {
   return onSnapshot(collectionRef, (snapshot) => {
     const borrowers = snapshot.docs.map(doc => ({
       id: doc.id,
-      borrower: doc.data().borrower
+      studentID: doc.data().studentID,
+      borrower: doc.data().borrower,
+      date: doc.data().date_issued
     }));
 
     callback(borrowers);
@@ -721,5 +766,6 @@ export {
   fetchDeletedAndNotDeletedEquipments,
   getMonthlyEquipmentStocksCount,
   getDamagedEquipments,
-  getLiableBorrowers
+  getLiableBorrowers,
+  getReplacedEquipments,
 };

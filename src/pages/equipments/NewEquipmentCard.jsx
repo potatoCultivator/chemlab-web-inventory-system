@@ -83,7 +83,8 @@ const ChemistryLabInventoryCard = ({ isLoading }) => {
                           <Grid container alignItems="center" justifyContent="space-between">
                             <Grid item>
                               <Typography variant="subtitle1" color="inherit">
-                                {equipment.name}
+                              {equipment.name}{' '}
+                              {equipment.unit !== 'pcs' && `${equipment.capacity}${equipment.unit}`}
                               </Typography>
                             </Grid>
                             <Grid item>
