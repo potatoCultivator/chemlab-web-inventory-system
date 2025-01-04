@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-
+import React, { useEffect, useState } from 'react';
 // material-ui
 import { styled, useTheme } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
@@ -16,8 +16,8 @@ import MainCard from 'components/MainCard';
 
 // assets
 // import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';
-import { TableOutlined } from '@ant-design/icons';
 import { TagsOutlined } from '@ant-design/icons';
+import { getEquipmentsCounts } from '../../Query'
 
 // styles
 const CardWrapper = styled(MainCard)(({ theme }) => ({
@@ -52,7 +52,24 @@ const CardWrapper = styled(MainCard)(({ theme }) => ({
 
 const DistinctEquipment = ({ isLoading }) => {
   const theme = useTheme();
+  const [count, setCount] = React.useState(0);
 
+  useEffect(() => {
+    const handleSuccess = (data) => {
+      setCount(data.totalEquipments); // Assuming you want to display totalEquipments
+    };
+
+    const handleError = (error) => {
+      console.error("Error fetching equipment counts: ", error);
+    };
+
+    const unsubscribe = getEquipmentsCounts(handleSuccess, handleError);
+
+    // Cleanup function to unsubscribe from the snapshot listener when the component unmounts
+    return () => {
+      unsubscribe();
+    };
+  }, []);
   return (
     <>
       {isLoading ? (
@@ -80,7 +97,7 @@ const DistinctEquipment = ({ isLoading }) => {
                   sx={{ py: 0, my: 0.45 }}
                   primary={
                     <Typography variant="h4" sx={{ color: '#fff' }}>
-                      203
+                      {count}
                     </Typography>
                   }
                   secondary={

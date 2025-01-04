@@ -117,9 +117,11 @@ export default function DashboardDefault() {
         </Grid> */}
         {/* row 1 */}        
         <Grid item xs={12} sm={6} md={4} lg={3} className="total-bad-condition" >
+          <DistinctEquipment />
+        </Grid>
+        <Grid item xs={12} sm={6} md={4} lg={3} className="total-bad-condition" >
           <TotalEquipmentBorrowed />
         </Grid>
-
         <Grid item xs={12} sm={6} md={4} lg={3} className="total-bad-condition" >
           <TotalReplacedEquipment />
         </Grid>
@@ -127,9 +129,7 @@ export default function DashboardDefault() {
         <Grid item xs={12} sm={6} md={4} lg={3} className="total-bad-condition" >
           <TotalDamageEquipment />
         </Grid>
-        <Grid item xs={12} sm={6} md={4} lg={3} className="total-bad-condition" >
-          <DistinctEquipment />
-        </Grid>
+        
         
       <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
 
