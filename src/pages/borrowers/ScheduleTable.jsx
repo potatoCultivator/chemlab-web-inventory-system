@@ -64,7 +64,7 @@ function Row(props) {
         <TableCell component="th" scope="row">
           {row.subject}
         </TableCell>
-        <TableCell>{row.schedule.start} - {row.schedule.end}</TableCell>
+        <TableCell>{row.schedule.day}, {row.schedule.start} - {row.schedule.end}</TableCell>
         <TableCell>{row.instructor}</TableCell>
       </TableRow>
       <TableRow>
@@ -72,7 +72,7 @@ function Row(props) {
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1, padding: 0, maxWidth: '800px', marginLeft: 'auto', marginRight: 'auto' }}>
               <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} md={12}>
                   <Typography variant="h6" gutterBottom component="div" sx={{ fontSize: '1rem', fontWeight: 'bold' }}>
                     List of Equipments Issued
                   </Typography>
@@ -104,7 +104,7 @@ function Row(props) {
                     </Table>
                   </TableContainer>
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} md={12}>
                   <Typography variant="h6" gutterBottom component="div" sx={{ fontSize: '1rem', fontWeight: 'bold' }}>
                     Students Borrowing Equipments
                   </Typography>
@@ -120,18 +120,23 @@ function Row(props) {
                           }}
                         >
                           <TableCell>Student</TableCell>
-                          <TableCell align='right'>Borrow Time</TableCell>
+                          <TableCell>Status</TableCell>
+                          <TableCell align='right'>Borrow</TableCell>
+                          <TableCell align='right'>Return</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
                           {row.students.map((student) => {
-                            const date = student.borrowTime ? student.borrowTime.toDate() : new Date();
+                            const date_borrow = student.borrowedTime ? student.borrowedTime.toDate() : new Date();
+                            const date_return = student.returnedTime ? student.returnedTime.toDate() : null;
                             return (
-                              <TableRow key={student.name} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}  onClick={() => handleStudentClick(student)}>
+                              <TableRow key={student.name} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }} onClick={() => handleStudentClick(student)}>
                                 <TableCell component="th" scope="row">
                                   {student.name}
                                 </TableCell>
-                                <TableCell align='right'>{date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</TableCell>
+                                <TableCell>{student.status}</TableCell>
+                                <TableCell align='right'>{date_borrow.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</TableCell>
+                                <TableCell align='right'>{date_return ? date_return.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : 'N/A'}</TableCell>
                               </TableRow>
                             );
                           })}
@@ -199,6 +204,7 @@ Row.propTypes = {
   row: PropTypes.shape({
     subject: PropTypes.string.isRequired,
     schedule: PropTypes.shape({
+      day: PropTypes.string.isRequired,
       start: PropTypes.string.isRequired,
       end: PropTypes.string.isRequired,
     }).isRequired,
@@ -229,10 +235,12 @@ export default function ScheduleTable({ title }) {
         const scheduleList = data.map((sched) => {
           const startDate = sched.start.toDate();
           const endDate = sched.end.toDate();
+          const day = startDate.toLocaleDateString('en-US', { weekday: 'short' });
   
           return createData(
             sched.subject,
             {
+              day,
               start: startDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
               end: endDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
             },

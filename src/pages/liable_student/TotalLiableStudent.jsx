@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // Ant Design
 import { useTheme } from '@mui/material/styles';
 import { Avatar, Typography, Grid, Box } from '@mui/material';
 import { UserOutlined } from '@ant-design/icons';
 
-import { getEquipmentsCounts } from '../Query'
+import { getCountLiable } from '../Query'
 
 // project imports
 import MainCard from 'components/MainCard';
@@ -16,23 +16,14 @@ import MainCard from 'components/MainCard';
 
 const TotalLiableStudent = ({ isLoading }) => {
     const theme = useTheme();
-    const [count, setCount] = React.useState(0);
+    const [coountLiable, setCountLiable] = useState(0);
 
+    // Fetch pending counts on component mount
     useEffect(() => {
-        const handleSuccess = (data) => {
-            setCount(data.totalEquipments); // Assuming you want to display totalEquipments
-        };
-
-        const handleError = (error) => {
-            console.error("Error fetching equipment counts: ", error);
-        };
-
-        const unsubscribe = getEquipmentsCounts(handleSuccess, handleError);
-
-        // Cleanup function to unsubscribe from the snapshot listener when the component unmounts
-        return () => {
-            unsubscribe();
-        };
+        getCountLiable(
+            (data) => setCountLiable(data.totalCount), // Success callback
+            (error) => console.error('Error fetching pending counts: ', error) // Error callback
+        );
     }, []);
 
     return (
@@ -78,7 +69,7 @@ const TotalLiableStudent = ({ isLoading }) => {
                             <Grid item>
                                 <Grid container alignItems="center">
                                     <Grid item>
-                                        <Typography sx={{ fontSize: '2.125rem', fontWeight: 700, mr: 1, mt: 1.75, mb: 0.75 }}>{count}</Typography>
+                                        <Typography sx={{ fontSize: '2.125rem', fontWeight: 700, mr: 1, mt: 1.75, mb: 0.75 }}>{coountLiable}</Typography>
                                     </Grid>
                                     <Grid item>
                                         <Avatar

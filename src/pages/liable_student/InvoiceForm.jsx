@@ -26,7 +26,7 @@ import {
 import 'react-datepicker/dist/react-datepicker.css'; // Import the default CSS
 import './InvoiceForm.css'; // Import custom CSS
 import { CalendarOutlined } from '@ant-design/icons';
-import { get_Sched, uploadInvoice, get_SchedSub, updateInvoice } from 'pages/Query';
+import { get_SchedSub, updateInvoice, replaceStock } from 'pages/Query';
 import { Timestamp } from 'firebase/firestore';
 
 const InvoiceForm = ({ invoice }) => {
@@ -120,6 +120,9 @@ const InvoiceForm = ({ invoice }) => {
     setLoading(true);
     try {
       await updateInvoice(invoice.id);  // Assuming this is a promise-based function
+      for (const equipment of formValues.equipments) {
+        await replaceStock(equipment.name, equipment.capacity, equipment.unit, equipment.qty);
+      }
       setSnackbarMessage('Invoice updated successfully');
       setSnackbarSeverity('success');
       setSnackbarOpen(true);

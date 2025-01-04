@@ -439,10 +439,17 @@ async function updatedBorrowerStatus(schedID, borrowerID, newStatus) {
       const data = docSnap.data();
       const borrowers = data.borrowers || [];
 
-      // Update the status of the specific borrower
-      const updatedBorrowers = borrowers.map(borrower => 
-        borrower.userID === borrowerID ? { ...borrower, status: newStatus } : borrower
-      );
+      let updatedBorrowers = borrowers;
+
+      if (newStatus === 'returned') {
+        updatedBorrowers = borrowers.map(borrower => 
+          borrower.userID === borrowerID ? { ...borrower, status: newStatus, date_returned: new Date() } : borrower
+        );
+      } else if (newStatus === 'approved') {
+         updatedBorrowers = borrowers.map(borrower => 
+          borrower.userID === borrowerID ? { ...borrower, status: newStatus } : borrower
+        );
+      }
 
       // Update the document with the modified borrowers array
       await updateDoc(docRef, { borrowers: updatedBorrowers });
@@ -775,6 +782,61 @@ async function getCountSettled(successCallback, errorCallback) {
   }
 }
 
+async function getCountLiable(successCallback, errorCallback) {
+  try {
+    const collectionRef = collection(firestore, 'invoice');
+    const querySnapshot = await getDocs(collectionRef);
+
+    let totalCount = 0;
+
+    querySnapshot.forEach(doc => {
+      totalCount++;
+    });
+
+    successCallback({ totalCount: totalCount });
+  } catch (error) {
+    errorCallback(error);
+  }
+}
+
+async function replaceStock(name, capacity, unit, addedStock) {
+  const db = firestore;
+  const collectionRef = collection(db, 'equipments');
+
+  // Create the query based on the name, unit, and capacity (if unit is not 'pcs')
+  let q;
+  if (unit.toLowerCase() === 'pcs') {
+    q = query(
+      collectionRef,
+      where('name', '==', name),
+      where('unit', '==', unit),
+      where('deleted', '==', false)
+    );
+  } else {
+    q = query(
+      collectionRef,
+      where('name', '==', name),
+      where('capacity', '==', Number(capacity)),
+      where('unit', '==', unit),
+      where('deleted', '==', false)
+    );
+  }
+
+  const querySnapshot = await getDocs(q);
+
+  if (!querySnapshot.empty) {
+    const docRef = querySnapshot.docs[0].ref;
+    const data = querySnapshot.docs[0].data();
+    const currentStock = Number(data.stocks) || 0;  // Ensure currentStock is a number
+    const newStock = currentStock + Number(addedStock);  // Ensure addedStock is a number
+
+    // Update the document with the new stock values
+    await updateDoc(docRef, { stocks: newStock });
+    console.log('Stock replaced successfully!');
+  } else {
+    console.error('Document does not exist!');
+  }
+}
 
 export { 
   addEquipment,
@@ -813,5 +875,7 @@ export {
   getLiableBorrowers,
   getReplacedEquipments,
   getCountPending,
-  getCountSettled
+  getCountSettled,
+  getCountLiable,
+  replaceStock,
 };
