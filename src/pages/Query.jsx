@@ -225,7 +225,9 @@ async function getAllSchedule() {
   const collectionRef = collection(db, 'schedule');
   const querySnapshot = await getDocs(collectionRef);
 
-  const schedList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  const schedList = querySnapshot.docs
+    .filter(doc => !doc.data().deleted) // Filter out documents where deleted is true
+    .map(doc => ({ id: doc.id, ...doc.data() }));
   console.log(schedList);
   return schedList;
 }

@@ -14,31 +14,7 @@ import Collapse from '@mui/material/Collapse';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import { getReplacedEquipments, getLiableBorrowers } from '../Query'; // Update the import path
 
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) return -1;
-  if (b[orderBy] > a[orderBy]) return 1;
-  return 0;
-}
-
-function getComparator(order, orderBy) {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
-
 export default function CustomTable({ title }) {
-  const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('name');
   const [damagedEquipments, setDamagedEquipments] = React.useState([]);
   const [liableBorrowers, setLiableBorrowers] = React.useState([]);
   const [openRows, setOpenRows] = React.useState({});
@@ -63,12 +39,6 @@ export default function CustomTable({ title }) {
     return () => unsubscribe && unsubscribe();
   }, []);
   
-  const handleRequestSort = (property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
-  };
-
   const handleRowClick = (rowId) => {
     setOpenRows((prev) => ({ ...prev, [rowId]: !prev[rowId] }));
   };
@@ -90,13 +60,13 @@ export default function CustomTable({ title }) {
           <TableHead>
             <TableRow style={{ backgroundColor: '#f5f5f5', position: 'sticky', top: 0, zIndex: 1 }}>
               <TableCell />
-              <TableCell onClick={() => handleRequestSort('name')}>Equipment Name</TableCell>
-              <TableCell onClick={() => handleRequestSort('unit')}>Capacity</TableCell>
-              <TableCell align="center" onClick={() => handleRequestSort('stocks')}>Total</TableCell>
+              <TableCell>Equipment Name</TableCell>
+              <TableCell>Capacity</TableCell>
+              <TableCell align="center">Total</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {stableSort(damagedEquipments, getComparator(order, orderBy)).map((row) => (
+            {damagedEquipments.map((row) => (
               <React.Fragment key={row.id}>
                 <TableRow>
                   <TableCell>
@@ -109,7 +79,7 @@ export default function CustomTable({ title }) {
                     </IconButton>
                   </TableCell>
                   <TableCell>{row.name}</TableCell>
-                  <TableCell>{row.capacity}{row.unit}</TableCell>
+                  <TableCell>{row.unit !== 'pcs' ? `${row.capacity}${row.unit}` : `${row.unit}`}</TableCell>
                   <TableCell align="center">{row.total_qty}</TableCell>
                 </TableRow>
                 <TableRow>

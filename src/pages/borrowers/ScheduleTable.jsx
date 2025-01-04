@@ -14,8 +14,6 @@ import Typography from '@mui/material/Typography';
 import { UpOutlined, DownOutlined } from '@ant-design/icons';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
-import { TableSortLabel } from '@mui/material';
-// import Dialog, { DialogContent, DialogTitle, DialogActions } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -32,42 +30,6 @@ function createData(subject, schedule, instructor, equipments, students) {
     equipments,
     students,
   };
-}
-
-function descendingComparator(a, b, orderBy) {
-  if (orderBy === 'schedule') {
-    if (b.schedule.start < a.schedule.start) {
-      return -1;
-    }
-    if (b.schedule.start > a.schedule.start) {
-      return 1;
-    }
-    return 0;
-  } else {
-    if (b[orderBy] < a[orderBy]) {
-      return -1;
-    }
-    if (b[orderBy] > a[orderBy]) {
-      return 1;
-    }
-    return 0;
-  }
-}
-
-function getComparator(order, orderBy) {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
 }
 
 function Row(props) {
@@ -257,15 +219,7 @@ Row.propTypes = {
 };
 
 export default function ScheduleTable({ title }) {
-  const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('subject');
   const [rows, setRows] = useState([]);
-
-  const handleRequestSort = (property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
-  };
 
   useEffect(() => {
     async function fetchScheduleData() {
@@ -297,16 +251,6 @@ export default function ScheduleTable({ title }) {
     fetchScheduleData();
   }, []);
   
-  // function createData(subject, schedule, instructor, equipments, students) {
-  //   return {
-  //     subject,
-  //     schedule,
-  //     instructor,
-  //     equipments,
-  //     students,
-  //   };
-  // }
-  
   return (
     <Box sx={{ height: 853, backgroundColor: 'transparent' }}>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
@@ -330,37 +274,13 @@ export default function ScheduleTable({ title }) {
               }}
             >
               <TableCell />
-              <TableCell sortDirection={orderBy === 'subject' ? order : false}>
-                <TableSortLabel
-                  active={orderBy === 'subject'}
-                  direction={orderBy === 'subject' ? order : 'asc'}
-                  onClick={() => handleRequestSort('subject')}
-                >
-                  Subject
-                </TableSortLabel>
-              </TableCell>
-              <TableCell sortDirection={orderBy === 'schedule' ? order : false}>
-                <TableSortLabel
-                  active={orderBy === 'schedule'}
-                  direction={orderBy === 'schedule' ? order : 'asc'}
-                  onClick={() => handleRequestSort('schedule')}
-                >
-                  Schedule
-                </TableSortLabel>
-              </TableCell>
-              <TableCell sortDirection={orderBy === 'instructor' ? order : false}>
-                <TableSortLabel
-                  active={orderBy === 'instructor'}
-                  direction={orderBy === 'instructor' ? order : 'asc'}
-                  onClick={() => handleRequestSort('instructor')}
-                >
-                  Instructor
-                </TableSortLabel>
-              </TableCell>
+              <TableCell>Subject</TableCell>
+              <TableCell>Schedule</TableCell>
+              <TableCell>Instructor</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {stableSort(rows, getComparator(order, orderBy)).map((row) => (
+            {rows.map((row) => (
               <Row key={row.subject} row={row} />
             ))}
           </TableBody>
