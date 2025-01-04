@@ -737,6 +737,45 @@ function getLiableBorrowers(callback, errorCallback) {
   }, errorCallback);
 }
 
+async function getCountPending(successCallback, errorCallback) {
+    try {
+        const collectionRef = collection(firestore, 'invoice');
+        const querySnapshot = await getDocs(collectionRef);
+
+        let pendingCount = 0;
+
+        querySnapshot.forEach(doc => {
+            if (!doc.data().replaced) {
+                pendingCount++;
+            }
+        });
+
+        successCallback({ totalPending: pendingCount });
+    } catch (error) {
+        errorCallback(error);
+    }
+}
+
+async function getCountSettled(successCallback, errorCallback) {
+  try {
+      const collectionRef = collection(firestore, 'invoice');
+      const querySnapshot = await getDocs(collectionRef);
+
+      let pendingCount = 0;
+
+      querySnapshot.forEach(doc => {
+          if (doc.data().replaced) {
+              pendingCount++;
+          }
+      });
+
+      successCallback({ totalPending: pendingCount });
+  } catch (error) {
+      errorCallback(error);
+  }
+}
+
+
 export { 
   addEquipment,
   uploadImageAndGetUrl,
@@ -773,4 +812,6 @@ export {
   getDamagedEquipments,
   getLiableBorrowers,
   getReplacedEquipments,
+  getCountPending,
+  getCountSettled
 };

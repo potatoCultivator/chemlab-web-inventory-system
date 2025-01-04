@@ -131,7 +131,7 @@ class BorrowerList extends Component {
                         <TableCell>Equipment</TableCell>
                         <TableCell align="center">Quantity</TableCell>
                         <TableCell align="center">Borrowers</TableCell>
-                        <TableCell align="center">Total</TableCell>
+                        <TableCell align="center">Total Borrowed</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -146,15 +146,16 @@ class BorrowerList extends Component {
                             <TableCell align="center">
                             {
                                 filteredBorrowers.filter(
-                                (borrower) => borrower.status === 'pending return'
-                                ).length
+                                    (borrower) => borrower.status === 'pending return' || borrower.status === 'approved'
+                                    ).length
                             }
                             </TableCell>
                             <TableCell align="center">
                             {equipment.qty *
                                 filteredBorrowers.filter(
-                                (borrower) => borrower.status === 'pending return'
-                                ).length}
+                                    (borrower) => borrower.status === 'pending return' || borrower.status === 'approved'
+                                    ).length
+                            }
                             </TableCell>
                         </TableRow>
                         ))}
