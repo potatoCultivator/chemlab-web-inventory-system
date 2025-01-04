@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import React, { useEffect } from 'react';
 
 // material-ui
 import { styled, useTheme } from '@mui/material/styles';
@@ -18,8 +19,10 @@ import MainCard from 'components/MainCard';
 // import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';
 import { ThunderboltOutlined } from '@ant-design/icons';
 
+import { getTotalDamagedEquipmentQty } from '../../Query';
+
 // styles
-const CardWrapper = styled(MainCard)(({ theme }) => ({
+const CardWrapper = styled(MainCard)(() => ({
     backgroundColor: '#6A1B9A', // Deep purple
     color: '#EDE7F6',          // Soft lavender
     overflow: 'hidden',
@@ -46,12 +49,32 @@ const CardWrapper = styled(MainCard)(({ theme }) => ({
     }
   }));
   
-  
 
 // ==============================|| DASHBOARD - TOTAL INCOME DARK CARD ||============================== //
 
 const TotalDamageEquipment = ({ isLoading }) => {
   const theme = useTheme();
+  const [count, setCount] = React.useState(0);
+
+  useEffect(() => {
+    const handleSuccess = (data) => {
+      setCount(data);
+    };
+
+    const handleError = (error) => {
+      console.error('Error fetching damaged equipment counts: ', error);
+    };
+
+    const unsubscribe = getTotalDamagedEquipmentQty(handleSuccess, handleError);
+    if (typeof unsubscribe !== 'function') {
+      console.error('Expected a function for unsubscribe, but got:', typeof unsubscribe);
+      return () => {};
+    }
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   return (
     <>
@@ -80,12 +103,12 @@ const TotalDamageEquipment = ({ isLoading }) => {
                   sx={{ py: 0, my: 0.45 }}
                   primary={
                     <Typography variant="h4" sx={{ color: '#fff' }}>
-                      203
+                      {count}
                     </Typography>
                   }
                   secondary={
                     <Typography variant="subtitle2" sx={{ color: '#fff', mt: 0.25 }}>
-                       Damage Equipment
+                      Damage Equipment
                     </Typography>
                   }
                 />

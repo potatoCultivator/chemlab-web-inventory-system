@@ -838,6 +838,100 @@ async function replaceStock(name, capacity, unit, addedStock) {
   }
 }
 
+// function getCountDamageEquipment(callback, errorCallback) {
+//   const db = firestore;
+//   const collectionRef = collection(db, 'invoice');
+
+//   return onSnapshot(collectionRef, (snapshot) => {
+//     const equipments = snapshot.docs
+//       .map(doc => doc.data().equipments.map(equipment => ({ ...equipment, id: doc.id })))
+//       .flat();
+
+//     const groupedEquipments = _.groupBy(equipments, equipment => `${equipment.name}-${equipment.unit}-${equipment.capacity}`);
+//     const uniqueEquipments = Object.values(groupedEquipments).map(group => ({
+//       ...group[0],
+//       id_list: group.map(equipment => ({ id: equipment.id, qty: equipment.qty })),
+//       total_qty: group.reduce((total, equipment) => total + equipment.qty, 0)
+//     }));
+
+//     callback(uniqueEquipments);
+//   }, errorCallback);
+// }
+
+async function getTotalDamagedEquipmentQty(callback, errorCallback) {
+  const db = firestore;
+  const collectionRef = collection(db, 'invoice');
+
+  return onSnapshot(collectionRef, (snapshot) => {
+    const equipments = snapshot.docs
+      .filter(doc => doc.data().replaced === false) // Only count documents where replaced is false
+      .map(doc => doc.data().equipments.map(equipment => ({ ...equipment, id: doc.id })))
+      .flat();
+
+    const groupedEquipments = _.groupBy(equipments, equipment => `${equipment.name}-${equipment.unit}-${equipment.capacity}`);
+    const uniqueEquipments = Object.values(groupedEquipments).map(group => ({
+      ...group[0],
+      id_list: group.map(equipment => ({ id: equipment.id, qty: equipment.qty })),
+      total_qty: group.reduce((total, equipment) => total + Number(equipment.qty), 0) // Ensure qty is parsed as a number
+    }));
+
+    const totalQty = uniqueEquipments.reduce((sum, equipment) => sum + equipment.total_qty, 0);
+    callback(totalQty);
+  }, errorCallback);
+}
+
+async function getTotalReplacedEquipmentQty(callback, errorCallback) {
+  const db = firestore;
+  const collectionRef = collection(db, 'invoice');
+
+  return onSnapshot(collectionRef, (snapshot) => {
+    const equipments = snapshot.docs
+      .filter(doc => doc.data().replaced === true) // Only count documents where replaced is false
+      .map(doc => doc.data().equipments.map(equipment => ({ ...equipment, id: doc.id })))
+      .flat();
+
+    const groupedEquipments = _.groupBy(equipments, equipment => `${equipment.name}-${equipment.unit}-${equipment.capacity}`);
+    const uniqueEquipments = Object.values(groupedEquipments).map(group => ({
+      ...group[0],
+      id_list: group.map(equipment => ({ id: equipment.id, qty: equipment.qty })),
+      total_qty: group.reduce((total, equipment) => total + Number(equipment.qty), 0) // Ensure qty is parsed as a number
+    }));
+
+    const totalQty = uniqueEquipments.reduce((sum, equipment) => sum + equipment.total_qty, 0);
+    callback(totalQty);
+  }, errorCallback);
+}
+
+async function getCountBorrowedEquipment(callback, errorCallback) {
+  const db = firestore;
+  const collectionRef = collection(db, 'schedule');
+
+  return onSnapshot(collectionRef, (snapshot) => {
+    const equipments = snapshot.docs
+      .filter(doc => !doc.data().deleted) // Ensure doc.deleted is false
+      .map(doc => {
+        const data = doc.data();
+        const approvedAndPendingBorrowers = data.borrowers.filter(borrower => borrower.status === 'approved' || borrower.status === 'pending return');
+        return data.equipments.map(equipment => ({
+          ...equipment,
+          id: doc.id,
+          qty: equipment.qty * approvedAndPendingBorrowers.length // Multiply qty by the count of approved and pending return borrowers
+        }));
+      })
+      .flat();
+
+    const groupedEquipments = _.groupBy(equipments, equipment => `${equipment.name}-${equipment.unit}-${equipment.capacity}`);
+    const uniqueEquipments = Object.values(groupedEquipments).map(group => ({
+      ...group[0],
+      id_list: group.map(equipment => ({ id: equipment.id, qty: equipment.qty })),
+      total_qty: group.reduce((total, equipment) => total + equipment.qty, 0)
+    }));
+
+    const totalQty = uniqueEquipments.reduce((sum, equipment) => sum + equipment.total_qty, 0);
+    callback(totalQty);
+  }, errorCallback);
+}
+
 export { 
   addEquipment,
   uploadImageAndGetUrl,
@@ -878,4 +972,7 @@ export {
   getCountSettled,
   getCountLiable,
   replaceStock,
+  getTotalDamagedEquipmentQty,
+  getTotalReplacedEquipmentQty,
+  getCountBorrowedEquipment,
 };
