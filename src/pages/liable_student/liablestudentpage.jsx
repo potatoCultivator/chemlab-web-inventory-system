@@ -55,11 +55,18 @@ const LiableStudentsPage = () => {
     return () => unsubscribe();
   }, []);
 
+  console.log('invoices: ' + invoices.length);
+
   const handleSearchChange = (e) => setSearchQuery(e.target.value);
 
   const handleClearSearch = () => setSearchQuery('');
 
-  const handleFilterChange = (e) => setFilterStatus(e.target.value);
+  const handleFilterChange = (e) => {
+    setFilterStatus(e.target.value);
+    setSearchQuery('');
+    setSelectedStudent(null);
+    setViewInvoice(false);
+  };
 
   const handleViewDetails = (student) => {
     setSelectedStudent(student);
@@ -105,10 +112,13 @@ const LiableStudentsPage = () => {
     });
   };
 
-  const filteredData = invoices.filter((student) => {
+  const uniqueInvoices = Array.from(new Set(invoices.map(student => student.issueID)))
+    .map(id => invoices.find(student => student.issueID === id));
+
+  const filteredData = uniqueInvoices.filter((student) => {
     return (
       student.borrower.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      (filterStatus === 'All' || student.status === filterStatus)
+      (filterStatus === 'All' || student.replaced === filterStatus)
     );
   });
 
@@ -152,8 +162,8 @@ const LiableStudentsPage = () => {
             sx={{ width: 150, backgroundColor: '#ffffff', borderRadius: 1 }}
           >
             <MenuItem value="All">All</MenuItem>
-            <MenuItem value="Pending">Pending</MenuItem>
-            <MenuItem value="Settled">Settled</MenuItem>
+            <MenuItem value={false}>Pending</MenuItem>
+            <MenuItem value={true}>Settled</MenuItem>
           </Select>
         </Box>
       )}
@@ -192,7 +202,7 @@ const LiableStudentsPage = () => {
             </TableHead>
             <TableBody>
               {filteredData.map((student) => (
-                <TableRow key={student.borrowerID}>
+                <TableRow key={student.issueID}>
                   <TableCell>{student.borrower}</TableCell>
                   <TableCell>{student.studentID}</TableCell>
                   <TableCell>
