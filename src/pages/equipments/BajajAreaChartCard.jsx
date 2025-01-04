@@ -46,14 +46,23 @@ const ChemistryLabAreaChartCard = () => {
     return equipmentMonth === currentMonth;
   });
 
-  const newAdded = currentMonthEquipments.reduce((sum, equipment) => sum + Number(equipment.stocks), 0);
-const allStocks = equipments.reduce((sum, equipment) => sum + Number(equipment.stocks), 0);
-const previousStock = allStocks - newAdded;
+  const newAdded = currentMonthEquipments.reduce((sum, equipment) => {
+    const lastHistory = equipment.history[equipment.history.length - 1];
+    return sum + (lastHistory ? Number(lastHistory.addedStock) : 0);
+  }, 0);
 
-// If previousStock is 0, set percentage increase to 100, otherwise calculate the percentage increase
-const percentageIncrease = previousStock === 0 ? 100 : (newAdded / previousStock) * 100;
+  // Calculate all stock before this month
+  const previousEquipments = equipments.filter(equipment => {
+    const equipmentMonth = new Date(equipment.dateAdded.seconds * 1000).getMonth();
+    return equipmentMonth !== currentMonth;
+  });
 
-console.log(percentageIncrease);
+  const previousStock = previousEquipments.reduce((sum, equipment) => sum + Number(equipment.stocks), 0);
+
+  const percentageIncrease = previousStock === 0 ? 100 : (newAdded / previousStock) * 100;
+
+  console.log(percentageIncrease);
+
 
 
   return (
@@ -68,7 +77,7 @@ console.log(percentageIncrease);
             </Grid>
             <Grid item>
               <Typography variant="h4" sx={{ color: 'grey.800' }}>
-                {newAdded} Stocks
+                {/* {newAdded} Stocks */}
               </Typography>
             </Grid>
           </Grid>

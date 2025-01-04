@@ -106,7 +106,7 @@ class BorrowerList extends Component {
 
             <Box sx={{ width: '100%' }}>
             <Typography variant="h6">Equipments</Typography>
-            <TableContainer component={Paper} style={{ maxHeight: '200px', overflowY: 'auto' }}>
+            <TableContainer component={Paper} style={{ maxHeight: '300px', overflowY: 'auto' }}>
                 <Table>
                 <TableHead>
                 <TableRow

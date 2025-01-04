@@ -361,6 +361,7 @@ function get_ID_Name_Sched(callback, errorCallback) {
           const data = doc.data();
           const docDate = data.start.toDate(); // Assuming dateAdded is a Firestore Timestamp
           if (
+            !data.deleted && // Check if doc.deleted is false
             docDate.getFullYear() === currentDate.getFullYear() &&
             docDate.getMonth() === currentDate.getMonth() &&
             docDate.getDate() === currentDate.getDate()
@@ -397,16 +398,18 @@ function get_Sched(callback, errorCallback) {
   const unsubscribe = onSnapshot(
     collectionRef,
     (snapshot) => {
-      const schedList = snapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          subject: data.subject,
-          borrowers: data.borrowers,
-          equipments: data.equipments,
-          teacher: data.teacher,
-        };
-      });
+      const schedList = snapshot.docs
+        .filter(doc => !doc.data().deleted) // Filter out documents where deleted is true
+        .map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            subject: data.subject,
+            borrowers: data.borrowers,
+            equipments: data.equipments,
+            teacher: data.teacher,
+          };
+        });
       callback(schedList); // Call the callback with the updated schedule list
     },
     (error) => {

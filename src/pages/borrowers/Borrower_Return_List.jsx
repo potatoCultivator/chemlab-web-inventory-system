@@ -99,136 +99,122 @@ class BorrowerList extends Component {
 
         return (
             <>
-                <Box
-                    sx={{
-                        position: 'sticky',
-                        top: 0,
-                        backgroundColor: 'white',
-                        zIndex: 1,
-                        width: '100%',
-                        padding: 2,
-                        marginBottom: 2,
-                        height: 800, // Set constant height
-                    }}
-                >
-                    <Typography variant="h5" sx={{ marginBottom: 1 }}>
-                        Return
-                    </Typography>
+            <Box
+                sx={{
+                position: 'sticky',
+                top: 0,
+                backgroundColor: 'white',
+                zIndex: 1,
+                width: '100%',
+                padding: 2,
+                marginBottom: 2,
+                height: 800, // Set constant height
+                }}
+            >
+                <Typography variant="h5" sx={{ marginBottom: 1 }}>
+                Return
+                </Typography>
 
-                    <Box sx={{ width: '100%' }}>
-                        <Typography variant="h6">Equipments</Typography>
-                        <TableContainer component={Paper} style={{ maxHeight: '200px', overflowY: 'auto' }}>
-                                        <Table>
-                                        <TableHead>
-                                        <TableRow
-                                            style={{
-                                            backgroundColor: "#f5f5f5",
-                                            position: "sticky", // Make the header sticky
-                                            top: 0,             // Stick to the top of the container
-                                            zIndex: 1,          // Ensure it's above the body
-                                            }}
-                                        >
-                                        <TableCell>Equipment</TableCell>
-                                        <TableCell align="center">Quantity</TableCell>
-                                        <TableCell align="center">Borrowers</TableCell>
-                                        <TableCell align="center">Total</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {equipments.map((equipment, index) => (
-                                        <TableRow key={index}>
-                                            <TableCell>
-                                                {equipment.unit === 'pcs'
-                                                    ? equipment.name
-                                                    : `${equipment.name} ${equipment.capacity}${equipment.unit}`}
-                                            </TableCell>
-                                            <TableCell align="center">{equipment.qty}</TableCell>
-                                            <TableCell align="center">
-                                                {
-                                                    filteredBorrowers.filter(
-                                                        (borrower) => borrower.status === 'pending'
-                                                    ).length
-                                                }
-                                            </TableCell>
-                                            <TableCell align="center">
-                                                {equipment.qty *
-                                                    filteredBorrowers.filter(
-                                                        (borrower) => borrower.status === 'pending'
-                                                    ).length}
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    </Box>
-                {/* </Box>
-                <Box
-                    sx={{
-                        height: 'calc(100vh - 500px)', // Adjusts dynamically to screen height
-                        overflow: 'auto',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        padding: 2,
-                        height: 400, // Set constant height
-                    }}
-                > */}
-                    <FormControl fullWidth sx={{ marginTop: 2 }}>
-                        <InputLabel id="schedule-select-label">Select Schedule</InputLabel>
-                        <Select
-                            labelId="schedule-select-label"
-                            value={selectedSchedule}
-                            onChange={this.handleScheduleChange}
-                            label="Select Schedule"
+                <Box sx={{ width: '100%' }}>
+                <Typography variant="h6">Equipments</Typography>
+                <TableContainer component={Paper} style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                        <Table>
+                        <TableHead>
+                        <TableRow
+                            style={{
+                            backgroundColor: "#f5f5f5",
+                            position: "sticky", // Make the header sticky
+                            top: 0,             // Stick to the top of the container
+                            zIndex: 1,          // Ensure it's above the body
+                            }}
                         >
-                            {schedules.length === 0 ? (
-                                <MenuItem value="">
-                                    <em>No Subject</em>
-                                </MenuItem>
-                            ) : (
-                                schedules.map((schedule) => (
-                                    <MenuItem key={schedule.id} value={schedule.id}>
-                                        {schedule.subject}
-                                    </MenuItem>
-                                ))
-                            )}
-                        </Select>
-                    </FormControl>
-                    <TextField
-                        label="Search"
-                        variant="outlined"
-                        value={searchQuery}
-                        onChange={this.handleSearchChange}
-                        fullWidth
-                        sx={{ marginTop: 2 }}
-                    />
-                    
-                    {filteredBorrowers.filter(
-                        (borrower) => borrower.status === 'pending return'
-                    ).length === 0 ? (
-                        <Box sx={{ display: 'flex', justifyContent: 'center', height: '100%' }}>
-                            <Typography variant="h5">No borrowers</Typography>
-                        </Box>
-                    ) : (
-                        filteredBorrowers
-                            .filter((borrower) => borrower.status === 'pending return')
-                            .map((borrower, index) => (
-                                <Box key={index} sx={{ width: '100%' }}>
-                                    <Borrower_Return
-                                        schedID={selectedSchedule}
-                                        userID={borrower.userId}
-                                        name={borrower.name}
-                                        equipments={equipments}
-                                        subject={selectedScheduleSubject}
-                                        onApprove={() =>
-                                            this.handleBorrowerApproved(borrower.userID)
-                                        }
-                                    />
-                                </Box>
-                            ))
-                    )}
+                        <TableCell>Equipment</TableCell>
+                        <TableCell align="center">Quantity</TableCell>
+                        <TableCell align="center">Borrowers</TableCell>
+                        <TableCell align="center">Total</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {equipments.map((equipment, index) => (
+                        <TableRow key={index}>
+                            <TableCell>
+                            {equipment.unit === 'pcs'
+                                ? equipment.name
+                                : `${equipment.name} ${equipment.capacity}${equipment.unit}`}
+                            </TableCell>
+                            <TableCell align="center">{equipment.qty}</TableCell>
+                            <TableCell align="center">
+                            {
+                                filteredBorrowers.filter(
+                                (borrower) => borrower.status === 'pending return'
+                                ).length
+                            }
+                            </TableCell>
+                            <TableCell align="center">
+                            {equipment.qty *
+                                filteredBorrowers.filter(
+                                (borrower) => borrower.status === 'pending return'
+                                ).length}
+                            </TableCell>
+                        </TableRow>
+                        ))}
+                    </TableBody>
+                    </Table>
+                </TableContainer>
                 </Box>
+                <FormControl fullWidth sx={{ marginTop: 2 }}>
+                <InputLabel id="schedule-select-label">Select Schedule</InputLabel>
+                <Select
+                    labelId="schedule-select-label"
+                    value={selectedSchedule}
+                    onChange={this.handleScheduleChange}
+                    label="Select Schedule"
+                >
+                    {schedules.length === 0 ? (
+                    <MenuItem value="">
+                        <em>No Subject</em>
+                    </MenuItem>
+                    ) : (
+                    schedules.map((schedule) => (
+                        <MenuItem key={schedule.id} value={schedule.id}>
+                        {schedule.subject}
+                        </MenuItem>
+                    ))
+                    )}
+                </Select>
+                </FormControl>
+                <TextField
+                label="Search"
+                variant="outlined"
+                value={searchQuery}
+                onChange={this.handleSearchChange}
+                fullWidth
+                sx={{ marginTop: 2 }}
+                />
+                
+                {filteredBorrowers.filter(
+                (borrower) => borrower.status === 'pending return'
+                ).length === 0 ? (
+                <Typography variant="h6" align="center">No borrowers</Typography>
+                ) : (
+                filteredBorrowers
+                    .filter((borrower) => borrower.status === 'pending return')
+                    .map((borrower, index) => (
+                    <Box key={index} sx={{ width: '100%' }}>
+                        <Borrower_Return
+                        schedID={selectedSchedule}
+                        userID={borrower.userId}
+                        name={borrower.name}
+                        equipments={equipments}
+                        subject={selectedScheduleSubject}
+                        onApprove={() =>
+                            this.handleBorrowerApproved(borrower.userID)
+                        }
+                        />
+                    </Box>
+                    ))
+                )}
+            </Box>
             </>
         );
     }
