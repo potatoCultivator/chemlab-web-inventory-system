@@ -123,7 +123,7 @@ const LiableStudentsPage = () => {
   });
 
   return (
-    <Box sx={{ p: 4, backgroundColor: 'transparent', minHeight: '100vh' }}>
+    <Box sx={{ p: 4, backgroundColor: 'transparent', minHeight: '40vh' }}>
       {!viewInvoice && (
         <>
           <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#333', mb: 2 }}>
@@ -188,10 +188,10 @@ const LiableStudentsPage = () => {
           <Invoice student={selectedStudent} />
         </Box>
       ) : (
-        <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: 1, mb: 4 }}>
-          <Table>
+        <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: 1, mb: 4 }} style={{ maxHeight: '510px', overflowY: 'auto' }}>
+          <Table aria-label="table" stickyHeader>
             <TableHead sx={{ backgroundColor: '#e0e0e0' }}>
-              <TableRow>
+              <TableRow style={{ backgroundColor: '#f5f5f5', position: 'sticky', top: 0, zIndex: 1 }}>
                 <TableCell>Borrower</TableCell>
                 <TableCell>Borrower ID</TableCell>
                 <TableCell>Status</TableCell>
