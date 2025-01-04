@@ -5,16 +5,13 @@ import Typography from '@mui/material/Typography';
 
 // project import
 import MainCard from 'components/MainCard';
-import ToolAnalytics from 'components/cards/statistics/ToolAnalytics';
-import SummaryTable from './SummaryTable';
 import BorrowersReport from './BorrowersReport';
-import SampleCard from './SampleCard';
 import EquipmentSummary from './EquipmentSummary';
 import TotalEquipmentBorrowed from './Cards/TotalEquipmentBorrowed';
 import TotalReplacedEquipment from './Cards/TotalReplacedEquipment';
 import TotalDamageEquipment from './Cards/TotalDamageEquipment';
 import DistinctEquipment from './Cards/DistinctEquipment';
-import UniqueVisitorCard from './UniqueVisitorCard';
+import TotalGrowthBarChart from './TotalGrowthBarChart';
 
 // Firebase
 import { 
@@ -135,22 +132,14 @@ export default function DashboardDefault() {
 
         {/* row 2 */}
         <Grid item xs={12} md={6} lg={6} className="recent-borrowed">
-          <Grid container alignItems="center" justifyContent="space-between">
-            <Grid item>
-              <Typography variant="h5" className="recent-borrowed">
-                Summary Table
-              </Typography>
-            </Grid>
-            <Grid item />
-          </Grid>
-          <MainCard sx={{ mt: 2 }} content={false}>
+          <MainCard title="Recent Borrowed Equipment">
             <EquipmentSummary />
           </MainCard>
         </Grid>
 
         {/* row 4 */}
         <Grid item xs={12} md={6} lg={6} className="borrowers-report" >
-          <BorrowersReport className="borrowers-report" />
+          <TotalGrowthBarChart />
         </Grid>
       </Grid>
     </>
