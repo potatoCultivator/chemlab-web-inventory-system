@@ -989,6 +989,27 @@ function getEquipmentsList(callback, errorCallback) {
   );
 }
 
+function getAllBorrowers(callback, errorCallback) {
+  const db = firestore;
+  const collectionRef = collection(db, 'schedule');
+
+  return onSnapshot(collectionRef, (snapshot) => {
+    const borrowers = snapshot.docs
+      .filter(doc => !doc.data().deleted) // Ensure doc.deleted is false
+      .flatMap(doc => {
+        const data = doc.data();
+        return data.borrowers
+          .filter(borrower => borrower.status === 'returned')
+          .map(borrower => ({ ...borrower, scheduleId: doc.id }));
+      });
+
+      // console.log(borrowers);
+
+    callback(borrowers);
+  }, errorCallback);
+}
+
+
 
 export { 
   addEquipment,
@@ -1037,4 +1058,5 @@ export {
   getEquipmentBorrowed,
   getCurrentStocks,
   getEquipmentsList,
+  getAllBorrowers
 };

@@ -3,6 +3,8 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 // project import
 // import CustomTab from './CustomTab';
+import HistoryTable from './HistoryTable';
+import MainCard from 'components/MainCard';
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
@@ -16,6 +18,9 @@ export default function History() {
       <Box sx={{ mt: 4 }}> {/* Add margin-top to create space */}
         {/* <CustomTab /> */}
       </Box>
+      <MainCard>
+          <HistoryTable />
+      </MainCard>
     </>
   );
 }
