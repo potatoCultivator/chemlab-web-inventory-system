@@ -932,6 +932,64 @@ async function getCountBorrowedEquipment(callback, errorCallback) {
   }, errorCallback);
 }
 
+async function fetchEquipmentsForChart(callback, errorCallback) {
+  const db = firestore;
+  const collectionRef = collection(db, 'equipments');
+
+  return onSnapshot(collectionRef, (snapshot) => {
+    const equipments = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    callback(equipments);
+  }, errorCallback);
+}
+
+function getEquipmentBorrowed(equipmentID, callback, errorCallback) {
+  const db = firestore;
+  const collectionRef = collection(db, 'schedule');
+  const q = query(collectionRef, where('equipments', 'array-contains', equipmentID));
+
+  return onSnapshot(q, (snapshot) => {
+    const totalBorrower = snapshot.docs
+    .filter(doc => {
+      const data = doc.data();
+      return data.borrowers.some(borrower => borrower.status === 'pending return' || borrower.status === 'approved');
+    })
+
+    const borrowedList = snapshot.docs.map(doc => ({
+      id: doc.id,
+      qty: doc.data().equipments.find(equipment => equipment.id === equipmentID).qty * totalBorrower.length
+    }));
+    callback(borrowedList);
+  }, errorCallback);
+}
+
+function getCurrentStocks(equipmentID, callback, errorCallback) {
+  const db = firestore;
+  const docRef = doc(db, 'equipments', equipmentID);
+
+  return onSnapshot(docRef, (doc) => {
+    const data = doc.data();
+    if (!data.deleted) {
+      callback(data.stocks);
+    }
+  }, errorCallback);
+}
+
+function getEquipmentsList(callback, errorCallback) {
+  const db = firestore;
+  const collectionRef = collection(db, 'equipments');
+  const q = query(collectionRef, where('deleted', '==', false));
+
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const equipmentsList = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      callback(equipmentsList);
+    },
+    errorCallback
+  );
+}
+
+
 export { 
   addEquipment,
   uploadImageAndGetUrl,
@@ -975,4 +1033,8 @@ export {
   getTotalDamagedEquipmentQty,
   getTotalReplacedEquipmentQty,
   getCountBorrowedEquipment,
+  fetchEquipmentsForChart,
+  getEquipmentBorrowed,
+  getCurrentStocks,
+  getEquipmentsList,
 };

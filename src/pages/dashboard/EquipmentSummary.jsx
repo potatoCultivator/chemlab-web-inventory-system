@@ -97,7 +97,7 @@ const EquipmentSummary = () => {
     };
 
     return (
-        <Box height="525px" overflow="hidden" padding={2}>
+        <Box height="525px" overflow="hidden">
             <TableContainer
                 component={Paper}
                 style={{

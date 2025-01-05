@@ -9,7 +9,7 @@ import CustomTable from './CustomTable';
 
 export default function ReplacedEquipments() {
   return (
-    <MainCard title="Sample Card">
+    <MainCard title="Replaced Equipments">
         <CustomTable />
     </MainCard>
   );

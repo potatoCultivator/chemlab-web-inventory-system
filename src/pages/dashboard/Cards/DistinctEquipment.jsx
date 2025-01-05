@@ -70,6 +70,7 @@ const DistinctEquipment = ({ isLoading }) => {
       unsubscribe();
     };
   }, []);
+  
   return (
     <>
       {isLoading ? (

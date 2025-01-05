@@ -64,8 +64,8 @@ function Row(props) {
         <TableCell component="th" scope="row">
           {row.subject}
         </TableCell>
-        <TableCell>{row.schedule.day}, {row.schedule.start} - {row.schedule.end}</TableCell>
-        <TableCell>{row.instructor}</TableCell>
+        <TableCell align='center'>{row.schedule.day}, {row.schedule.start} - {row.schedule.end}</TableCell>
+        <TableCell align='center'>{row.instructor}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={4}>
@@ -88,7 +88,7 @@ function Row(props) {
                           }}
                         >
                           <TableCell>Equipment</TableCell>
-                          <TableCell align='right'>Quantity</TableCell>
+                          <TableCell align='center  '>Quantity</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
@@ -97,7 +97,7 @@ function Row(props) {
                             <TableCell component="th" scope="row">
                               {item.name}{' '}{item.capacity}{item.unit}
                             </TableCell>
-                            <TableCell align='right'>{item.qty}</TableCell>
+                            <TableCell align='center'>{item.qty}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -120,23 +120,23 @@ function Row(props) {
                           }}
                         >
                           <TableCell>Student</TableCell>
-                          <TableCell>Status</TableCell>
-                          <TableCell align='right'>Borrow</TableCell>
-                          <TableCell align='right'>Return</TableCell>
+                          <TableCell align='center'>Status</TableCell>
+                          <TableCell align='center'>Borrow</TableCell>
+                          <TableCell align='center'>Return</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
                           {row.students.map((student) => {
                             const date_borrow = student.borrowedTime ? student.borrowedTime.toDate() : new Date();
-                            const date_return = student.returnedTime ? student.returnedTime.toDate() : null;
+                            const date_return = student.date_returned ? student.date_returned.toDate() : null;
                             return (
-                              <TableRow key={student.name} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }} onClick={() => handleStudentClick(student)}>
+                              <TableRow key={student.name} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
                                 <TableCell component="th" scope="row">
                                   {student.name}
                                 </TableCell>
-                                <TableCell>{student.status}</TableCell>
-                                <TableCell align='right'>{date_borrow.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</TableCell>
-                                <TableCell align='right'>{date_return ? date_return.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : 'N/A'}</TableCell>
+                                <TableCell align='center'>{student.status}</TableCell>
+                                <TableCell align='center'>{date_borrow.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</TableCell>
+                                <TableCell align='center'>{date_return ? date_return.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : 'N/A'}</TableCell>
                               </TableRow>
                             );
                           })}
@@ -283,8 +283,8 @@ export default function ScheduleTable({ title }) {
             >
               <TableCell />
               <TableCell>Subject</TableCell>
-              <TableCell>Schedule</TableCell>
-              <TableCell>Instructor</TableCell>
+              <TableCell align='center'>Schedule</TableCell>
+              <TableCell align='center'>Teacher</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

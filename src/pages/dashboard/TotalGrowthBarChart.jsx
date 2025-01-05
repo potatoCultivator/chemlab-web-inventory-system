@@ -4,8 +4,6 @@ import React from 'react';
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
-import MenuItem from '@mui/material/MenuItem';
-import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
 // third-party
@@ -18,27 +16,55 @@ import MainCard from 'components/MainCard';
 // chart data
 import chartData from './total-growth-bar-chart';
 
-const status = [
-  {
-    value: 'today',
-    label: 'Today'
-  },
-  {
-    value: 'month',
-    label: 'This Month'
-  },
-  {
-    value: 'year',
-    label: 'This Year'
-  }
-];
+import { fetchEquipmentsForChart, getEquipmentsList } from 'pages/Query';
 
 // ==============================|| DASHBOARD DEFAULT - TOTAL GROWTH BAR CHART ||============================== //
 
 const TotalGrowthBarChart = ({ isLoading }) => {
-  const [value, setValue] = React.useState('today');
   const theme = useTheme();
+  const [equipments, setEquipments] = React.useState([]);
+  const [borrowedEquipments, setBorrowedEquipments] = React.useState([]);
+  const [series, setSeries] = React.useState([]);
 
+  // Fetch equipment list
+  React.useEffect(() => {
+    const handleSuccess = (data) => setEquipments(data);
+    const handleError = (error) => console.error('Error fetching equipment counts: ', error);
+    const unsubscribe = getEquipmentsList(handleSuccess, handleError) || (() => {});
+    return () => {
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
+    };
+  }, []);
+
+  // Fetch borrowed equipment list
+  React.useEffect(() => {
+    const handleSuccess = (data) => setBorrowedEquipments(data);
+    const handleError = (error) => console.error('Error fetching borrowed equipment: ', error);
+    const unsubscribe = fetchEquipmentsForChart(handleSuccess, handleError) || (() => {});
+    return () => {
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
+    };
+  }, []);
+
+  // Update series state
+  React.useEffect(() => {
+    const equipmentNames = equipments.map((equipment) => equipment.name);
+    const filteredBorrowedEquipments = borrowedEquipments.filter((borrowed) =>
+      equipmentNames.includes(borrowed.name)
+    );
+
+    const equipmentSeries = [
+      { name: 'Stocks', data: equipments.map((equipment) => equipment.stocks) },
+      { name: 'Borrowed', data: filteredBorrowedEquipments.map((equipment) => equipment.stocks) }
+    ];
+    setSeries(equipmentSeries);
+  }, [equipments, borrowedEquipments]);
+
+  // Theme configuration
   const { primary } = theme.palette.text;
   const divider = theme.palette.divider;
   const grey500 = theme.palette.grey[500];
@@ -48,35 +74,32 @@ const TotalGrowthBarChart = ({ isLoading }) => {
   const secondaryMain = theme.palette.secondary.main;
   const secondaryLight = theme.palette.secondary.light;
 
+  // Update chart options
   React.useEffect(() => {
     const newChartData = {
       ...chartData.options,
       colors: [primary200, primaryDark, secondaryMain, secondaryLight],
       xaxis: {
+        categories: equipments.map((equipment) => equipment.name),
         labels: {
-          style: {
-            colors: [primary, primary, primary, primary, primary, primary, primary, primary, primary, primary, primary, primary]
-          }
+          style: { colors: Array(equipments.length).fill(primary) }
         }
       },
       yaxis: {
-        labels: {
-          style: {
-            colors: [primary]
-          }
-        }
+        labels: { style: { colors: [primary] } }
       },
       grid: { borderColor: divider },
       tooltip: { theme: 'light' },
       legend: { labels: { colors: grey500 } }
     };
 
-    // do not load chart when loading
+    // Update chart only when not loading
     if (!isLoading) {
-      ApexCharts.exec(`bar-chart`, 'updateOptions', newChartData);
+      ApexCharts.exec('bar-chart', 'updateOptions', newChartData);
     }
-  }, [primary200, primaryDark, secondaryMain, secondaryLight, primary, divider, isLoading, grey500]);
+  }, [primary200, primaryDark, secondaryMain, secondaryLight, primary, divider, isLoading, grey500, equipments]);
 
+  // Render
   return (
     <>
       {isLoading ? (
@@ -89,21 +112,16 @@ const TotalGrowthBarChart = ({ isLoading }) => {
                 <Grid item>
                   <Grid container direction="column" spacing={1}>
                     <Grid item>
-                      <Typography variant="subtitle2">Total Growth</Typography>
+                      <Typography variant="h4" component="div">
+                        Equipment Inventory Overview
+                      </Typography>
                     </Grid>
                     <Grid item>
-                      <Typography variant="h3">2,324.00</Typography>
+                      <Typography variant="subtitle1" color="textSecondary">
+                        A detailed view of the current stock and borrowed equipment.
+                      </Typography>
                     </Grid>
                   </Grid>
-                </Grid>
-                <Grid item>
-                  <TextField id="standard-select-currency" select value={value} onChange={(e) => setValue(e.target.value)}>
-                    {status.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </TextField>
                 </Grid>
               </Grid>
             </Grid>
@@ -116,7 +134,8 @@ const TotalGrowthBarChart = ({ isLoading }) => {
                 }
               }}
             >
-              <Chart {...chartData} />
+              {/* Use the series state */}
+              <Chart {...chartData} series={series} />
             </Grid>
           </Grid>
         </MainCard>
