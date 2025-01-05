@@ -1,193 +1,271 @@
-// Required imports
-import React, { useState, useEffect } from "react";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Button,
-    Typography,
-    Box,
-    Divider,
-    TablePagination,
-} from "@mui/material";
+import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import Box from '@mui/material/Box';
+import Collapse from '@mui/material/Collapse';
+import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Typography from '@mui/material/Typography';
+import { UpOutlined, DownOutlined } from '@ant-design/icons';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogActions from '@mui/material/DialogActions';
 
-import { fetchBorrowedEquipments } from "pages/Query";
+// project import
+import { getAllSchedule } from 'pages/Query';
 
-const EquipmentSummary = () => {
-    const [equipments, setEquipments] = useState([]);
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+function createData(subject, schedule, instructor, equipments, students) {
+  return {
+    subject,
+    schedule,
+    instructor,
+    equipments,
+    students,
+  };
+}
 
-    useEffect(() => {
-        let isSubscribed = true;
-    
-        const getEquipmentDetails = async () => {
-            try {
-                const details = await fetchBorrowedEquipments();
-    
-                if (isSubscribed) {
-                    // Sort the equipment details by name, capacity, and unit
-                    const sortedDetails = details.sort((a, b) => {
-                        if (a.name !== b.name) {
-                            return a.name.localeCompare(b.name);
-                        }
-                        if (a.capacity !== b.capacity) {
-                            return a.capacity - b.capacity;
-                        }
-                        return a.unit.localeCompare(b.unit);
-                    });
-    
-                    // Combine redundant equipment
-                    const combinedEquipments = sortedDetails.reduce((acc, item) => {
-                        const existingItem = acc.find(equip =>
-                            equip.name === item.name &&
-                            equip.capacity === item.capacity &&
-                            equip.unit === item.unit
-                        );
-    
-                        if (existingItem) {
-                            existingItem.qty += item.qty;
-                        } else {
-                            acc.push({ ...item });
-                        }
-                        return acc;
-                    }, []);
-    
-                    setEquipments(combinedEquipments);
-                }
-            } catch (error) {
-                console.error('Error fetching equipment details:', error);
-            }
-        };
-    
-        getEquipmentDetails();
-    
-        return () => {
-            isSubscribed = false;
-        };
-    }, []);
-    
-    
+function Row(props) {
+  const { row } = props;
+  const [open, setOpen] = React.useState(false);
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [selectedStudent, setSelectedStudent] = React.useState(null);
 
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
+  const handleStudentClick = (student) => {
+    console.log(student);
+    setSelectedStudent(student);
+    setDialogOpen(true);
+  };
 
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+    setSelectedStudent(null);
+  };
 
-    const [selectedEquipment, setSelectedEquipment] = useState(null);
-
-    const handleRowClick = (equipment) => {
-        setSelectedEquipment(equipment);
-    };
-
-    const handleClose = () => {
-        setSelectedEquipment(null);
-    };
-
-    return (
-        <Box height="525px" overflow="hidden">
-            <TableContainer
-                component={Paper}
-                style={{
-                    maxHeight: "100%",
-                    overflowY: "auto",
-                }}
-            >
-                <Table>
-                    <TableHead>
+  return (
+    <React.Fragment>
+      <TableRow sx={{ '& > *': { borderBottom: 'unset' }, '&:hover': { backgroundColor: '#f5f5f5' } }}>
+        <TableCell>
+          <IconButton
+            aria-label="expand row"
+            size="small"
+            onClick={() => setOpen(!open)}
+          >
+            {open ? <UpOutlined /> : <DownOutlined />}
+          </IconButton>
+        </TableCell>
+        <TableCell component="th" scope="row">
+          {row.subject}
+        </TableCell>
+        <TableCell align='center'>{row.schedule.day}, {row.schedule.start} - {row.schedule.end}</TableCell>
+        <TableCell align='center'>{row.instructor}</TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={4}>
+          <Collapse in={open} timeout="auto" unmountOnExit>
+            <Box sx={{ margin: 1, padding: 0, maxWidth: '800px', marginLeft: 'auto', marginRight: 'auto' }}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={12}>
+                  <Typography variant="h6" gutterBottom component="div" sx={{ fontSize: '1rem', fontWeight: 'bold' }}>
+                    List of Equipments Issued
+                  </Typography>
+                  <TableContainer component={Paper} sx={{ maxHeight: '450px', overflowY: 'auto' }}>
+                    <Table size="small" aria-label="equipments" sx={{ border: '1px solid #ddd' }}>
+                      <TableHead>
                         <TableRow
-                            style={{
-                                backgroundColor: "#f5f5f5",
-                                position: "sticky",
-                                top: 0,
-                                zIndex: 1,
-                            }}
+                          style={{
+                            backgroundColor: "#f5f5f5",
+                            position: "sticky", // Make the header sticky
+                            top: 0,             // Stick to the top of the container
+                            zIndex: 1,          // Ensure it's above the body
+                          }}
                         >
-                            <TableCell style={{ fontWeight: "bold" }}>Name</TableCell>
-                            <TableCell align="center" style={{ fontWeight: "bold" }}>Total Borrowed</TableCell>
+                          <TableCell>Equipment</TableCell>
+                          <TableCell align='center'>Total Borrowed</TableCell>
                         </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {equipments.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((equipment) => (
-                            <TableRow
-                                key={equipment.id}
-                                hover
-                                style={{ cursor: "pointer" }}
-                                onClick={() => handleRowClick(equipment)}
-                            >
-                                <TableCell>{equipment.name}{' '}{equipment.unit !== 'pcs' && `${equipment.capacity}${equipment.unit}`}</TableCell>
-                                <TableCell align="center">{equipment.qty}</TableCell>
+                      </TableHead>
+                      <TableBody>
+                        {row.equipments.map((item) => (
+                            <TableRow key={item.equipment} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
+                            <TableCell component="th" scope="row">
+                                {item.name}{' '}{item.capacity}{item.unit}
+                            </TableCell>
+                            <TableCell align="center">
+                                {item.qty * (
+                                Array.isArray(row.students)
+                                    ? row.students.filter(student => student.status === 'approved' || student.status === 'pending return').length
+                                    : 0
+                                )}
+                            </TableCell>
                             </TableRow>
                         ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
-                component="div"
-                count={equipments.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-            />
+                        </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Grid>
+                
+              </Grid>
+            </Box>
+          </Collapse>
+        </TableCell>
+      </TableRow>
+      <Dialog open={dialogOpen} onClose={handleDialogClose} maxWidth="sm" fullWidth>
+        <DialogTitle>Student Details</DialogTitle>
+        <DialogContent dividers>
+          {selectedStudent && (
+            <Box>
+              <Typography variant="h6" gutterBottom>
+                {selectedStudent.name}
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <Typography variant="subtitle1" color="textSecondary">
+                    Borrow Time:
+                  </Typography>
+                  <Typography variant="body1">
+                    {selectedStudent?.borrowTime
+                      ? selectedStudent.borrowTime.toDate().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
+                      : 'No borrow time available'}
+                  </Typography>
 
-            {selectedEquipment && (
-                <Dialog open={!!selectedEquipment} onClose={handleClose} fullWidth>
-                    <DialogTitle style={{ backgroundColor: "#f5f5f5", fontWeight: "bold" }}>Equipment Details</DialogTitle>
-                    <DialogContent style={{ padding: "20px" }}>
-                        <Box>
-                            <Typography variant="h6" gutterBottom style={{ marginBottom: "10px" }}>
-                                Equipment Information
-                            </Typography>
-                            <Divider />
-                            <Box marginY={2}>
-                                <Typography style={{ marginBottom: "10px" }}>
-                                    <strong>Name:</strong> {selectedEquipment.name}
-                                </Typography>
-                                <Typography style={{ marginBottom: "10px" }}>
-                                    <strong>Capacity:</strong> {selectedEquipment.capacity}
-                                </Typography>
-                                <Typography style={{ marginBottom: "10px" }}>
-                                    <strong>Unit:</strong> {selectedEquipment.unit}
-                                </Typography>
-                                <Typography style={{ marginBottom: "10px" }}>
-                                    <strong>Quantity:</strong> {selectedEquipment.qty}
-                                </Typography>
-                            </Box>
-                            <Divider />
-                            <Box marginTop={2}>
-                                <Typography variant="body1" color="textSecondary" style={{ marginTop: "10px" }}>
-                                    Please ensure that the equipment is handled properly and returned in good condition.
-                                </Typography>
-                            </Box>
-                        </Box>
-                    </DialogContent>
-                    <DialogActions style={{ backgroundColor: "#f5f5f5" }}>
-                        <Button onClick={handleClose} color="primary">Close</Button>
-                        {/* <Button
-                            onClick={() => alert("Generating Equipment Report...")}
-                            color="secondary"
-                        >
-                            Generate Report
-                        </Button> */}
-                    </DialogActions>
-                </Dialog>
-            )}
-        </Box>
-    );
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="subtitle1" color="textSecondary">
+                    Status:
+                  </Typography>
+                  <Typography variant="body1">
+                    {selectedStudent.status}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant="subtitle1" color="textSecondary">
+                    Additional Information:
+                  </Typography>
+                  <Typography variant="body1">
+                    {/* Add any additional information here */}
+                    No additional information available.
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose} color="primary" variant="contained">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </React.Fragment>
+  );
+}
+
+Row.propTypes = {
+  row: PropTypes.shape({
+    subject: PropTypes.string.isRequired,
+    schedule: PropTypes.shape({
+      day: PropTypes.string.isRequired,
+      start: PropTypes.string.isRequired,
+      end: PropTypes.string.isRequired,
+    }).isRequired,
+    instructor: PropTypes.string.isRequired,
+    equipments: PropTypes.arrayOf(
+      PropTypes.shape({
+        equipment: PropTypes.string.isRequired,
+        quantity: PropTypes.number.isRequired,
+      }),
+    ).isRequired,
+    students: PropTypes.arrayOf(
+          PropTypes.shape({
+            name: PropTypes.string.isRequired,
+            // borrowTime: PropTypes.string.isRequired,
+            status: PropTypes.string.isRequired,
+          }),
+        ).isRequired,
+  }).isRequired,
 };
 
-export default EquipmentSummary;
+export default function EquipmentSummary() {
+  const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+    async function fetchScheduleData() {
+      try {
+        const data = await getAllSchedule();
+  
+        const scheduleList = data.map((sched) => {
+          const startDate = sched.start.toDate();
+          const endDate = sched.end.toDate();
+          const day = startDate.toLocaleDateString('en-US', { weekday: 'short' });
+  
+          return createData(
+            sched.subject,
+            {
+              day,
+              start: startDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+              end: endDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+            },
+            sched.teacher,
+            sched.equipments,
+            sched.borrowers
+          );
+        });
+  
+        setRows(scheduleList);
+      } catch (error) {
+        console.error("Error fetching schedule data:", error);
+      }
+    }
+  
+    fetchScheduleData();
+  }, []);
+  
+  return (
+    <Box sx={{ height: 523, backgroundColor: 'transparent' }}>
+      {/* <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Typography variant="h5">Schedules</Typography>
+      </Box> */}
+      <TableContainer
+        component={Paper}
+        style={{
+          maxHeight: "510px", // Set a maximum height to allow scrolling
+          overflowY: "auto",  // Enables vertical scrolling for the body
+        }}
+      >
+        <Table aria-label="collapsible table">
+          <TableHead>
+            <TableRow
+              style={{
+                backgroundColor: "#f5f5f5",
+                position: "sticky", // Make the header sticky
+                top: 0,             // Stick to the top of the container
+                zIndex: 1,          // Ensure it's above the body
+              }}
+            >
+              <TableCell />
+              <TableCell>Subject</TableCell>
+              <TableCell align='center'>Schedule</TableCell>
+              <TableCell align='center'>Teacher</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rows.map((row) => (
+              <Row key={row.subject} row={row} />
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
+  );
+}
+
+EquipmentSummary.propTypes = {
+  title: PropTypes.string.isRequired,
+};

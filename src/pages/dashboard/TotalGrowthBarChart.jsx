@@ -52,21 +52,19 @@ const TotalGrowthBarChart = ({ isLoading }) => {
 
   // Update series state
   React.useEffect(() => {
-    const equipmentIds = equipments.map((equipment) => equipment.id);
-    const filteredBorrowedEquipments = borrowedEquipments.filter((borrowed) =>
-      equipmentIds.includes(borrowed.id)
-    );
-
+    const borrowedMap = borrowedEquipments.reduce((acc, borrowed) => {
+      acc[borrowed.id] = borrowed.total_qty;
+      return acc;
+    }, {});
+    
     const equipmentSeries = [
       { name: 'Stocks', data: equipments.map((equipment) => equipment.stocks) },
       {
         name: 'Borrowed',
-        data: equipments.map((equipment) => {
-          const borrowed = filteredBorrowedEquipments.find((b) => b.id === equipment.id);
-          return borrowed ? borrowed.qty : 0;
-        }),
+        data: equipments.map((equipment) => borrowedMap[equipment.id] || 0),
       },
     ];
+    
     setSeries(equipmentSeries);
   }, [equipments, borrowedEquipments]);
 

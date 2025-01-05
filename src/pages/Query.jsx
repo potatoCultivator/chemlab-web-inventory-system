@@ -902,25 +902,40 @@ async function getTotalReplacedEquipmentQty(callback, errorCallback) {
   }, errorCallback);
 }
 
+// import _ from 'lodash';
+// import { firestore, collection, onSnapshot } from 'firebase/firestore';
+
 async function getCountBorrowedEquipment(callback, errorCallback) {
   const db = firestore;
   const collectionRef = collection(db, 'schedule');
 
   return onSnapshot(collectionRef, (snapshot) => {
+    console.log('Number of documents in snapshot:', snapshot.docs.length);
+
     const equipments = snapshot.docs
-      .filter(doc => !doc.data().deleted) // Ensure doc.deleted is false
+      .filter(doc => !(doc.data().deleted ?? false))
       .map(doc => {
         const data = doc.data();
-        const approvedAndPendingBorrowers = data.borrowers.filter(borrower => borrower.status === 'approved' || borrower.status === 'pending return');
+        console.log('Borrowers for document', doc.id, data.borrowers);
+
+        const approvedAndPendingBorrowers = data.borrowers.filter(
+          borrower => borrower.status === 'approved' || borrower.status === 'pending return'
+        );
+        console.log(`Document ID: ${doc.id}, Approved/Pending Borrowers:`, approvedAndPendingBorrowers.length);
+
         return data.equipments.map(equipment => ({
           ...equipment,
           id: doc.id,
-          qty: equipment.qty * approvedAndPendingBorrowers.length // Multiply qty by the count of approved and pending return borrowers
+          qty: equipment.qty * approvedAndPendingBorrowers.length
         }));
       })
       .flat();
 
-    const groupedEquipments = _.groupBy(equipments, equipment => `${equipment.name}-${equipment.unit}-${equipment.capacity}`);
+    const groupedEquipments = _.groupBy(
+      equipments,
+      equipment => `${equipment.name || ''}-${equipment.unit || ''}-${equipment.capacity || ''}`
+    );
+
     const uniqueEquipments = Object.values(groupedEquipments).map(group => ({
       ...group[0],
       id_list: group.map(equipment => ({ id: equipment.id, qty: equipment.qty })),
@@ -928,9 +943,11 @@ async function getCountBorrowedEquipment(callback, errorCallback) {
     }));
 
     const totalQty = uniqueEquipments.reduce((sum, equipment) => sum + equipment.total_qty, 0);
+    console.log('Total borrowed equipment qty:', totalQty);
     callback(totalQty);
   }, errorCallback);
 }
+
 
 async function fetchEquipmentsForChart(callback, errorCallback) {
   const db = firestore;
@@ -957,8 +974,15 @@ async function getEquipmentBorrowed() {
       if (data.deleted) return;
 
       // Check if the document contains `equipments` and `borrowers` arrays
+      const borrowerCount = data.borrowers?.filter(borrower => 
+        borrower.status === 'approved' || borrower.status === 'pending return'
+      ).length || 0;
+
       if (data.equipments) {
-        const borrowed = data.equipments;
+        const borrowed = data.equipments.map(equipment => ({
+          ...equipment,
+          total_qty: (Number(equipment.qty) || 0) * borrowerCount
+        }));
           
         if (borrowed.length > 0) {
           borrowedEquipments.push(...borrowed);
@@ -966,13 +990,14 @@ async function getEquipmentBorrowed() {
       }
     });
 
-    console.log('Borrowed Equipments 2:', borrowedEquipments);
+    console.log('Borrowed Equipments:', borrowedEquipments);
     return borrowedEquipments;
   } catch (error) {
     console.error('Error fetching borrowed equipments:', error);
     return [];
   }
 }
+
 
 
 

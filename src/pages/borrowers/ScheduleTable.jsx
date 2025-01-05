@@ -88,7 +88,7 @@ function Row(props) {
                           }}
                         >
                           <TableCell>Equipment</TableCell>
-                          <TableCell align='center  '>Quantity</TableCell>
+                          <TableCell align='center'>Quantity</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
