@@ -18,20 +18,13 @@ export default function Instructors() {
 
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
-      {/* row 1 */}
-      {/* <Grid item xs={12} sx={{ mb: -2.25 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h5">Intructors</Typography>
-        </Box>
-      </Grid> */}
-      {/* row 2 */}
       <Grid item xs={12}  md={8}>
         <MainCard title="List" content={InstructorTable} >
           <InstructorTable />
         </MainCard>
       </Grid>
       <Grid item xs={12}  md={4}>
-        <MainCard title="Instructor Registration" content={InstructorRegistration} >
+        <MainCard title="Teacher Registration" content={InstructorRegistration} >
           <InstructorRegistration />
         </MainCard>
       </Grid>

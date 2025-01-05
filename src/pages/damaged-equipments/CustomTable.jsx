@@ -101,17 +101,17 @@ export default function CustomTable({ title }) {
                                   }}
                                 >
                                 <TableCell>Date</TableCell>
-                                <TableCell>Replaced By</TableCell>
-                                <TableCell>Borrower Id</TableCell>
-                                <TableCell align='center'>Replaced</TableCell>
+                                <TableCell align='center'>Damage By</TableCell>
+                                <TableCell align='center'> Borrower Id</TableCell>
+                                <TableCell align='center'>Damage</TableCell>
                               </TableRow>
                             </TableHead>
                             <TableBody>
                               {getBorrowersForEquipment(row.id_list).map((borrower) => (
                                 <TableRow key={borrower.id}>
                                   <TableCell>{new Date(borrower.date.seconds * 1000).toLocaleDateString()}</TableCell>
-                                  <TableCell>{borrower.borrower}</TableCell>
-                                  <TableCell>{borrower.studentID}</TableCell>
+                                  <TableCell align='center'>{borrower.borrower}</TableCell>
+                                  <TableCell align='center'>{borrower.studentID}</TableCell>
                                   <TableCell align='center'>{borrower.qty}</TableCell>
                                 </TableRow>
                               ))}
