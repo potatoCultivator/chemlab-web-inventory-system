@@ -942,25 +942,39 @@ async function fetchEquipmentsForChart(callback, errorCallback) {
   }, errorCallback);
 }
 
-function getEquipmentBorrowed(equipmentID, callback, errorCallback) {
+async function getEquipmentBorrowed() {
   const db = firestore;
-  const collectionRef = collection(db, 'schedule');
-  const q = query(collectionRef, where('equipments', 'array-contains', equipmentID));
+  const scheduleCollectionRef = collection(db, 'schedule');
+  const borrowedEquipments = [];
 
-  return onSnapshot(q, (snapshot) => {
-    const totalBorrower = snapshot.docs
-    .filter(doc => {
+  try {
+    const querySnapshot = await getDocs(scheduleCollectionRef);
+
+    querySnapshot.forEach((doc) => {
       const data = doc.data();
-      return data.borrowers.some(borrower => borrower.status === 'pending return' || borrower.status === 'approved');
-    })
 
-    const borrowedList = snapshot.docs.map(doc => ({
-      id: doc.id,
-      qty: doc.data().equipments.find(equipment => equipment.id === equipmentID).qty * totalBorrower.length
-    }));
-    callback(borrowedList);
-  }, errorCallback);
+      // Skip the schedule if it is marked as deleted
+      if (data.deleted) return;
+
+      // Check if the document contains `equipments` and `borrowers` arrays
+      if (data.equipments) {
+        const borrowed = data.equipments;
+          
+        if (borrowed.length > 0) {
+          borrowedEquipments.push(...borrowed);
+        }
+      }
+    });
+
+    console.log('Borrowed Equipments 2:', borrowedEquipments);
+    return borrowedEquipments;
+  } catch (error) {
+    console.error('Error fetching borrowed equipments:', error);
+    return [];
+  }
 }
+
+
 
 function getCurrentStocks(equipmentID, callback, errorCallback) {
   const db = firestore;

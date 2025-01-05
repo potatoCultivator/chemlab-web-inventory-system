@@ -13,99 +13,10 @@ import TotalDamageEquipment from './Cards/TotalDamageEquipment';
 import DistinctEquipment from './Cards/DistinctEquipment';
 import TotalGrowthBarChart from './TotalGrowthBarChart';
 
-// Firebase
-import { 
-        fetchAdminApprovedBorrowersCount, 
-        addAdminApprovedBorrowersListener,
-        fetchBorrowerEquipmentDetails,
-        // fetchBorrowerEquipmentDetails_Returned,
-        fetchChartData } from '../TE_Backend';
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
 export default function DashboardDefault() {
-  // const [run, setRun] = useState(true);
-  const [borrowersCount, setBorrowersCount] = useState(0);
-  const [ recentBorrowed, setRecentBorrowed ] = useState(0);
-  // const [ returnedEquipment, setReturnedEquipment ] = useState([]);
-
-  const [borrowedData, setBorrowedData] = useState([]);
-  const [returnedData, setReturnedData] = useState([]);
-
-  useEffect(() => {
-    const unsubscribeBorrowed = fetchChartData((data) => {
-      setBorrowedData(data);
-      setLoading(false);
-    }, 'borrowed');
-    
-    const unsubscribeReturned = fetchChartData((data) => {
-      setReturnedData(data);
-      setLoading(false);
-    }, 'returned');
-
-    return () => {
-      if (typeof unsubscribeBorrowed === 'function') unsubscribeBorrowed();
-      if (typeof unsubscribeReturned === 'function') unsubscribeReturned();
-    };
-  }, []);
-
-  const processData = (data) => {
-    let count = 0;
-
-    data.forEach(item => {
-      count += item.count;
-    })
-    
-    return count;
-  }
-
-  useEffect(() => {
-    const getCount = async () => {
-      try {
-        const count = await fetchAdminApprovedBorrowersCount();
-        console.log(count);
-        setBorrowersCount(count);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    getCount();
-
-    const unsubscribe = addAdminApprovedBorrowersListener((count) => {
-      setBorrowersCount(count);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    const getEquipmentDetails = async () => {
-      try {
-        const details = await fetchBorrowerEquipmentDetails();
-        let cnt = 0;
-        details.forEach((item) => {
-          cnt = cnt + item.good_quantity;
-        });
-        setRecentBorrowed(cnt);
-        // setRecentBorrowed(details);
-      } catch (error) {
-        console.error('Error fetching equipment details:', error);
-        // setError(error);
-      } 
-    };
-    getEquipmentDetails();
-  }, []);
-
-  console.log("record count:" + recentBorrowed.length);
-  console.log(recentBorrowed);
-
-  useEffect(() => {
-    document.title = "ChemLab IMS";
-    // Delay the tour start to ensure all elements are rendered
-    // setTimeout(() => setRun(true), 500); // 500ms delay
-  }, []);
-  
-
   return (
     <>
       <Grid container rowSpacing={4.5} columnSpacing={2.75}>

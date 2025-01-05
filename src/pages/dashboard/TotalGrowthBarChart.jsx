@@ -16,7 +16,7 @@ import MainCard from 'components/MainCard';
 // chart data
 import chartData from './total-growth-bar-chart';
 
-import { fetchEquipmentsForChart, getEquipmentsList } from 'pages/Query';
+import { getEquipmentsList, getEquipmentBorrowed } from 'pages/Query';
 
 // ==============================|| DASHBOARD DEFAULT - TOTAL GROWTH BAR CHART ||============================== //
 
@@ -29,41 +29,43 @@ const TotalGrowthBarChart = ({ isLoading }) => {
   // Fetch equipment list
   React.useEffect(() => {
     const handleSuccess = (data) => setEquipments(data);
-    const handleError = (error) => console.error('Error fetching equipment counts: ', error);
+    const handleError = (error) => console.error('Error fetching equipment counts:', error);
+
     const unsubscribe = getEquipmentsList(handleSuccess, handleError) || (() => {});
-    return () => {
-      if (typeof unsubscribe === 'function') {
-        unsubscribe();
-      }
-    };
+    return () => unsubscribe();
   }, []);
 
-  // Fetch borrowed equipment list
   React.useEffect(() => {
-    const handleSuccess = (data) => setBorrowedEquipments(data);
-    const handleError = (error) => console.error('Error fetching borrowed equipment: ', error);
-    const unsubscribe = fetchEquipmentsForChart(handleSuccess, handleError) || (() => {});
-    return () => {
-      if (typeof unsubscribe === 'function') {
-        unsubscribe();
+    const fetchBorrowedEquipments = async () => {
+      try {
+        const data = await getEquipmentBorrowed();
+        setBorrowedEquipments(data);
+      } catch (error) {
+        console.error('Error fetching borrowed equipment:', error);
       }
     };
+
+    fetchBorrowedEquipments();
   }, []);
+  
+  
 
   // Update series state
   React.useEffect(() => {
-    const equipmentNames = equipments.map((equipment) => equipment.name);
+    const equipmentIds = equipments.map((equipment) => equipment.id);
     const filteredBorrowedEquipments = borrowedEquipments.filter((borrowed) =>
-      equipmentNames.includes(borrowed.name)
+      equipmentIds.includes(borrowed.id)
     );
 
     const equipmentSeries = [
       { name: 'Stocks', data: equipments.map((equipment) => equipment.stocks) },
-      { name: 'Borrowed', data: equipments.map((equipment) => {
-          const borrowed = filteredBorrowedEquipments.find((b) => b.name === equipment.name);
-          return borrowed ? borrowed.stocks : 0;
-        })
-      }
+      {
+        name: 'Borrowed',
+        data: equipments.map((equipment) => {
+          const borrowed = filteredBorrowedEquipments.find((b) => b.id === equipment.id);
+          return borrowed ? borrowed.qty : 0;
+        }),
+      },
     ];
     setSeries(equipmentSeries);
   }, [equipments, borrowedEquipments]);
@@ -84,17 +86,19 @@ const TotalGrowthBarChart = ({ isLoading }) => {
       ...chartData.options,
       colors: [primary200, primaryDark, secondaryMain, secondaryLight],
       xaxis: {
-        categories: equipments.map((equipment) => equipment.name),
-        labels: {
-          style: { colors: Array(equipments.length).fill(primary) }
-        }
+      categories: equipments.map((equipment) => 
+        equipment.unit === 'pcs' ? equipment.name : `${equipment.name} ${equipment.capacity}${equipment.unit}`
+      ),
+      labels: {
+        style: { colors: Array(equipments.length).fill(primary) },
+      },
       },
       yaxis: {
-        labels: { style: { colors: [primary] } }
+      labels: { style: { colors: [primary] } },
       },
       grid: { borderColor: divider },
       tooltip: { theme: 'light' },
-      legend: { labels: { colors: grey500 } }
+      legend: { labels: { colors: grey500 } },
     };
 
     // Update chart only when not loading
@@ -134,8 +138,8 @@ const TotalGrowthBarChart = ({ isLoading }) => {
               xs={12}
               sx={{
                 '& .apexcharts-menu.apexcharts-menu-open': {
-                  bgcolor: 'background.paper'
-                }
+                  bgcolor: 'background.paper',
+                },
               }}
             >
               {/* Use the series state */}
@@ -149,7 +153,7 @@ const TotalGrowthBarChart = ({ isLoading }) => {
 };
 
 TotalGrowthBarChart.propTypes = {
-  isLoading: PropTypes.bool
+  isLoading: PropTypes.bool,
 };
 
 export default TotalGrowthBarChart;
