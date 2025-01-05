@@ -139,7 +139,7 @@ const LiableStudentsPage = () => {
         <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
           <TextField
             variant="outlined"
-            placeholder="Search by Name or ID"
+            placeholder="Search by Name"
             value={searchQuery}
             onChange={handleSearchChange}
             InputProps={{
