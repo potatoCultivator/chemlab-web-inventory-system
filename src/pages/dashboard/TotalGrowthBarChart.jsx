@@ -59,7 +59,11 @@ const TotalGrowthBarChart = ({ isLoading }) => {
 
     const equipmentSeries = [
       { name: 'Stocks', data: equipments.map((equipment) => equipment.stocks) },
-      { name: 'Borrowed', data: filteredBorrowedEquipments.map((equipment) => equipment.stocks) }
+      { name: 'Borrowed', data: equipments.map((equipment) => {
+          const borrowed = filteredBorrowedEquipments.find((b) => b.name === equipment.name);
+          return borrowed ? borrowed.stocks : 0;
+        })
+      }
     ];
     setSeries(equipmentSeries);
   }, [equipments, borrowedEquipments]);
