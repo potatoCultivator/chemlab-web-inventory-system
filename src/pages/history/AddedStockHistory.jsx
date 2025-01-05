@@ -1,4 +1,3 @@
-// Required imports
 import React, { useState, useEffect } from "react";
 import {
     Table,
@@ -15,17 +14,20 @@ import {
     IconButton,
 } from "@mui/material";
 import { CloseCircleOutlined, SearchOutlined } from "@ant-design/icons";
-import { getAllBorrowers } from "pages/Query"; // Replace with your actual query function
+import { getAllAddedStocks } from "pages/Query"; // Replace with your actual query function
 
-const HistoryTable = () => {
-    const [borrowers, setBorrowers] = useState([]);
+const AddedStockHistory = () => {
+    const [stocks, setStocks] = useState([]);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
-        const unsubscribe = getAllBorrowers(
-            (data) => setBorrowers(data),
+        const unsubscribe = getAllAddedStocks(
+            (data) => {
+                console.log("Fetched data: ", data); // Log fetched data
+                setStocks(data);
+            },
             (error) => {
                 console.error(error);
             }
@@ -54,9 +56,14 @@ const HistoryTable = () => {
         setPage(0);
     };
 
-    const filteredBorrowers = borrowers.filter((borrower) =>
-        borrower.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredStocks = stocks
+    .filter((stock) => stock.name?.toLowerCase().includes(searchQuery.toLowerCase())) // Filtering by name
+    .map((stock) => {
+        return {
+            ...stock,
+            addedTime: new Date(stock.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }), // Ensure valid date
+        };
+    });
 
     return (
         <Box height="525px" overflow="hidden">
@@ -86,36 +93,41 @@ const HistoryTable = () => {
                 <Table stickyHeader>
                     <TableHead>
                         <TableRow style={{ backgroundColor: "#f5f5f5" }}>
-                            <TableCell style={{ fontWeight: "bold" }}>Name</TableCell>
-                            <TableCell align="center" style={{ fontWeight: "bold" }}>Date Borrow</TableCell>
-                            <TableCell align="center" style={{ fontWeight: "bold" }}>Time Borrow</TableCell>
-                            <TableCell align="center" style={{ fontWeight: "bold" }}>Date Return</TableCell>
-                            <TableCell align="center" style={{ fontWeight: "bold" }}>Time Return</TableCell>
+                            <TableCell style={{ fontWeight: "bold" }}>equipment</TableCell>
+                            <TableCell align="center" style={{ fontWeight: "bold" }}>Date Added</TableCell>
+                            <TableCell align="center" style={{ fontWeight: "bold" }}>Time Added</TableCell>
+                            <TableCell align="center" style={{ fontWeight: "bold" }}>Added By</TableCell>
+                            <TableCell align="center" style={{ fontWeight: "bold" }}>Added Stock</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {filteredBorrowers
+                        {filteredStocks
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            .map((borrower) => {
-                                const time_borrow = borrower.borrowedTime.toDate();
-                                const time_return = borrower.date_returned.toDate();
-                                return (
-                                    <TableRow key={borrower.userId} hover>
-                                        <TableCell>{borrower.name}</TableCell>
-                                        <TableCell align="center">{time_borrow.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</TableCell>
-                                        <TableCell align="center">{time_borrow.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</TableCell>
-                                        <TableCell align="center">{time_return.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</TableCell>
-                                        <TableCell align="center">{time_return.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</TableCell>
-                                    </TableRow>
-                                );
-                            })}
+                            .map((stock) => (
+                                <TableRow key={stock.id} hover>
+                                    <TableCell>
+                                        {stock.name}
+                                        {stock.unit !== 'pcs' && ` ${stock.capacity}${stock.unit}`}
+                                    </TableCell>
+                                    <TableCell align="center">
+                                        {new Date(stock.date).toLocaleDateString('en-US', {
+                                            month: 'short',
+                                            day: 'numeric',
+                                            year: 'numeric',
+                                        })}
+                                    </TableCell>
+                                    <TableCell align="center">{stock.addedTime}</TableCell>
+                                    <TableCell align="center">{stock.addedBy}</TableCell>
+                                    <TableCell align="center">{stock.addedStock}</TableCell>
+                                </TableRow>
+                            ))}
                     </TableBody>
                 </Table>
             </TableContainer>
             <TablePagination
                 rowsPerPageOptions={[5, 10, 25]}
                 component="div"
-                count={filteredBorrowers.length}
+                count={filteredStocks.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onPageChange={handleChangePage}
@@ -125,4 +137,4 @@ const HistoryTable = () => {
     );
 };
 
-export default HistoryTable;
+export default AddedStockHistory;

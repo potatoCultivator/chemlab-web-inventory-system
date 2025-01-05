@@ -1047,6 +1047,36 @@ function getAllBorrowers(callback, errorCallback) {
   }, errorCallback);
 }
 
+function getAllAddedStocks(callback, errorCallback) {
+  const db = firestore;
+  const collectionRef = collection(db, 'equipments');
+  const q = query(collectionRef, where('deleted', '==', false));
+
+  // Return the unsubscribe function directly
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const historyList = snapshot.docs
+        .map((doc) =>
+          doc.data().history?.map((entry) => ({
+            ...entry,
+            id: doc.id, // Add unique ID if needed
+            date: entry.date?.toDate() || new Date(),
+            name: doc.data().name,
+            capacity: doc.data().capacity,
+            unit: doc.data().unit
+          }))
+        )
+        .flat();
+
+      console.log(historyList);
+      callback(historyList);
+    },
+    errorCallback
+  );
+}
+
+
 
 
 export { 
@@ -1096,5 +1126,6 @@ export {
   getEquipmentBorrowed,
   getCurrentStocks,
   getEquipmentsList,
-  getAllBorrowers
+  getAllBorrowers,
+  getAllAddedStocks
 };

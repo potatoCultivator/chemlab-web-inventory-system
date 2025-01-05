@@ -5,22 +5,23 @@ import Box from '@mui/material/Box';
 // import CustomTab from './CustomTab';
 import HistoryTable from './HistoryTable';
 import MainCard from 'components/MainCard';
+import AddedStockHistory from './AddedStockHistory';
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
 export default function History() {
   return (
-    <>
-      {/* row 1 */}
-      <Grid item xs={12} sx={{ mb: -2.25 }}>
-        {/* <Typography variant="h5" className="History-title">History</Typography> */}
-      </Grid>
-      <Box sx={{ mt: 4 }}> {/* Add margin-top to create space */}
-        {/* <CustomTab /> */}
-      </Box>
-      <MainCard>
+    <Grid container spacing={2}>
+      <Grid item xs={12}>
+        <MainCard title="Borrowers">
           <HistoryTable />
-      </MainCard>
-    </>
+        </MainCard>
+      </Grid>
+      <Grid item xs={12}>
+        <MainCard title="Added Stocks">
+          <AddedStockHistory />
+        </MainCard>
+      </Grid>
+    </Grid>
   );
 }
