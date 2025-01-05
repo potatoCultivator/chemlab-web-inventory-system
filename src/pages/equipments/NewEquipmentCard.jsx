@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // material-ui
 import Avatar from '@mui/material/Avatar';
@@ -28,6 +29,7 @@ import { Box } from '@mui/system';
 const ChemistryLabInventoryCard = ({ isLoading }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [equipments, setEquipments] = React.useState([]);
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     const fetchData = () => {
@@ -47,13 +49,15 @@ const ChemistryLabInventoryCard = ({ isLoading }) => {
     return () => clearInterval(interval); // Cleanup interval on component unmount
   }, []);
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleViewAllClick = () => {
+    navigate('/history');
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const sortedEquipments = equipments.sort((a, b) => {
+    const dateA = a.deleted ? a.dateDeleted.toDate() : a.dateAdded.toDate();
+    const dateB = b.deleted ? b.dateDeleted.toDate() : b.dateAdded.toDate();
+    return dateB - dateA; // Sort in descending order
+  });
 
   return (
     <>
@@ -76,22 +80,24 @@ const ChemistryLabInventoryCard = ({ isLoading }) => {
                   <BajajAreaChartCard />
                 </Grid>
                 <Grid item xs={12}>
-                  {equipments.slice(0, 8).map((equipment, index) => (
+                  {sortedEquipments.slice(0, 8).map((equipment, index) => (
                     <React.Fragment key={index}>
                       <Grid container direction="column">
                         <Grid item>
                           <Grid container alignItems="center" justifyContent="space-between">
                             <Grid item>
                               <Typography variant="subtitle1" color="inherit">
-                              {equipment.name}{' '}
-                              {equipment.unit !== 'pcs' && `${equipment.capacity}${equipment.unit}`}
+                                {equipment.name}{' '}
+                                {equipment.unit !== 'pcs' && `${equipment.capacity}${equipment.unit}`}
                               </Typography>
                             </Grid>
                             <Grid item>
                               <Grid container alignItems="center" justifyContent="space-between">
                                 <Grid item>
                                   <Typography variant="subtitle1" color="inherit">
-                                    {equipment.dateAdded.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                    {equipment.deleted
+                                      ? equipment.dateDeleted.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                                      : equipment.dateAdded.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                                   </Typography>
                                 </Grid>
                                 <Grid item>
@@ -130,7 +136,7 @@ const ChemistryLabInventoryCard = ({ isLoading }) => {
               </Grid>
             </CardContent>
             <CardActions sx={{ p: 1.25, pt: 0, justifyContent: 'center' }}>
-              <Button size="small" disableElevation>
+              <Button size="small" disableElevation onClick={handleViewAllClick}>
                 View All
                 <RightOutlined style={{ fontSize: '1rem', marginLeft: 8 }} />
               </Button>

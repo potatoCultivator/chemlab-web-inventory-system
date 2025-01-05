@@ -15,16 +15,11 @@
 // // Firebase Storage imports
 // import { storage } from '../firebase'; // Adjust the path as necessary
 // import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { firestore, storage, auth } from '../firebase'; // Adjust the path as necessary
+import { firestore, storage } from '../firebase'; // Adjust the path as necessary
 import { collection, query, where, writeBatch, doc, getDocs, updateDoc, deleteDoc, onSnapshot, arrayUnion,getDoc, setDoc, } from "firebase/firestore"; 
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { sendEmail } from './emailService'; // Import the email service
-import { getMonth, getYear, getWeekOfMonth, getDate } from 'date-fns';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword  } from 'firebase/auth';
-import { circIn } from 'framer-motion';
-import borrowers from 'menu-items/borrowers';
-import equipments from 'menu-items/equipments';
-import { teal } from '@mui/material/colors';
+import { Timestamp } from 'firebase/firestore';
 
 // Function to validate tool data
 function validateToolData(data) {
@@ -254,7 +249,10 @@ async function getAllBorrower() {
 async function deleteEquipment(id) {
   const db = firestore;
   const docRef = doc(db, 'equipments', id);
-  await updateDoc(docRef, { deleted: true });
+  await updateDoc(docRef, {
+    dateDeleted: Timestamp.fromDate(new Date()),
+    deleted: true
+  });
 }
 
 async function editEquipment(id, equipment) {
@@ -686,6 +684,7 @@ function getMonthlyEquipmentStocksCount(callback, errorCallback) {
 // }
 
 import _ from 'lodash';
+import { date } from 'yup';
 
 function getDamagedEquipments(callback, errorCallback) {
   const db = firestore;
