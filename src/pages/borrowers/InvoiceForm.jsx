@@ -196,7 +196,7 @@ const InvoiceForm = () => {
           <TextField
             select
             fullWidth
-            label="Schedule"
+            label="Subject"
             variant="outlined"
             value={formValues.schedID}
             onChange={(e) => handleInputChange('schedID', e.target.value)}
