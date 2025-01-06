@@ -256,7 +256,7 @@ const InvoiceForm = () => {
                 {formValues.equipments.map((equipment, index) => (
                   <TableRow key={index}>
                     <TableCell>
-                      {equipment.name} {equipment.capacity} {equipment.unit}
+                    {equipment.name} {equipment.unit !== 'pcs' && `${equipment.capacity} ${equipment.unit}`}
                     </TableCell>
                     <TableCell align="center">
                       {editRowIndex === index ? (

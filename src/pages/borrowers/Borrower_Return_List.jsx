@@ -163,6 +163,7 @@ class BorrowerList extends Component {
                     </Table>
                 </TableContainer>
                 </Box>
+                
                 <FormControl fullWidth sx={{ marginTop: 2 }}>
                 <InputLabel id="schedule-select-label">Select Schedule</InputLabel>
                 <Select
