@@ -23,10 +23,10 @@ import {
   DialogContent,
   DialogTitle,
 } from '@mui/material';
-import { SearchOutlined, MailOutlined, EyeOutlined, ClearOutlined, EditOutlined } from '@ant-design/icons';
+import { SearchOutlined, MailOutlined, EyeOutlined, ClearOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Timestamp } from 'firebase/firestore';
 import Invoice from './invoice';
-import { getInvoices } from 'pages/Query';
+import { getInvoices, deleteInvoice } from 'pages/Query';
 import InvoiceForm from './InvoiceForm';
 
 const LiableStudentsPage = () => {
@@ -41,6 +41,8 @@ const LiableStudentsPage = () => {
   const [invoices, setInvoices] = useState([]);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [studentToEdit, setStudentToEdit] = useState(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [studentToDelete, setStudentToDelete] = useState(null);
 
   useEffect(() => {
     const unsubscribe = getInvoices(
@@ -100,6 +102,36 @@ const LiableStudentsPage = () => {
   const handleEditDialogClose = () => {
     setEditDialogOpen(false);
     setStudentToEdit(null);
+  };
+
+  const handleDeleteStudent = (student) => {
+    setStudentToDelete(student);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteDialogClose = () => {
+    setDeleteDialogOpen(false);
+    setStudentToDelete(null);
+  };
+
+  const confirmDeleteStudent = async () => {
+    setLoading(true);
+    try {
+      await deleteInvoice(studentToDelete.id);
+      setInvoices((prevInvoices) => prevInvoices.filter((invoice) => invoice.issueID !== studentToDelete.issueID));
+      setSnackbarMessage('Invoice deleted successfully');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
+    } catch (error) {
+      setSnackbarMessage('Error deleting invoice');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+      console.error('Error deleting invoice:', error);
+    } finally {
+      setLoading(false);
+      setDeleteDialogOpen(false);
+      setStudentToDelete(null);
+    }
   };
 
   const formatDate = (timestamp) => {
@@ -243,6 +275,20 @@ const LiableStudentsPage = () => {
                         <EditOutlined style={{ fontSize: '20px' }} />
                       </IconButton>
                     </Tooltip>
+                    <Tooltip title="Delete">
+                      <IconButton
+                        size="small"
+                        onClick={() => handleDeleteStudent(student)}
+                        sx={{
+                          color: '#f44336',
+                          '&:hover': {
+                            color: '#d32f2f',
+                          },
+                        }}
+                      >
+                        <DeleteOutlined style={{ fontSize: '20px' }} />
+                      </IconButton>
+                    </Tooltip>
                   </TableCell>
                 </TableRow>
               ))}
@@ -258,6 +304,22 @@ const LiableStudentsPage = () => {
         <DialogActions>
           <Button onClick={handleEditDialogClose} color="primary">
             Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onClose={handleDeleteDialogClose}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to delete this invoice?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteDialogClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={confirmDeleteStudent} sx={{ color: 'error.main' }}>
+            Confirm
           </Button>
         </DialogActions>
       </Dialog>

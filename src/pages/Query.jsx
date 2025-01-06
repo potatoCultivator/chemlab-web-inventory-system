@@ -1076,8 +1076,17 @@ function getAllAddedStocks(callback, errorCallback) {
   );
 }
 
-
-
+async function deleteInvoice(id) {
+  try {
+    const db = firestore;
+    const docRef = doc(db, 'invoice', id);
+    await deleteDoc(docRef);
+    console.log(`Invoice with ID ${id} deleted successfully`);
+  } catch (error) {
+    console.error('Error deleting invoice:', error);
+    throw error; // Re-throw the error to handle it in the calling function
+  }
+}
 
 export { 
   addEquipment,
@@ -1127,5 +1136,6 @@ export {
   getCurrentStocks,
   getEquipmentsList,
   getAllBorrowers,
-  getAllAddedStocks
+  getAllAddedStocks,
+  deleteInvoice
 };
