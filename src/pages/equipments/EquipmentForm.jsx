@@ -204,152 +204,165 @@ export default function EquipmentForm({ onClose }) {
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({ setFieldValue, values }) => (
-          <Form>
-            <Box sx={{ width: '100%', backgroundColor: 'transparent', padding: 3, borderRadius: 2 }}>
-              <Grid container spacing={3} direction={{ xs: 'column', sm: 'row' }}>
-                {/* Name and Stocks Fields */}
-                <Grid item xs={12} sm={6}>
-                  <Typography>Name:</Typography>
-                  <Autocomplete
-                    freeSolo
-                    options={equipmentNames}
-                    onInputChange={(event, newInputValue) => handleNameChange({ target: { value: newInputValue } }, setFieldValue, values)}
-                    onChange={(event, value) => handleNameSelect(event, value, setFieldValue)}
-                    renderInput={(params) => (
-                      <Field
-                        {...params}
-                        component={TextField}
-                        name="name"
-                        fullWidth
-                        placeholder="Enter the name of the item"
-                        sx={{ backgroundColor: 'transparent' }}
-                        error={!!nameError}
-                        helperText={nameError}
+        {({ setFieldValue, values }) => {
+          useEffect(() => {
+            const checkExistingEquipment = async () => {
+              const exists = await checkEquipmentExists(values.name, values.unit, values.capacity);
+              setNameError(exists ? 'Equipment with this name already exists.' : '');
+                if (exists) {
+                  setDialogOpen(true);
+                }
+            };
+            checkExistingEquipment();
+          }, [values.name, values.unit, values.capacity]);
+
+          return (
+            <Form>
+              <Box sx={{ width: '100%', backgroundColor: 'transparent', padding: 3, borderRadius: 2 }}>
+                <Grid container spacing={3} direction={{ xs: 'column', sm: 'row' }}>
+                  {/* Name and Stocks Fields */}
+                  <Grid item xs={12} sm={6}>
+                    <Typography>Name:</Typography>
+                    <Autocomplete
+                      freeSolo
+                      options={equipmentNames}
+                      onInputChange={(event, newInputValue) => handleNameChange({ target: { value: newInputValue } }, setFieldValue, values)}
+                      onChange={(event, value) => handleNameSelect(event, value, setFieldValue)}
+                      renderInput={(params) => (
+                        <Field
+                          {...params}
+                          component={TextField}
+                          name="name"
+                          fullWidth
+                          placeholder="Enter the name of the item"
+                          sx={{ backgroundColor: 'transparent' }}
+                          error={!!nameError}
+                          helperText={nameError}
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography>Stocks:</Typography>
+                    <Field
+                      component={TextField}
+                      name="stocks"
+                      type="number"
+                      fullWidth
+                      placeholder="Enter the stocks"
+                      sx={{ backgroundColor: 'transparent' }}
+                    />
+                  </Grid>
+
+                  {/* Unit and Capacity Fields */}
+                  <Grid item xs={12} sm={6}>
+                    <Typography>Unit:</Typography>
+                    <Field
+                      component={Select}
+                      name="unit"
+                      fullWidth
+                      displayEmpty
+                      onChange={(event) => handleUnitChange(event, setFieldValue)}
+                      inputProps={{ 'aria-label': 'Select unit' }}
+                      sx={{ backgroundColor: 'transparent' }}
+                    >
+                      <MenuItem value="" disabled>
+                        Please select the unit of measurement
+                      </MenuItem>
+                      <MenuItem value="kg">kg</MenuItem>
+                      <MenuItem value="g">g</MenuItem>
+                      <MenuItem value="L">L</MenuItem>
+                      <MenuItem value="mL">mL</MenuItem>
+                      <MenuItem value="pcs">pcs</MenuItem>
+                      <MenuItem value="cm">cm</MenuItem>
+                      <MenuItem value="in">inches (in)</MenuItem>
+                      <MenuItem value="mm">mm</MenuItem>
+                      <MenuItem value="m">meters (m)</MenuItem>
+                      <MenuItem value="ft">feet (ft)</MenuItem>
+                    </Field>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography>Capacity:</Typography>
+                    <Field
+                      component={TextField}
+                      name="capacity"
+                      type="number"
+                      fullWidth
+                      disabled={values.unit === 'pcs'}
+                      placeholder="Enter the capacity of the item"
+                      sx={{ backgroundColor: 'transparent' }}
+                    />
+                  </Grid>
+
+                  {/* Category Field */}
+                  <Grid item xs={12} sm={6}>
+                    <Typography>Category:</Typography>
+                    <Field
+                      component={Select}
+                      name="category"
+                      fullWidth
+                      displayEmpty
+                      inputProps={{ 'aria-label': 'Select category' }}
+                      sx={{ backgroundColor: 'transparent' }}
+                    >
+                      <MenuItem value="" disabled>
+                        Please select the category
+                      </MenuItem>
+                      <MenuItem value="glassware">Glassware</MenuItem>
+                      <MenuItem value="plasticware">Plasticware</MenuItem>
+                      <MenuItem value="metalware">Metalware</MenuItem>
+                      <MenuItem value="heating">Heating</MenuItem>
+                      <MenuItem value="measuring">Measuring</MenuItem>
+                      <MenuItem value="container">Container</MenuItem>
+                      <MenuItem value="separator">Separation Equipment</MenuItem>
+                      <MenuItem value="mixing">Mixing & Stirring</MenuItem>
+                    </Field>
+                  </Grid>
+
+                  {/* Image Upload Field */}
+                  <Grid item xs={12} sm={6}>
+                    <Typography>Image:</Typography>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(event) => handleImageChange(event, setFieldValue)}
+                      style={{ display: 'block', marginBottom: '1rem' }}
+                    />
+                    {previewImage && (
+                      <Box
+                        component="img"
+                        src={previewImage}
+                        alt="Preview"
+                        sx={{
+                          maxWidth: '100%',
+                          maxHeight: 200,
+                          border: '1px solid #ccc',
+                          borderRadius: 2,
+                          marginBottom: '1rem',
+                        }}
                       />
                     )}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography>Stocks:</Typography>
-                  <Field
-                    component={TextField}
-                    name="stocks"
-                    type="number"
-                    fullWidth
-                    placeholder="Enter the stocks"
-                    sx={{ backgroundColor: 'transparent' }}
-                  />
-                </Grid>
+                  </Grid>
 
-                {/* Unit and Capacity Fields */}
-                <Grid item xs={12} sm={6}>
-                  <Typography>Unit:</Typography>
-                  <Field
-                    component={Select}
-                    name="unit"
-                    fullWidth
-                    displayEmpty
-                    onChange={(event) => handleUnitChange(event, setFieldValue)}
-                    inputProps={{ 'aria-label': 'Select unit' }}
-                    sx={{ backgroundColor: 'transparent' }}
-                  >
-                    <MenuItem value="" disabled>
-                      Please select the unit of measurement
-                    </MenuItem>
-                    <MenuItem value="kg">kg</MenuItem>
-                    <MenuItem value="g">g</MenuItem>
-                    <MenuItem value="L">L</MenuItem>
-                    <MenuItem value="mL">mL</MenuItem>
-                    <MenuItem value="pcs">pcs</MenuItem>
-                    <MenuItem value="cm">cm</MenuItem>
-                    <MenuItem value="in">inches (in)</MenuItem>
-                    <MenuItem value="mm">mm</MenuItem>
-                    <MenuItem value="m">meters (m)</MenuItem>
-                    <MenuItem value="ft">feet (ft)</MenuItem>
-                  </Field>
+                  {/* Submit Button */}
+                  <Grid item xs={12}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        disabled={loading}
+                        startIcon={loading && <CircularProgress size={20} />}
+                      >
+                        {loading ? 'Submitting...' : 'Submit'}
+                      </Button>
+                    </Box>
+                  </Grid>
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography>Capacity:</Typography>
-                  <Field
-                    component={TextField}
-                    name="capacity"
-                    type="number"
-                    fullWidth
-                    disabled={values.unit === 'pcs'}
-                    placeholder="Enter the capacity of the item"
-                    sx={{ backgroundColor: 'transparent' }}
-                  />
-                </Grid>
-
-                {/* Category Field */}
-                <Grid item xs={12} sm={6}>
-                  <Typography>Category:</Typography>
-                  <Field
-                    component={Select}
-                    name="category"
-                    fullWidth
-                    displayEmpty
-                    inputProps={{ 'aria-label': 'Select category' }}
-                    sx={{ backgroundColor: 'transparent' }}
-                  >
-                    <MenuItem value="" disabled>
-                      Please select the category
-                    </MenuItem>
-                    <MenuItem value="glassware">Glassware</MenuItem>
-                    <MenuItem value="plasticware">Plasticware</MenuItem>
-                    <MenuItem value="metalware">Metalware</MenuItem>
-                    <MenuItem value="heating">Heating</MenuItem>
-                    <MenuItem value="measuring">Measuring</MenuItem>
-                    <MenuItem value="container">Container</MenuItem>
-                    <MenuItem value="separator">Separation Equipment</MenuItem>
-                    <MenuItem value="mixing">Mixing & Stirring</MenuItem>
-                  </Field>
-                </Grid>
-
-                {/* Image Upload Field */}
-                <Grid item xs={12} sm={6}>
-                  <Typography>Image:</Typography>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(event) => handleImageChange(event, setFieldValue)}
-                    style={{ display: 'block', marginBottom: '1rem' }}
-                  />
-                  {previewImage && (
-                    <Box
-                      component="img"
-                      src={previewImage}
-                      alt="Preview"
-                      sx={{
-                        maxWidth: '100%',
-                        maxHeight: 200,
-                        border: '1px solid #ccc',
-                        borderRadius: 2,
-                        marginBottom: '1rem',
-                      }}
-                    />
-                  )}
-                </Grid>
-
-                {/* Submit Button */}
-                <Grid item xs={12}>
-                  <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      color="primary"
-                      disabled={loading}
-                      startIcon={loading && <CircularProgress size={20} />}
-                    >
-                      {loading ? 'Submitting...' : 'Submit'}
-                    </Button>
-                  </Box>
-                </Grid>
-              </Grid>
-            </Box>
-          </Form>
-        )}
+              </Box>
+            </Form>
+          );
+        }}
       </Formik>
 
       {/* Dialog for existing equipment */}
