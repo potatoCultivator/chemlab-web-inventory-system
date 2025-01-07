@@ -96,6 +96,7 @@ const InvoiceForm = () => {
   
     const updatedValues = {
       ...formValues,
+      studentID: selectedBorrower.id, // Use the id from the selected borrower
       borrowerID: selectedBorrower.userId,
       date_issued: Timestamp.fromDate(formValues.date_issued),
       due_date: Timestamp.fromDate(formValues.due_date),
@@ -236,10 +237,13 @@ const InvoiceForm = () => {
             fullWidth
             label="Student ID"
             variant="outlined"
-            value={formValues.studentID}
-            onChange={(e) => handleInputChange('studentID', e.target.value)}
+            value={selectedBorrower?.id || ''}  // Use the ID of the selected borrower
+            InputProps={{
+              readOnly: true,
+            }}
           />
         </Grid>
+
 
         {/* Equipment Table */}
         <Grid item xs={12}>

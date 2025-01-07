@@ -64,6 +64,7 @@ function Row(props) {
         <TableCell component="th" scope="row">
           {row.subject}
         </TableCell>
+        <TableCell align='center'>{row.schedule.date}</TableCell>
         <TableCell align='center'>{row.schedule.day}, {row.schedule.start} - {row.schedule.end}</TableCell>
         <TableCell align='center'>{row.instructor}</TableCell>
       </TableRow>
@@ -236,12 +237,14 @@ export default function ScheduleTable({ title }) {
           const startDate = sched.start.toDate();
           const endDate = sched.end.toDate();
           const day = startDate.toLocaleDateString('en-US', { weekday: 'short' });
+          const formattedDate = startDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
   
           return createData(
             sched.subject,
             {
+              date: formattedDate,
               day,
-              start: startDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+              start: `${startDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`,
               end: endDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
             },
             sched.teacher,
@@ -283,6 +286,7 @@ export default function ScheduleTable({ title }) {
             >
               <TableCell />
               <TableCell>Subject</TableCell>
+              <TableCell align='center'>date</TableCell>
               <TableCell align='center'>Schedule</TableCell>
               <TableCell align='center'>Teacher</TableCell>
             </TableRow>
