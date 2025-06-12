@@ -1,15 +1,40 @@
-// https://github.com/vitejs/vite/discussions/3448
 import path from 'path';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import jsconfigPaths from 'vite-jsconfig-paths';
-
-// ----------------------------------------------------------------------
+import { VitePWA } from 'vite-plugin-pwa'; // ✅ Add this
 
 export default defineConfig({
-  plugins: [react(), jsconfigPaths()],
-  // https://github.com/jpuri/react-draft-wysiwyg/issues/1317
-  base: '/', // accessing env variable is not possible here. So hard coding this.
+  plugins: [
+    react(),
+    jsconfigPaths(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['favicon.svg', 'robots.txt', 'icons/icon-192x192.png', 'icons/icon-512x512.png'],
+      manifest: {
+        name: 'My React Vite App',
+        short_name: 'ReactVitePWA',
+        description: 'A React PWA using Vite and MUI',
+        theme_color: '#1976d2', // MUI default primary color
+        background_color: '#ffffff',
+        display: 'standalone',
+        start_url: '/',
+        icons: [
+          {
+            src: 'icons/icon-192x192.png',
+            sizes: '192x192',
+            type: 'image/png'
+          },
+          {
+            src: 'icons/icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png'
+          }
+        ]
+      }
+    })
+  ],
+  base: '/',
   define: {
     global: 'window'
   },
@@ -26,15 +51,11 @@ export default defineConfig({
     ]
   },
   server: {
-    // this ensures that the browser opens upon server start
     open: true,
-    // this sets a default port to 3000
     port: 3000
   },
   preview: {
-    // this ensures that the browser opens upon preview start
     open: true,
-    // this sets a default port to 3000
     port: 3000
   }
 });
